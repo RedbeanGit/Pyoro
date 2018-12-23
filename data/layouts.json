@@ -1,0 +1,110 @@
+[
+	{
+		"max_ratio": 4,
+		"min_ratio": 1.8,
+		"name": "Wide",
+
+		"title": {
+			"pos": [0.25, 0.5],
+			"size": [0.45, -1],
+			"aspectRatio": 2.35,
+			"anchor": [0, 0]
+		},
+		"playButton1": {
+			"pos": [0.625, 0.3],
+			"size": [-1, 0.4],
+			"aspectRatio": 1,
+			"anchor": [0, 0]
+		},
+		"playButton2": {
+			"pos": [0.875, 0.3],
+			"size": [-1, 0.4],
+			"aspectRatio": 1,
+			"anchor": [0, 0]
+		},
+		"optionButton": {
+			"pos": [0.625, 0.75],
+			"size": [-1, 0.2],
+			"aspectRatio": 2,
+			"anchor": [0, 0]
+		},
+		"quitButton": {
+			"pos": [0.875, 0.75],
+			"size": [-1, 0.2],
+			"aspectRatio": 2,
+			"anchor": [0, 0]
+		}
+	},
+	{
+		"max_ratio": 1.8,
+		"min_ratio": 1,
+		"name": "Normal",
+
+		"title": {
+			"pos": [0.5, 0.2],
+			"size": [-1, 0.3],
+			"aspectRatio": 2.35,
+			"anchor": [0, 0]
+		},
+		"playButton1": {
+			"pos": [0.3, 0.55],
+			"size": [0.3, -1],
+			"aspectRatio": 1,
+			"anchor": [0, 0]
+		},
+		"playButton2": {
+			"pos": [0.7, 0.55],
+			"size": [0.3, -1],
+			"aspectRatio": 1,
+			"anchor": [0, 0]
+		},
+		"optionButton": {
+			"pos": [0.3, 0.85],
+			"size": [0.3, -1],
+			"aspectRatio": 2,
+			"anchor": [0, 0]
+		},
+		"quitButton": {
+			"pos": [0.7, 0.85],
+			"size": [0.3, -1],
+			"aspectRatio": 2,
+			"anchor": [0, 0]
+		}
+	},
+	{
+		"max_ratio": 1,
+		"min_ratio": 0,
+		"name": "Narrow",
+
+		"title": {
+			"pos": [0.5, 0.15],
+			"size": [-1, 0.2],
+			"aspectRatio": 2.35,
+			"anchor": [0, 0]
+		},
+		"playButton1": {
+			"pos": [0.5, 0.38],
+			"size": [0.4, -1],
+			"aspectRatio": 1,
+			"anchor": [0, 0]
+		},
+		"playButton2": {
+			"pos": [0.5, 0.6],
+			"size": [0.4, -1],
+			"aspectRatio": 1,
+			"anchor": [0, 0]
+		},
+		"optionButton": {
+			"pos": [0.5, 0.78],
+			"size": [0.4, 0.08],
+			"aspectRatio": -1,
+			"anchor": [0, 0]
+		},
+		"quitButton": {
+			"pos": [0.5, 0.9],
+			"size": [0.4, 0.08],
+			"aspectRatio": -1,
+			"anchor": [0, 0]
+		}
+	}
+]
