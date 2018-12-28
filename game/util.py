@@ -9,7 +9,7 @@ Created on 17/11/2018
 from game.config import DEFAULT_OPTIONS, NAME, VERSION
 
 __author__ = "Julien Dubois"
-__version__ = "1.1.1"
+__version__ = "1.1.2"
 
 import ctypes
 import enum
@@ -22,6 +22,7 @@ import subprocess
 import sys
 import threading
 
+from gi.repository import Gdk
 from pygame.locals import K_1, K_2, K_3, K_4, K_5, K_6, K_7, K_8, K_9, K_0, \
 	K_q, K_w, K_z, K_m, K_a, K_MINUS, K_LEFTBRACKET, K_RIGHTBRACKET, \
 	K_SEMICOLON, K_QUOTE, K_COMMA, K_PERIOD, K_SLASH, JOYBUTTONDOWN, \
@@ -61,7 +62,7 @@ def getJoyKeyName(inputType, **inputKwargs):
 	Get a representation of a joystick input.
 
 	:type inputType: int
-	:param inputType: The pygame code of a joystick input type. 
+	:param inputType: The pygame code of a joystick input type.
 		It can be JOYBUTTONDOWN, JOYHATMOTION or JOYAXISMOTION.
 
 	:type **inputKwargs: object
@@ -126,11 +127,11 @@ def saveOptions(options):
 	optionFilePath = os.path.join(getExternalDataPath(), "options.json")
 	with open(optionFilePath, "w") as file:
 		json.dump(options, file, indent = "\t")
-	
+
 
 def loadOptions():
 	"""
-	Load options from a json file. If no option found, return 
+	Load options from a json file. If no option found, return
 	game.config.DEFAULT_OPTIONS.
 
 	:rtype: dict
@@ -168,7 +169,7 @@ def leaveGame(errorId = 0):
 	wrong happened.
 
 	:type errorId: int
-	:param errorId: Optional. An error id. 0 is used if 
+	:param errorId: Optional. An error id. 0 is used if
 		not defined.
 	"""
 
@@ -242,12 +243,23 @@ def adminRestart(*args):
 				1
 			)
 
+	def rootPrompt():
+		toReturn = 0
+		# If the user isn't a super user
+		if os.geteuid() != 0:
+			msg = "[sudo] password for %u:"
+			toReturn = subprocess.check_call("sudo -v -p '%s'" % msg, shell=True)
+		return toReturn
+
 	if systemName == "Windows":
 		threading.Thread(target = uacPrompt).start()
 		leaveGame()
 	else:
-		subprocess.Popen(["sudo", sys.executable] + args)
-		leaveGame()
+		if rootPrompt() == 0:
+			restart()
+		else:
+			print("[WARNING] [util.adminRestart] Unable to get root privileges")
+			leaveGame()
 
 
 def resetGame():
@@ -287,9 +299,9 @@ def checkModules():
 	"""
 
 	print("[INFO] [util.chechModules] Checking required modules")
-	required = ("os", "sys", "pygame", "json", "wave", "audioop", "pyaudio", 
-		"threading", "traceback", "time", "platform", "shutil", "ftplib", 
-		"enum")
+	required = ("os", "sys", "pygame", "json", "wave", "audioop", "pyaudio",
+		"threading", "traceback", "time", "platform", "shutil", "ftplib",
+		"enum", "gi")
 
 	for moduleName in required:
 		try:
@@ -307,7 +319,7 @@ def getResourcePaths(resourceType):
 	Get the path of all resources in a defined category.
 
 	:type resourceType: str
-	:param resourceType: The category of resource. It can be 
+	:param resourceType: The category of resource. It can be
 		"musics", "sounds" and "images"
 
 	:rtype: list<str>
@@ -331,43 +343,10 @@ def getResourcePaths(resourceType):
 	return []
 
 
-def getLayoutTemplate(ratio):
-	"""
-	Get the best layout for a given ratio.
-
-	:type ratio: float
-	:param ratio: The ratio of the game window.
-
-	:rtype: dict
-	:returns: A dictionary representing placement informations about 
-		the graphical components of the game menu.
-	"""
-
-	layoutFilePath = os.path.join("data", "layouts.json")
-	if os.path.exists(layoutFilePath):
-		with open(layoutFilePath, "r") as file:
-			layouts = json.load(file)
-			for layout in layouts:
-				if "max_ratio" in layout and "min_ratio" in layout:
-					if ratio >= layout["min_ratio"]:
-						if ratio <= layout["max_ratio"]:
-							if "name" in layout:
-								print("[INFO] [util.getLayoutTemplate] " \
-									+ '"%s" layout chosen' % layout["name"])
-							return layout
-							
-		print("[WARNING] [util.getLayoutTemplate] Unable to find a layout which" \
-			+ " fit the given ratio")
-	else:
-		print("[WARNING] [util.getLayoutTemplate] Unable" \
-			+ ' to find "%s"' % layoutFilePath)
-	return {}
-
-
 def getExternalDataPath():
 	r"""
-	Get the path to the game data folder according to the host 
-	operating system. 
+	Get the path to the game data folder according to the host
+	operating system.
 		- %AppData%\Pyoro on Window
 		- /home/<user>/share/Pyoro on Linux distributions
 		- /home/<user>/Library/Pyoro on MacOS.
@@ -406,7 +385,7 @@ def copyDirectory(fromPath, toPath):
 	:param toPath: The destination file or folder.
 
 	:rtype: bool
-	:returns: True if files and folders has been copied successfuly, 
+	:returns: True if files and folders has been copied successfuly,
 		otherwise False.
 	"""
 
@@ -425,7 +404,7 @@ def copyDirectory(fromPath, toPath):
 		if os.path.exists(fromPath):
 			if not os.path.exists(os.path.dirname(toPath)):
 				os.makedirs(os.path.dirname(toPath))
-			
+
 			try:
 				shutil.copyfile(fromPath, toPath)
 			except Exception:
@@ -438,6 +417,95 @@ def copyDirectory(fromPath, toPath):
 			toReturn = False
 
 	return toReturn
+
+##############################################################################
+### Screen Infos #############################################################
+##############################################################################
+
+
+def getLayoutTemplate(ratio):
+	"""
+	Get the best layout for a given ratio.
+
+	:type ratio: float
+	:param ratio: The ratio of the game window.
+
+	:rtype: dict
+	:returns: A dictionary representing placement informations about
+		the graphical components of the game menu.
+	"""
+
+	# Detecting best layout name accourding to the resolution
+	if ratio > 1:
+		bestLayoutName = "Wide"
+	elif ratio < 1:
+		bestLayoutName = "Narrow"
+	else:
+		bestLayoutName = "Square"
+
+	layoutFilePath = os.path.join("data", "layouts.json")
+	if os.path.exists(layoutFilePath):
+		with open(layoutFilePath, "r") as file:
+			layouts = json.load(file)
+
+			# Searching the best layout
+			for layout in layouts:
+				if "name" in layout:
+					if layout["name"] == bestLayoutName:
+						print("[INFO] [util.getLayoutTemplate] Layout" \
+							+ ' "%s" choosen' % bestLayoutName)
+						return layout
+				else:
+					print("[WARNING] [util.getLayoutTemplate] Some layouts" \
+						+ " aren't named")
+
+		print("[WARNING] [util.getLayoutTemplate] Unable to find a layout" \
+			+ " which fit the given ratio")
+	else:
+		print("[WARNING] [util.getLayoutTemplate] Unable" \
+			+ ' to find "%s"' % layoutFilePath)
+	return {}
+
+
+def getMonitorSize():
+	"""
+	Return the screen size in mm.
+
+	:rtype: tuple
+	:returns: (width, height) tuple where width and height are ints which
+		represent the default screen size in millimeters.
+	"""
+
+	display = Gdk.Display.get_default()
+	monitor = display.get_monitor(0)
+	return monitor.get_width_mm(), monitor.get_height_mm()
+
+def getScreenSize():
+	"""
+	Return the screen size in pixels.
+
+	:rtype: tuple
+	:returns: (width, height) tuple where width and height are ints which
+		represent the default screen size in pixels.
+	"""
+
+	screen = Gdk.Screen.get_default()
+	return screen.get_width(), screen.get_height()
+
+def getScreenRatio():
+	"""
+	Return the screen resolution (width / height).
+
+	:rtype: float
+	:returns: A floating point value representing the ratio width / height.
+	"""
+
+	w, h = getScreenSize()
+	if h:
+		return w / h
+	print("[WARNING] [util.getScreenRatio] Height can't be null")
+	return 1
+
 
 ##############################################################################
 ### Enumerations #############################################################

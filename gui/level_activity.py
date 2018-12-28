@@ -12,7 +12,7 @@
 import os, pygame
 from pygame.locals import KEYDOWN, KEYUP, JOYBUTTONDOWN, JOYBUTTONUP, JOYHATMOTION, JOYAXISMOTION
 
-from game.config import LEVEL_IMAGE_PATH, HEIGHT, WIDTH
+from game.config import LEVEL_IMAGE_PATH
 from game.level import Level
 from game.util import Game
 
@@ -34,7 +34,7 @@ class Level_activity(Activity):
 
 		self.lastLevelStyleType = 0
 		self.lastLevelScore = 0
-		
+
 		self.joyHatStates = []
 		self.joyAxisStates = []
 
@@ -48,13 +48,22 @@ class Level_activity(Activity):
 
 	def initSounds(self):
 		self.__initSounds__(("music_0", "music_1", "music_2",
-			"drums", "organ", "game_over", "speed_drums"), 
+			"drums", "organ", "game_over", "speed_drums"),
 			os.path.join("data", "audio", "musics"), "music")
 		self.sounds["music_0"].play()
 
 	def initWidgets(self):
-		self.addWidget("scoreText", Text, (int(WIDTH * 0.25), int(HEIGHT * 0.05)), "Score: 0", fontSize = 20, anchor = (0, -1))
-		self.addWidget("highScoreText", Text, (int(WIDTH * 0.75), int(HEIGHT * 0.05)), "Meilleur Score: {}".format(self.getHighScore()), fontSile = 20, anchor = (0, -1))
+		spos = self.layout.getWidgetPos("score_text")
+		ssize = self.layout.getFontSize("score_text")
+
+		hpos = self.layout.getWidgetPos("high_score_text")
+		hsize = self.layout.getFontSize("high_score_text")
+
+		self.addWidget("score_text", Text, spos, "Score: 0", \
+			fontSize = ssize, anchor = (0, -1))
+		self.addWidget("high_score_text", Text, hpos, \
+			"Meilleur Score: %s" % self.getHighScore(), \
+			fontSize = hsize, anchor = (0, -1))
 
 	def initJoyStates(self):
 		bestJoyHats = max(self.window.joysticks, key = lambda x: x.get_numhats(), default = None)
@@ -76,9 +85,9 @@ class Level_activity(Activity):
 		self.window.setOption("high score", lastOptions)
 
 	def updateScore(self):
-		self.widgets["scoreText"].text = "Score: {}".format(self.level.score)
+		self.widgets["score_text"].text = "Score: %s" % self.level.score
 		if self.level.score > self.getHighScore():
-			self.widgets["highScoreText"].text = "High Score: {}".format(self.level.score)
+			self.widgets["high_score_text"].text = "High Score: %s" % self.level.score
 
 
 	# sounds
@@ -91,19 +100,19 @@ class Level_activity(Activity):
 					print("[INFO] [Level_activity.updateSounds] Drums added to the music")
 					self.sounds["drums"].play()
 					self.sounds["drums"].setPos(self.sounds["music_0"].pos)
-				
+
 				elif self.lastLevelScore < 10000 and self.level.score >= 10000:
 					print("[INFO] [Level_activity.updateSounds] Organ added to the music")
 					self.sounds["organ"].play()
 					self.sounds["organ"].setPos(self.sounds["music_0"].pos)
-		
+
 		elif styleType == 1:
 			if self.lastLevelStyleType != styleType:
 				print("[INFO] [Level_activity.updateSounds] Music 2 started")
 				Game.audioPlayer.setSpeed(1)
 				Game.audioPlayer.stopAudio()
 				self.sounds["music_1"].play()
-		
+
 		elif styleType == 2:
 			if self.lastLevelStyleType != styleType:
 				print("[INFO] [Level_activity.updateSounds] Music 3 started")
@@ -115,7 +124,7 @@ class Level_activity(Activity):
 				print("[INFO] [Level_activity.updateSounds] Speed drums added to the music")
 				self.sounds["speed_drums"].play()
 				self.sounds["speed_drums"].setPos(self.sounds["music_2"].pos)
-				
+
 		self.lastLevelStyleType = styleType
 		self.lastLevelScore = self.level.score
 		if not self.level.pyoro.dead:
@@ -127,15 +136,22 @@ class Level_activity(Activity):
 		self.window.setOption("last game", self.level.gameId)
 
 	def pauseGame(self):
-		if "pauseMenu" in self.widgets:
-			self.widgets["pauseMenu"].destroy()
+		if "pause_menu" in self.widgets:
+			self.widgets["pause_menu"].destroy()
 		else:
 			#Game.audioPlayer.pauseAudio()
-			self.addWidget("pauseMenu", Pause_menu, (WIDTH // 2, HEIGHT // 2), self.onPauseMenuDestroy, self.window.setMenuRender, anchor = (0, 0))
+			size = self.layout.getWidgetSize("pause_menu")
+			pos = self.layout.getWidgetPos("pause_menu")
+			anchor = self.layout.getWidgetAnchor("pause_menu")
+
+			self.addWidget("pause_menu", Pause_menu, pos, \
+				self.onPauseMenuDestroy, self.window.setMenuRender, \
+				size = size, anchor = anchor)
+
 			self.level.loopActive = False
-	
+
 	def onPauseMenuDestroy(self):
-		self.removeWidget("pauseMenu")
+		self.removeWidget("pause_menu")
 		self.level.loopActive = True
 		#Game.audioPlayer.unpauseAudio()
 
@@ -143,10 +159,15 @@ class Level_activity(Activity):
 		Game.audioPlayer.stopAudio()
 		Game.audioPlayer.setSpeed(1)
 		self.sounds["game_over"].play(1)
-		self.addWidget("gameOverMenu", Game_over_menu, (WIDTH // 2, HEIGHT // 2), self.level.score, self.onGameOverMenuDestroy, anchor = (0, 0))
+
+		size = self.layout.getWidgetSize("game_over_menu")
+		pos = self.layout.getWidgetPos("game_over_menu")
+		anchor = self.layout.getWidgetAnchor("game_over_menu")
+		self.addWidget("game_over_menu", Game_over_menu, pos, self.level.score, \
+			self.onGameOverMenuDestroy, size = size, anchor = anchor)
 
 	def onGameOverMenuDestroy(self):
-		self.removeWidget("gameOverMenu")
+		self.removeWidget("game_over_menu")
 		self.window.setMenuRender()
 
 
@@ -155,7 +176,7 @@ class Level_activity(Activity):
 		if self.level.loopActive:
 			keyboard = self.window.getOption("keyboard")
 			joystick = self.window.getOption("joystick")
-			
+
 			enableKeys = {
 				"left": self.level.pyoro.enableMoveLeft,
 				"right": self.level.pyoro.enableMoveRight,
@@ -217,7 +238,7 @@ class Level_activity(Activity):
 							elif disabled:
 								if inputInfos["value"] / disabled > 0 or abs(event.value) <= 0.2:
 									disableKeys[actionName]()
-								
+
 		Activity.updateEvent(self, event)
 
 	def update(self, deltaTime):

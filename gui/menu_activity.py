@@ -34,7 +34,7 @@ class Menu_activity(Activity):
 		self.titlePos = [0, 0]
 		self.level.init()
 		Activity.__init__(self, window)
-	
+
 	def initImages(self):
 		w, h = self.layout.getWidgetSize("title")
 		x, y = self.layout.getWidgetPos("title")
@@ -43,7 +43,7 @@ class Menu_activity(Activity):
 
 		self.images["title"] = Image_transformer.resize(self.window.getImage(
 			os.path.join(GUI_IMAGE_PATH, "title.png")), (w, h))
-		
+
 		self.levelDrawer.initImages()
 		Activity.initImages(self)
 
@@ -53,40 +53,34 @@ class Menu_activity(Activity):
 		Game.audioPlayer.setSpeed(1)
 
 	def initWidgets(self):
-		ww, wh = self.window.getSize()
-		ts = int((ww + wh) * 0.015625) 
 		widgetInfos = {
-			"playButton1": {
+			"play_button_1": {
 				"type": Play_button,
 				"args": (0,),
 				"kwargs": {
-					"fontSize": ts,
 					"onClickFct": self.window.setGameRender
 				}
 			},
-			"playButton2": {
+			"play_button_2": {
 				"type": Play_button,
 				"args": (1,),
 				"kwargs": {
-					"fontSize": ts,
-					"onClickFct": self.window.setGameRender, 
+					"onClickFct": self.window.setGameRender,
 					"enable": self.isPyoro2Unlocked()
 				}
 			},
-			"optionButton": {
+			"option_button": {
 				"type": Button,
 				"args": (),
 				"kwargs": {
-					"fontSize": ts,
 					"text": "Options",
 					"onClickFct": self.createOptionMenu
 				}
 			},
-			"quitButton": {
+			"quit_button": {
 				"type": Button,
 				"args": (),
 				"kwargs": {
-					"fontSize": ts,
 					"text": "Quitter",
 					"onClickFct": self.window.destroy
 				}
@@ -94,30 +88,34 @@ class Menu_activity(Activity):
 		}
 
 		for widgetName, kwargs in widgetInfos.items():
-			x, y = self.layout.getWidgetPos(widgetName)
-			w, h = self.layout.getWidgetSize(widgetName)
-			ax, ay = self.layout.getWidgetAnchor(widgetName)
+			pos = self.layout.getWidgetPos(widgetName)
+			size = self.layout.getWidgetSize(widgetName)
+			anchor = self.layout.getWidgetAnchor(widgetName)
+			fsize = self.layout.getFontSize(widgetName)
 			self.addWidget(
-				widgetName, 
-				kwargs["type"], 
-				(x, y),
+				widgetName,
+				kwargs["type"],
+				pos,
 				*kwargs["args"],
-				size = (w, h),
-				anchor = (ax, ay),
+				size = size,
+				anchor = anchor,
+				fontSize = fsize,
 				**kwargs["kwargs"]
 			)
-	
+
 	def createOptionMenu(self):
-		ww, wh = self.window.getSize()
-		self.addWidget("optionMenu", Option_menu, (ww // 2, wh // 2), self.onOptionMenuDestroy, anchor = (0, 0))
+		size = self.layout.getWidgetSize("option_menu")
+		pos = self.layout.getWidgetPos("option_menu")
+		anchor = self.layout.getWidgetAnchor("option_menu")
+
+		self.addWidget("option_menu", Option_menu, pos, \
+			self.onOptionMenuDestroy, size = size, anchor = anchor)
 
 	def onOptionMenuDestroy(self):
-		self.widgets["playButton2"].config(enable = self.isPyoro2Unlocked())
-		self.removeWidget("optionMenu")
+		self.widgets["play_button_2"].config(enable = self.isPyoro2Unlocked())
+		self.removeWidget("option_menu")
 
 	def update(self, deltaTime):
-		ww, wh = self.window.getSize()
-
 		self.level.update(deltaTime)
 		self.levelDrawer.update(deltaTime)
 		self.window.drawImage(self.images["title"], self.titlePos)
