@@ -11,7 +11,7 @@
 
 import os
 
-from game.config import GUI_IMAGE_PATH, WIDTH, HEIGHT
+from game.config import GUI_IMAGE_PATH
 from gui.clickable_text import Clickable_text
 from gui.menu_widget import Menu_widget
 from gui.option_menu import Option_menu
@@ -20,7 +20,6 @@ from gui.text import Text
 class Pause_menu(Menu_widget):
 
 	DEFAULT_KWARGS = {
-		"size": [WIDTH // 2.5, HEIGHT // 2],
 		"fontSize": 20,
 		"font": os.path.join(GUI_IMAGE_PATH, "font.ttf")
 	}
@@ -37,7 +36,7 @@ class Pause_menu(Menu_widget):
 		w, h = self.kwargs["size"]
 		f = self.kwargs["font"]
 		fs = self.kwargs["fontSize"]
-		
+
 		px = int(w * 0.5)
 		py = int(h * 0.2)
 		self.addSubWidget("titleText", Text, (px, py), "Pause", anchor = (0, 0), font = f, fontSize = fs + 15)

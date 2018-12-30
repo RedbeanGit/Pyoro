@@ -6,7 +6,7 @@ Provide a class to draw a game.level.Level and entities.entity.Entity
 Created on 11/10/2018
 """
 
-from game.config import WIDTH, HEIGHT, CASE_SIZE, \
+from game.config import CASE_SIZE, \
 	BACKGROUND_TRANSITION_DURATION, LEVEL_IMAGE_PATH
 from gui.image_transformer import Image_transformer
 

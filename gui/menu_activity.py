@@ -6,7 +6,7 @@ Provide an activity to manage the main menu.
 Created on 10/04/2018
 """
 
-from game.config import GUI_IMAGE_PATH, WIDTH, HEIGHT
+from game.config import GUI_IMAGE_PATH
 from game.level import Level
 from game.util import Game
 

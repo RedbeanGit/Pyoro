@@ -11,7 +11,7 @@
 
 import os
 
-from game.config import WIDTH, HEIGHT, GUI_IMAGE_PATH
+from game.config import GUI_IMAGE_PATH
 from gui.menu_widget import Menu_widget
 from gui.clickable_text import Clickable_text
 from gui.text import Text
@@ -25,8 +25,7 @@ class Dialog_menu(Menu_widget):
 		"negativeFct": None,
 		"negativeArgs": (),
 		"negativeKwargs": {},
-		"description": "",
-		"size": [int(WIDTH * 0.75), int(HEIGHT * 0.25)]
+		"description": ""
 	}
 
 	def __init__(self, activity, pos, message, positiveFct, **kwargs):
@@ -43,7 +42,7 @@ class Dialog_menu(Menu_widget):
 		px = int(w * 0.5)
 		py = int(h * 0.25)
 		self.addSubWidget("titleText", Text, (px, py), self.message, font = f, fontSize = 22, anchor = (0, 0))
-		
+
 		if self.kwargs["description"]:
 			px = int(w * 0.1)
 			py = int(h * 0.4)

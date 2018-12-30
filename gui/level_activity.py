@@ -10,7 +10,8 @@
 """
 
 import os, pygame
-from pygame.locals import KEYDOWN, KEYUP, JOYBUTTONDOWN, JOYBUTTONUP, JOYHATMOTION, JOYAXISMOTION
+from pygame.locals import KEYDOWN, KEYUP, JOYBUTTONDOWN, JOYBUTTONUP, \
+	JOYHATMOTION, JOYAXISMOTION
 
 from game.config import LEVEL_IMAGE_PATH
 from game.level import Level

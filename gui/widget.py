@@ -9,12 +9,11 @@
 =========================
 """
 
-from game.config import WIDTH, HEIGHT
 
 class Widget:
 
     DEFAULT_KWARGS = {
-        "size": [WIDTH, HEIGHT],
+        "size": [1, 1],
         "anchor": (-1, -1)
     }
 
@@ -33,18 +32,18 @@ class Widget:
 
     def update(self, deltaTime):
         pass
-    
+
     def onEvent(self, event):
         pass
 
     def config(self, **kwargs):
         for key, value in kwargs.items():
             self.kwargs[key] = value
-            
+
     def getRealPos(self):
         return [int(self.pos[0] - self.kwargs["size"][0] * (self.kwargs["anchor"][0] + 1) / 2), \
         int(self.pos[1] - self.kwargs["size"][1] * (self.kwargs["anchor"][1] + 1) / 2)]
-    
+
     def isInWidget(self, pos):
         realPos = self.getRealPos()
         return pos[0] >= realPos[0] \

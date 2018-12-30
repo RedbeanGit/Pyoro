@@ -175,6 +175,7 @@ def leaveGame(errorId = 0):
 
 	print("[INFO] [util.leaveGame] Leaving %s v%s" % (NAME.capitalize(), VERSION))
 	stopGame()
+	logMessage = "Consultez les logs pour plus de détails"
 
 	if errorId == 0:
 		sys.exit()
@@ -185,21 +186,21 @@ def leaveGame(errorId = 0):
 	elif errorId == Errors.DATA_NOT_FOUND:
 		raise RuntimeError("Une erreur est survenue ! " \
 			+ "Il manque les données du jeu " \
-			+ "(images, sons, polices d'écriture, ...) !")
+			+ "(images, sons, polices d'écriture, json) ! " + logMessage)
 	elif errorId == Errors.BOOT_ERROR:
 		raise RuntimeError("Une erreur est survenue pendant" \
-			+ " le démarrage du jeu ! Consultez " \
-			+ "les logs pour plus de détails")
+			+ " le démarrage du jeu ! " + logMessage)
 	elif errorId == Errors.LOOP_ERROR:
 		raise RuntimeError("Une erreur est survenue pendant la" \
-			+ " boucle de jeu ! Consultez les " \
-			+ "logs pour plus de détails")
+			+ " boucle de jeu ! " + logMessage)
 	elif errorId == Errors.UPDATE_ERROR:
 		raise RuntimeError("Une erreur est survenue pendant l'installation" \
-			+ " des mises à jours ! Consultez les " \
-			+ "logs pour plus de détails")
+			+ " des mises à jours ! " + logMessage)
+	elif errorId == Errors.BAD_RESOURCE:
+		raise RuntimeError("Il semblerait qu'une ressource du jeu (image, son" \
+			+ ", json) soit manquante ou endommagée ! " + logMessage)
 	raise RuntimeError("Une erreur inconnue est survenue " \
-		+ "(errorId=%s) ! Consultez les logs pour plus de détails" % errorId)
+		+ "(errorId=%s) ! " % errorId + logMessage)
 
 
 def restart(*args):
@@ -340,7 +341,7 @@ def getResourcePaths(resourceType):
 	else:
 		print("[WARNING] [util.getResourcePaths] " \
 			+ "Unable to find \"%s\"" % resFilePath)
-	return []
+	leaveGame(Errors.BAD_RESOURCE)
 
 
 def getExternalDataPath():
@@ -461,10 +462,10 @@ def getLayoutTemplate(ratio):
 
 		print("[WARNING] [util.getLayoutTemplate] Unable to find a layout" \
 			+ " which fit the given ratio")
-	else:
-		print("[WARNING] [util.getLayoutTemplate] Unable" \
-			+ ' to find "%s"' % layoutFilePath)
-	return {}
+		return {}
+	print("[WARNING] [util.getLayoutTemplate] Unable" \
+		+ ' to find "%s"' % layoutFilePath)
+	leaveGame(Errors.BAD_RESOURCE)
 
 
 def getMonitorSize():
@@ -480,6 +481,7 @@ def getMonitorSize():
 	monitor = display.get_monitor(0)
 	return monitor.get_width_mm(), monitor.get_height_mm()
 
+
 def getScreenSize():
 	"""
 	Return the screen size in pixels.
@@ -491,6 +493,7 @@ def getScreenSize():
 
 	screen = Gdk.Screen.get_default()
 	return screen.get_width(), screen.get_height()
+
 
 def getScreenRatio():
 	"""
@@ -511,10 +514,12 @@ def getScreenRatio():
 ### Enumerations #############################################################
 ##############################################################################
 
+
 class Game:
 	window = None
 	debugLogger = None
 	audioPlayer = None
+
 
 class Errors(enum.Enum):
 	MODULE_NOT_FOUND = 1
@@ -522,3 +527,4 @@ class Errors(enum.Enum):
 	BOOT_ERROR = 3
 	LOOP_ERROR = 4
 	UPDATE_ERROR = 5
+	BAD_RESOURCE = 6

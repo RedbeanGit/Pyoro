@@ -7,7 +7,7 @@ Created on 18/03/2018
 """
 
 from audio.audio_player import Audio_player
-from game.config import WIDTH, HEIGHT, NAME, GUI_IMAGE_PATH, CASE_SIZE
+from game.config import NAME, GUI_IMAGE_PATH, CASE_SIZE
 from game.util import loadOptions, saveOptions, getResourcePaths, \
 	leaveGame, Game
 from gui.image_transformer import Image_transformer
@@ -48,13 +48,9 @@ class Window:
 		"""
 
 		print("[INFO] [Window.initPygameWindow] Creating new Pygame window " \
-			+ "with definition %sx%s" % (WIDTH + 10, HEIGHT + 10))
+			+ "in fullscreen mode with auto definition")
 		pygame.init()
 
-		w, h = self.getScreenSize()
-		w = int(w * 0.6 - (w * 0.6) % CASE_SIZE)
-		h = int(h * 0.6 - (h * 0.6) % CASE_SIZE)
-		s = min(w, h)
 		self.root_window = pygame.display.set_mode((0, 0), pygame.FULLSCREEN)
 		pygame.display.set_caption(NAME)
 		iconPath = os.path.join(GUI_IMAGE_PATH, "pyoro_icon.png")

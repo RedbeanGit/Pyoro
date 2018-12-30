@@ -6,7 +6,7 @@ Provide a splash activity while the game is booting.
 Created on 29/10/2018
 """
 
-from game.config import WIDTH, HEIGHT, SPLASH_ANIMATION_DURATION, \
+from game.config import SPLASH_ANIMATION_DURATION, \
 	ENTITIES_IMAGE_PATH
 from game.update import getConnectionStream, getUpdates, downloadUpdate, \
 	installUpdate

@@ -15,10 +15,8 @@ import os
 # General information about the game
 DEBUG = True														# Debugging mode (if you want to see logs in a console)
 FPS = 60															# frame per seconds
-HEIGHT = 640														# window height in pixels
 NAME = "PYORO"														# game name
 VERSION = "1.1.1"													# game version
-WIDTH = 640															# window width in pixels
 
 # Update server address and login
 UPDATE_HOST = "ftpupload.net"										# FTP host

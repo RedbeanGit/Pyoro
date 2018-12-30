@@ -11,14 +11,13 @@
 
 import os
 
-from game.config import WIDTH, HEIGHT, GUI_IMAGE_PATH
+from game.config import GUI_IMAGE_PATH
 from gui.image_transformer import Image_transformer
 from gui.widget import Widget
 
 class Menu_widget(Widget):
 
 	DEFAULT_KWARGS = {
-		"size": [int(WIDTH * 0.9), int(HEIGHT * 0.9)],
 		"backgroundImage": os.path.join(GUI_IMAGE_PATH, "frame.png")
 	}
 

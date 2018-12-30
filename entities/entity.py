@@ -6,7 +6,7 @@ Provide a base abstract class to create entities
 Created on 18/03/2018
 """
 
-from game.config import CASE_SIZE, WIDTH, HEIGHT, ENTITIES_IMAGE_PATH
+from game.config import CASE_SIZE, ENTITIES_IMAGE_PATH
 from gui.image_transformer import Image_transformer
 
 __author__ = "Julien Dubois"
@@ -77,11 +77,11 @@ class Entity:
 			if imageName.split(".")[-1] == "png":
 				self.images[imageName] = Image_transformer.resize(
 					self.level.activity.window.getImage(
-						os.path.join(ENTITIES_IMAGE_PATH, 
+						os.path.join(ENTITIES_IMAGE_PATH,
 							folderName, imageName)), \
 					(CASE_SIZE * self.size[0], CASE_SIZE * self.size[1]))
 		self.updateSprite()
-	
+
 	def initImages(self):
 		"""
 		Initialize the images used by the entity.
@@ -148,14 +148,14 @@ class Entity:
 		   and (p[0] - s[0] / 2 < self.pos[0] + self.size[0] / 2) \
 		   and (p[1] + s[1] / 2 > self.pos[1] - self.size[1] / 2) \
 		   and (p[1] - s[1] / 2 < self.pos[1] + self.size[1] / 2)
-	
+
 	def isOutOfBounds(self, included = True):
 		"""
 		Check if the entity is in the terrain.
 
 		:type included: bool
 		:param included: Optional! If True (default), check if the entire
-			entity is out of the terrain. Otherwise, only check if a part 
+			entity is out of the terrain. Otherwise, only check if a part
 			of the entity is out of bounds.
 
 		:rtype: bool
