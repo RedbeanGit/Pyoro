@@ -26,24 +26,28 @@ class Super_bean(Bean):
 	def initSounds(self):
 		Bean.initSounds(self)
 		self.__initSounds__(("bean_implode",))
-	
+
 	def updateSprite(self):
 		if not self.colorIndex % 2:
 			self.spriteIndex = self.spriteIndex + 1 if self.spriteIndex < 2 else 0
 		self.colorIndex = self.colorIndex + 1 if self.colorIndex < 5 else 0
-		self.currentImageName = "bean_{}_{}.png".format(self.spriteIndex, self.colorIndex)
-		self.level.setActionDelay((self, "updateSprite"), BEAN_SPRITE_DURATION / 6, self.updateSprite)
-	
+		self.currentImageName = "bean_{}_{}.png".format(self.spriteIndex, \
+			self.colorIndex)
+		self.level.setActionDelay((self, "updateSprite"), \
+			BEAN_SPRITE_DURATION / 6, self.updateSprite)
+
 	def catch(self):
 		i = 0
 		for entity in self.level.entities:
 			if isinstance(entity, Bean) and entity != self:
-				self.level.createActionDelay((self, "destroyBean", i), i * 0.1, self.destroyBean, entity, i)
+				self.level.createActionDelay((self, "destroyBean", i), i * 0.1, \
+					self.destroyBean, entity, i)
 				i += 1
 		i = 0
 		emptyCases = list(self.level.getVoidCases())
 		for i in range(min(10, len(emptyCases))):
-			self.level.createActionDelay((self, "repairCase", emptyCases[i].pos), i * 0.5, self.repairCase, emptyCases[i])
+			self.level.createActionDelay((self, "repairCase", emptyCases[i].pos), \
+				i * 0.5, self.repairCase, emptyCases[i])
 		Bean.catch(self)
 
 	def destroyBean(self, bean, beanId):
@@ -56,7 +60,8 @@ class Super_bean(Bean):
 	def cut(self):
 		self.sounds["bean_cut"].play()
 		for i in range(2):
-			randPos = [self.pos[0] + random.uniform(-0.5, 0.5), self.pos[1] + random.uniform(-0.5, 0.2)]
+			randPos = [self.pos[0] + random.uniform(-0.5, 0.5), \
+				self.pos[1] + random.uniform(-0.5, 0.2)]
 			self.level.spawnLeaf(randPos, "super leaf")
 
 	def repairCase(self, case):

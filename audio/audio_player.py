@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 """
-Provide methods to play and manage sounds 
+Provide methods to play and manage sounds
 and musics
 
 Created on 27/08/2018
@@ -39,7 +39,7 @@ class Audio_player:
 		:param nbChannels: Number of output channels (1=mono, 2=stereo).
 
 		:type samplesWidth: int
-		:param samplesWidth: Number of bytes per sample 
+		:param samplesWidth: Number of bytes per sample
 			(1 = 8bits, 2 = 16bits, ...).
 
 		:type chunkSize: int
@@ -60,12 +60,13 @@ class Audio_player:
 				channels = self.nbChannels,
 				output = True
 			)
-		
+
 		self.sounds = {}
 		self.musics = {}
 		self.mixer = []
-		
-		self.volume = 1
+
+		self.soundVolume = 1
+		self.musicVolume = 1
 
 		self.active = False
 		self.thread = None
@@ -89,7 +90,7 @@ class Audio_player:
 		:type soundPath: str
 		:param soundPath: The file path of the sound to load.
 		"""
-		
+
 		snd = Sound(self)
 		snd.load(soundPath)
 		self.sounds[soundPath] = snd
@@ -124,6 +125,7 @@ class Audio_player:
 			print('[WARNING] [Audio_player.getSound] Unable to get ' \
 				+ '"%s" ! Creating empty sound' % soundPath)
 			snd = Sound(self)
+			snd.filePath = soundPath
 		self.sounds[soundPath, "copy", snd] = snd
 		return snd
 
@@ -143,7 +145,31 @@ class Audio_player:
 			return self.musics[musicPath]
 		print('[WARNING] [Audio_player.getMusic] Unable to get ' \
 			+ '"%s" ! Creating empty sound' % musicPath)
-		return Sound(self)
+		snd = Sound(self)
+		snd.filePath = musicPath
+		return snd
+
+	def removeSound(self, sound):
+		"""
+		Remove a sound from the sound list.
+
+		:type sound: audio.sound.Sound
+		:param sound: The sound to remove.
+		"""
+
+		if (sound.filePath, "copy", sound) in self.sounds:
+			self.sounds.pop((sound.filePath, "copy", sound))
+
+	def removeMusic(self, music):
+		"""
+		Remove a music from the music list.
+
+		:type music: audio.music.Music
+		:param music: The music to remove.
+		"""
+
+		if music.filePath in self.musics:
+			self.musics.pop(music.filePath)
 
 	def isPlayable(self, sound):
 		"""
@@ -178,9 +204,24 @@ class Audio_player:
 		Stop the audio player if started.
 		"""
 
-		print("[INFO] [Audio_player.stop] Stopping player")
-		self.active = False
-		self.thread.join()
+		if self.active:
+			print("[INFO] [Audio_player.stop] Stopping player")
+			self.active = False
+			self.thread.join()
+		else:
+			print("[WARNING] [Audio_player.stop] Audio_player already stopped")
+
+	def isMusic(self, sound):
+		"""
+		Return True if the given sound is a Music instance.
+
+		:type sound: audio.sound.Sound
+		:param sound: The sound to check.
+
+		:rtype: bool
+		:returns: True if the sound is a music, otherwise False.
+		"""
+		return isinstance(sound, Music)
 
 	def update(self):
 		"""
@@ -192,10 +233,15 @@ class Audio_player:
 			chunks = bytes()
 			for sound in self.mixer:
 				if sound.isPlaying and self.isPlayable(sound):
+					if self.isMusic(sound):
+						volume = self.musicVolume
+					else:
+						volume = self.soundVolume
+
 					chunk = sound.setChunkFramerate(
 						sound.setChunkVolume(
 							sound.update(),
-							self.volume * sound.volume),
+							volume * sound.volume),
 						framerate)
 					if chunks:
 						chunks = audioop.add(chunks, chunk, self.samplesWidth)
@@ -248,28 +294,6 @@ class Audio_player:
 
 		for sound in self.mixer:
 			sound.play()
-
-	def setSoundsVolume(self, volume):
-		"""
-		Define the sounds volume.
-
-		:type volume: float
-		:param volume: A floating point value between 0 and 1.
-		"""
-
-		for sound in self.sounds.values():
-			sound.volume = volume
-	
-	def setMusicsVolume(self, volume):
-		"""
-		Define the musics volume.
-
-		:type volume: float
-		:param volume: A floating point value between 0 and 1.
-		"""
-
-		for music in self.musics.values():
-			musics.volume = volume
 
 	def setSpeed(self, speed):
 		"""

@@ -6,8 +6,9 @@ Provide a base abstract class to create entities
 Created on 18/03/2018
 """
 
-from game.config import CASE_SIZE, ENTITIES_IMAGE_PATH
-from gui.image_transformer import Image_transformer
+from game.config import ENTITIES_IMAGE_PATH
+from game.util import Game
+from gui.image_transformer import resizeImage
 
 __author__ = "Julien Dubois"
 __version__ = "1.1.1"
@@ -72,14 +73,16 @@ class Entity:
 		"""
 
 		self.images = {}
+		caseSize = self.level.levelDrawer.getCaseSize()
 		imageNames = os.listdir(os.path.join(ENTITIES_IMAGE_PATH, folderName))
+
 		for imageName in imageNames:
 			if imageName.split(".")[-1] == "png":
-				self.images[imageName] = Image_transformer.resize(
-					self.level.activity.window.getImage(
+				self.images[imageName] = resizeImage(
+					self.level.levelDrawer.activity.window.getImage(
 						os.path.join(ENTITIES_IMAGE_PATH,
 							folderName, imageName)), \
-					(CASE_SIZE * self.size[0], CASE_SIZE * self.size[1]))
+					(caseSize[0] * self.size[0], caseSize[1] * self.size[1]))
 		self.updateSprite()
 
 	def initImages(self):
@@ -162,7 +165,7 @@ class Entity:
 		:returns: True if the entity is out of bounds, otherwise False.
 		"""
 
-		w, h = self.level.getSize()
+		w, h = self.level.size
 		if included:
 			return (self.pos[0] + self.size[0] / 2 <= 0) \
 				or (self.pos[0] - self.size[0] / 2 \
@@ -185,7 +188,7 @@ class Entity:
 		:rtype: bool
 		:returns: True if the entity is colliding the floor, otherwise False.
 		"""
-		return self.pos[1] + self.size[1] / 2 >= self.level.getSize()[1] - 1
+		return self.pos[1] + self.size[1] / 2 >= self.level.size[1] - 1
 
 	def remove(self):
 		"""
@@ -194,13 +197,14 @@ class Entity:
 		"""
 
 		self.level.removeEntity(self)
-		self.stopSounds()
+		self.removeSounds()
 
-	def stopSounds(self):
+	def removeSounds(self):
 		"""
-		Stop all sounds used by the entity.
+		Stop and remove all sounds used by this entity.
 		"""
 
 		for sound in self.sounds.values():
 			if sound.isPlaying:
 				sound.stop()
+			Game.audioPlayer.removeSound(sound)

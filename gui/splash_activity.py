@@ -10,11 +10,11 @@ from game.config import SPLASH_ANIMATION_DURATION, \
 	ENTITIES_IMAGE_PATH
 from game.update import getConnectionStream, getUpdates, downloadUpdate, \
 	installUpdate
-from game.util import adminRestart, restart
+from game.util import adminRestart, restart, Game
 
 from gui.activity import Activity
 from gui.dialog_menu import Dialog_menu
-from gui.image_transformer import Image_transformer
+from gui.image_widget import Image_widget
 from gui.text import Text
 
 __author__ = "Julien Dubois"
@@ -37,32 +37,23 @@ class Splash_activity(Activity):
 		:param window: The parent window of this activity.
 		"""
 
-		self.imagePos = [0, 0]
 		Activity.__init__(self, window)
-
-	def initImages(self):
-		"""
-		Load the Pyoro's image and stretch it according to the screen size.
-		"""
-
-		path = os.path.join(ENTITIES_IMAGE_PATH, "pyoro 1", "pyoro_0_normal_1.png")
-		self.window.initImage(path)
-
-		# Loading image size, position and anchor position
-		w, h = self.layout.getWidgetSize("splash_image")
-		x, y = self.layout.getWidgetPos("splash_image")
-		ax, ay = self.layout.getWidgetAnchor("splash_image")
-
-		# Defining the upper left corner position of the image
-		self.imagePos = [x - w * (ax + 1) / 2, y - h * (ay + 1) / 2]
-
-		self.images["splash_image"] = Image_transformer.resize(
-			self.window.getImage(path), (w, h))
 
 	def initWidgets(self):
 		"""
 		Load a text widget which will be used to display loading messages.
 		"""
+
+		# Loading text size, position and anchor position
+		pos = self.layout.getWidgetPos("splash_image")
+		size = self.layout.getWidgetSize("splash_image")
+		anchor = self.layout.getWidgetAnchor("splash_image")
+		path = os.path.join(ENTITIES_IMAGE_PATH, "pyoro 1", "pyoro_0_normal_1.png")
+
+		# Creating the text widget
+		self.window.loadImage(path)
+		self.addWidget("splash_image", Image_widget, pos, path, size = size, \
+			anchor = anchor)
 
 		# Loading text size, position and anchor position
 		pos = self.layout.getWidgetPos("splash_text")
@@ -72,17 +63,6 @@ class Splash_activity(Activity):
 		# Creating the text widget
 		self.addWidget("splash_text", Text, pos, "Chargement...", \
 			fontSize = size, anchor = anchor)
-
-	def update(self, deltaTime):
-		"""
-		Update the activity. This method should be called each game tick.
-
-		:type deltaTime: float
-		:param deltaTime: Time elapsed since the last call of this method.
-		"""
-
-		self.window.drawImage(self.images["splash_image"], self.imagePos)
-		Activity.update(self, deltaTime)
 
 	def setInfo(self, msg):
 		"""
@@ -97,7 +77,7 @@ class Splash_activity(Activity):
 		# be showed
 		self.window.update(0)
 
-	def waitLoading(self):
+	def boot(self):
 		"""
 		Load game resources, search for updates and display messages about the
 		current loading. This method should be called only once when the game
@@ -105,11 +85,14 @@ class Splash_activity(Activity):
 		"""
 
 		self.setInfo("Chargement des images...")
-		self.window.initImages()
+		self.window.loadImages()
 		self.setInfo("Chargement des sons...")
-		self.window.initAudioPlayer()
+		Game.audioPlayer.loadAudio()
+		Game.audioPlayer.soundVolume = Game.options.get("sound volume", 1)
+		Game.audioPlayer.musicVolume = Game.options.get("music volume", 1)
+		Game.audioPlayer.start()
 		self.setInfo("Initialisation des manettes...")
-		self.window.initJoysticks()
+		self.window.loadJoysticks()
 		self.setInfo("Recherche des mises à jour...")
 		self.searchForUpdates()
 
@@ -186,7 +169,7 @@ class Splash_activity(Activity):
 
 		ftpMgr.disconnect()
 
-	def installUpdate(self):
+	def bootUpdate(self):
 		"""
 		Install an update already downloaded and restart the game. This method
 		should be used with admin or root privileges.

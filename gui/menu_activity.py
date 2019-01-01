@@ -7,13 +7,11 @@ Created on 10/04/2018
 """
 
 from game.config import GUI_IMAGE_PATH
-from game.level import Level
 from game.util import Game
 
 from gui.activity import Activity
 from gui.button import Button
-from gui.image_transformer import Image_transformer
-from gui.layout import Layout
+from gui.image_widget import Image_widget
 from gui.level_drawer import Level_drawer
 from gui.play_button import Play_button
 from gui.option_menu import Option_menu
@@ -25,40 +23,52 @@ import os
 
 
 class Menu_activity(Activity):
-	""" Layout managing the menu's components """
+	"""
+	Layout managing the menu's components
+	"""
 
 	def __init__(self, window, gameId):
-		self.window = window
-		self.level = Level(self, gameId, botMode = True)
-		self.levelDrawer = Level_drawer(self.level, self.window)
-		self.titlePos = [0, 0]
-		self.level.init()
+		"""
+		Initialize a new Menu_activity object.
+
+		:type window: gui.window.Window
+		:param window: The parent game window.
+
+		:type gameId: int
+		:param gameId: The gameId of the level in background.
+			0 = Pyoro, 1 = Pyoro 2.
+		"""
+
 		Activity.__init__(self, window)
-
-	def initImages(self):
-		w, h = self.layout.getWidgetSize("title")
-		x, y = self.layout.getWidgetPos("title")
-		ax, ay = self.layout.getWidgetAnchor("title")
-		self.titlePos = [x - w * (ax + 1) / 2, y - h * (ay + 1) / 2]
-
-		self.images["title"] = Image_transformer.resize(self.window.getImage(
-			os.path.join(GUI_IMAGE_PATH, "title.png")), (w, h))
-
-		self.levelDrawer.initImages()
-		Activity.initImages(self)
+		self.levelDrawer = Level_drawer(self, gameId, botMode = True)
 
 	def initSounds(self):
+		"""
+		Reference the "intro.wav" music and start to play it.
+		This method reset the global Audio_player speed.
+		"""
+
 		self.__initSounds__(("intro",), os.path.join("data", "audio", "musics"), "music")
-		self.sounds["intro"].play()
 		Game.audioPlayer.setSpeed(1)
+		self.sounds["intro"].play(-1)
 
 	def initWidgets(self):
+		"""
+		Create widgets (Play, option and quit buttons).
+		"""
+
 		widgetInfos = {
+			"title_image": {
+				"type": Image_widget,
+				"args": (os.path.join(GUI_IMAGE_PATH, "title.png"),),
+				"kwargs": {}
+			},
 			"play_button_1": {
 				"type": Play_button,
 				"args": (0,),
 				"kwargs": {
-					"onClickFct": self.window.setGameRender
+					"onClickFct": self.window.setGameRender,
+					"textAnchor": (0, -0.1)
 				}
 			},
 			"play_button_2": {
@@ -66,7 +76,8 @@ class Menu_activity(Activity):
 				"args": (1,),
 				"kwargs": {
 					"onClickFct": self.window.setGameRender,
-					"enable": self.isPyoro2Unlocked()
+					"enable": self.isPyoro2Unlocked(),
+					"textAnchor": (0, -0.1)
 				}
 			},
 			"option_button": {
@@ -92,6 +103,7 @@ class Menu_activity(Activity):
 			size = self.layout.getWidgetSize(widgetName)
 			anchor = self.layout.getWidgetAnchor(widgetName)
 			fsize = self.layout.getFontSize(widgetName)
+
 			self.addWidget(
 				widgetName,
 				kwargs["type"],
@@ -99,11 +111,15 @@ class Menu_activity(Activity):
 				*kwargs["args"],
 				size = size,
 				anchor = anchor,
-				fontSize = fsize,
+				textKwargs = {"fontSize": fsize},
 				**kwargs["kwargs"]
 			)
 
 	def createOptionMenu(self):
+		"""
+		Display an option menu.
+		"""
+
 		size = self.layout.getWidgetSize("option_menu")
 		pos = self.layout.getWidgetPos("option_menu")
 		anchor = self.layout.getWidgetAnchor("option_menu")
@@ -112,15 +128,34 @@ class Menu_activity(Activity):
 			self.onOptionMenuDestroy, size = size, anchor = anchor)
 
 	def onOptionMenuDestroy(self):
+		"""
+		This method is called when the option menu is destroyed.
+		Remove the option menu from the updatable widgets list.
+		"""
+
 		self.widgets["play_button_2"].config(enable = self.isPyoro2Unlocked())
 		self.removeWidget("option_menu")
 
 	def update(self, deltaTime):
-		self.level.update(deltaTime)
+		"""
+		Update the level and redraw graphical components.
+
+		:type deltaTime: float
+		:param deltaTime: Time elapsed since the last call of this method
+			(in seconds).
+		"""
+
 		self.levelDrawer.update(deltaTime)
-		self.window.drawImage(self.images["title"], self.titlePos)
 		Activity.update(self, deltaTime)
 
 	def isPyoro2Unlocked(self):
-		highScore = self.window.getOption("high score")
+		"""
+		Check if Pyoro 2 is unlocked. To unlock Pyoro 2, the score must be
+			greater than 10000.
+
+		:rtype: bool
+		:returns: True if Pyoro 2 is unlocked, otherwise False.
+		"""
+
+		highScore = Game.options.get("high score", [0, 0])
 		return highScore[0] >= 10000

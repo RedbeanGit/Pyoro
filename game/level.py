@@ -22,7 +22,7 @@ from entities.super_bean import Super_bean
 from game.actionDelay import ActionDelay
 from game.case import Case
 from game.config import BEAN_FREQUENCY, SPEED_ACCELERATION, \
-	BACKGROUND_ANIMATED_DURATION, CASE_SIZE
+	BACKGROUND_ANIMATED_DURATION
 from game.util import Game
 
 __author__ = "Julien Dubois"
@@ -37,28 +37,32 @@ class Level:
 	Central class that manages the entities, terrain and more.
 	"""
 
-	def __init__(self, activity, gameId, botMode = False):
+	def __init__(self, levelDrawer, gameId, size, botMode = False):
 		"""
 		Initialize a new Level object.
 
-		:type activity: gui.activity.Activity
-		:param activity: The parent activity of this level.
+		:type levelDrawer: gui.level_drawer.Level_drawer
+		:param activity: The graphical representation of this level.
 
 		:type gameId: int
 		:param gameId: It can be 0 for Pyoro, or 1 for Pyoro 2.
 
+		:type size: tuple
+		:param size: The size of the level (in blocks) in a (width, height)
+			tuple where width and height are floating point values.
+
 		:type botMode: bool
-		:param botMode: Optional. If True, Pyoro will be a bot. 
+		:param botMode: Optional. If True, Pyoro will be a bot.
 			Default is False.
 		"""
 
-		self.activity = activity
+		self.levelDrawer = levelDrawer
 		self.gameId = gameId
+		self.size = size
 		self.botMode = botMode
-		
+
 		self.loopActive = True
 		self.pyoro = None
-		self.nbCases = 20
 
 		self.score = 0
 		self.speed = 1
@@ -68,29 +72,25 @@ class Level:
 		self.entities = []
 		self.actionDelays = {}
 
-	def init(self):
-		"""
-		Load cases, pyoro and start to spawn beans
-		"""
-
-		self.initCases()
+		self.initCases(self.size[0])
 		self.initPyoro()
 		self.spawnBean()
 
-	def initCases(self):
+	def initCases(self, nbCases):
 		"""
 		Create the terrain with new blocks.
+
+		:type nbCases: int
+		:param nbCases: The number of blocks which will compose the floor.
 		"""
 
 		self.cases.clear()
-		if "levelDrawer" in dir(self.activity):
-			self.nbCases = self.activity.levelDrawer.getNbCases()
-		for i in range(self.nbCases):
+		for i in range(nbCases):
 			self.cases.append(Case(i))
 
 	def initPyoro(self):
 		"""
-		Create a new bird according to the current gameId 
+		Create a new bird according to the current gameId
 		and botMode.
 		"""
 
@@ -119,7 +119,7 @@ class Level:
 			entity.remove()
 		self.entities.clear()
 		self.actionDelays.clear()
-		self.initCases()
+		self.initCases(self.size[0])
 		self.spawnBean()
 
 	def update(self, deltaTime):
@@ -154,7 +154,7 @@ class Level:
 		"""
 
 		beanTypeId = random.randint(0, 5)
-		pos = (random.randint(0, self.nbCases - 1) + 0.75, 0)
+		pos = (random.randint(0, self.size[0] - 1) + 0.75, 0)
 		speed = random.uniform(0.5, 1.5) * (self.speed ** 0.6)
 
 		if beanTypeId < 4:
@@ -165,7 +165,7 @@ class Level:
 			bean = Super_bean(self, pos, speed)
 
 		self.entities.append(bean)
-		self.setActionDelay((self, "spawnBean"), 
+		self.setActionDelay((self, "spawnBean"),
 				BEAN_FREQUENCY \
 				* random.uniform(0.5, 1.5) \
 				/ (self.speed ** 1.5),
@@ -174,27 +174,28 @@ class Level:
 
 	def spawnAngel(self, case):
 		"""
-		Spawn a new angel.
+		Spawn a new angel only if case can be repaired.
 
 		:type case: game.case.Case
 		:param case: The block that will be repaired by the new angel.
 		"""
 
-		self.entities.append(Angel(self, case))
+		if not case.exists and not case.isRepairing:
+			self.entities.append(Angel(self, case))
 
 	def spawnScore(self, score, pos):
 		"""
 		Spawn a flashing text and increase the score.
 
 		:type score: int
-		:param score: The value to add to the current score. 
+		:param score: The value to add to the current score.
 			It can be 10, 50, 100, 300 or 1000.
 
 		:type pos: Iterable<float>
 		:param pos: The position of the flashing text.
 		"""
 
-		allowed = (10, 50, 100, 300, 500, 1000)
+		allowed = (10, 50, 100, 300, 1000)
 		if score in allowed:
 			self.score += score
 			self.entities.append(Score_text(self, pos, score))
@@ -219,7 +220,7 @@ class Level:
 		:param pos: The position of the leaf.
 
 		:type leafType: str
-		:param leafType: The type of the leaf. It can be 
+		:param leafType: The type of the leaf. It can be
 			"", "pink" or "super".
 		"""
 
@@ -237,7 +238,7 @@ class Level:
 		:param speed: The speed of the leaf.
 
 		:type leafPieceType: str
-		:param leafPieceType: The type of the leaf. It can be 
+		:param leafPieceType: The type of the leaf. It can be
 			"", "pink" or "super".
 
 		:type vel: float
@@ -250,7 +251,7 @@ class Level:
 		Repair a block by spawning an angel.
 
 		:type case: game.case.Case
-		:param case: Optional. The block to repair. The leftmost destroyed 
+		:param case: Optional. The block to repair. The leftmost destroyed
 			block is chosen if undefined.
 		"""
 
@@ -286,7 +287,7 @@ class Level:
 
 	def setActionDelay(self, actionName, waitTime, fct, *fctArgs, **fctKwargs):
 		"""
-		Create a new actionDelay or replace an existing one. 
+		Create a new actionDelay or replace an existing one.
 		See game.actionDelay.ActionDelay.
 
 		:type actionName: object
@@ -339,7 +340,7 @@ class Level:
 		0 is normal, 1 is black and white and 2 is flashy.
 
 		:type score: int
-		:param score: Optional. A score. Use the current level score 
+		:param score: Optional. A score. Use the current level score
 			if undefined.
 
 		:rtype: int
@@ -359,7 +360,7 @@ class Level:
 		Get the background id associated to a specified score.
 
 		:type score: int
-		:param score: Optional. A score. Use the current level score 
+		:param score: Optional. A score. Use the current level score
 			if undefined.
 
 		:rtype: int
@@ -376,7 +377,7 @@ class Level:
 		elif score < 40000:
 			return 12
 		else:
-			self.createActionDelay((self, "updateAnimatedBackround"), 
+			self.createActionDelay((self, "updateAnimatedBackround"),
 				BACKGROUND_ANIMATED_DURATION, self.updateAnimatedBackground)
 			return self.animatedBackgroundId
 
@@ -399,13 +400,13 @@ class Level:
 		return [case for case in self.cases \
 			if not(case.exists) and not(case.isRepairing)]
 
-	def getSize(self):
+	def setSize(self, size):
 		"""
-		Get the width and the height (in blocks) of the level.
+		Define the level size (in case).
 
-		:rtype: tuple
-		:returns: A (width, height) tuple.
+		:type size: tuple
+		:param size: The size in blocks of the level.
 		"""
-		w = self.nbCases
-		h = self.activity.window.getSize()[1] // CASE_SIZE
-		return w, h
+
+		self.size = tuple(size)
+		self.initCases(int(size[0]))

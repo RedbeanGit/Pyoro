@@ -41,13 +41,15 @@ class Pyoro_2(Pyoro):
 
 	def update(self, deltaTime):
 		if self.shootSpriteId == 1:
-			self.level.createActionDelay((self, "updateShootSpriteId"), PYORO_SHOOT_SPRITE_DURATION, self.updateShootSpriteId)
+			self.level.createActionDelay((self, "updateShootSpriteId"), \
+				PYORO_SHOOT_SPRITE_DURATION, self.updateShootSpriteId)
 		Pyoro.update(self, deltaTime)
 
 	def updateShootSpriteId(self):
 		self.shootSpriteId += 1
 		if self.shootSpriteId < 5:
-			self.level.setActionDelay((self, "updateShootSpriteId"), PYORO_SHOOT_SPRITE_DURATION, self.updateShootSpriteId)
+			self.level.setActionDelay((self, "updateShootSpriteId"), \
+				PYORO_SHOOT_SPRITE_DURATION, self.updateShootSpriteId)
 		else:
 			self.shootSpriteId = 0
 			self.level.removeActionDelay((self, "updateShootSpriteId"))
@@ -55,18 +57,23 @@ class Pyoro_2(Pyoro):
 	def updateSprite(self):
 		styleType = self.level.getStyleTypeWithScore()
 		if self.dead:
-			self.currentImageName = "pyoro_{}_die_{}.png".format(styleType, self.direction)
+			self.currentImageName = "pyoro_{}_die_{}.png".format(styleType, \
+				self.direction)
 		elif self.shootSpriteId:
-			self.currentImageName = "pyoro_{}_shoot_{}_{}.png".format(styleType, self.shootSpriteId - 1, self.direction)
+			self.currentImageName = "pyoro_{}_shoot_{}_{}.png".format(styleType, \
+				self.shootSpriteId - 1, self.direction)
 		elif self.notch:
-			self.currentImageName = "pyoro_{}_jump_{}.png".format(styleType, self.direction)
+			self.currentImageName = "pyoro_{}_jump_{}.png".format(styleType, \
+				self.direction)
 		else:
-			self.currentImageName = "pyoro_{}_normal_{}.png".format(styleType, self.direction)
+			self.currentImageName = "pyoro_{}_normal_{}.png".format(styleType, \
+				self.direction)
 
 	def enableCapacity(self):
 		self.sounds["pyoro_shoot"].play()
 		self.shootSpriteId = 1
 		beanCoords = []
+
 		for entity in self.level.entities:
 			if self.isShootingEntity(entity):
 				if isinstance(entity, Bean):
@@ -78,6 +85,7 @@ class Pyoro_2(Pyoro):
 						entity.setRightWind()
 					else:
 						entity.setLeftWind()
+
 		if len(beanCoords) == 1:
 			score = 50
 		elif len(beanCoords) == 2:
@@ -86,6 +94,7 @@ class Pyoro_2(Pyoro):
 			score = 300
 		else:
 			score = 1000
+
 		for beanPos in beanCoords:
 			self.level.spawnScore(score, beanPos)
 		self.level.entities.append(Seed(self.level, 35, self.direction))

@@ -11,7 +11,8 @@
 
 from entities.entity import Entity
 from entities.tong import Tong
-from game.config import PYORO_SPEED, PYORO_NOTCH_DURATION, PYORO_EATING_DURATION, PYORO_DIE_SPEED
+from game.config import PYORO_SPEED, PYORO_NOTCH_DURATION, PYORO_EATING_DURATION, \
+	PYORO_DIE_SPEED
 
 class Pyoro(Entity):
 	def __init__(self, level):
@@ -21,9 +22,9 @@ class Pyoro(Entity):
 		self.tong = None
 		self.eatingCount = 0
 		self.direction = 1
-		w, h = level.getSize()
+		w, h = level.size
 		Entity.__init__(self, level, (2, h - 2), (2, 2))
-	
+
 	def initImages(self):
 		self.__initImages__("pyoro 1")
 
@@ -42,7 +43,7 @@ class Pyoro(Entity):
 			self.direction = -1
 			self.moving = True
 			self.sounds["pyoro_move"].play(-1)
-	
+
 	def disableMove(self):
 		if self.sounds["pyoro_move"].isPlaying:
 			self.sounds["pyoro_move"].pause()
@@ -55,8 +56,9 @@ class Pyoro(Entity):
 				if self.direction == 1:
 					newPos = self.pos[0] + self.size[0] / 2 + PYORO_SPEED * deltaTime
 					voidPos = self.getVoidCasePosOnPath(newPos)
-					if newPos >= self.level.nbCases:
-						self.pos[0] = self.level.nbCases - self.size[0] / 2
+
+					if newPos >= self.level.size[0]:
+						self.pos[0] = self.level.size[0] - self.size[0] / 2
 					elif voidPos != None:
 						self.pos[0] = voidPos - self.size[0] / 2
 					else:
@@ -71,7 +73,8 @@ class Pyoro(Entity):
 						self.pos[0] = voidPos + self.size[0] / 2 + 1
 					else:
 						self.pos[0] -= PYORO_SPEED * deltaTime
-				self.level.createActionDelay((self, "enableNotch"), PYORO_NOTCH_DURATION, self.enableNotch)
+				self.level.createActionDelay((self, "enableNotch"), \
+					PYORO_NOTCH_DURATION, self.enableNotch)
 
 	def getVoidCasePosOnPath(self, newPos):
 		if self.pos[0] < newPos:
@@ -91,7 +94,8 @@ class Pyoro(Entity):
 	def enableNotch(self):
 		self.notch = True
 		self.level.removeActionDelay((self, "enableNotch"))
-		self.level.createActionDelay((self, "disableNotch"), PYORO_NOTCH_DURATION, self.disableNotch)
+		self.level.createActionDelay((self, "disableNotch"), \
+			PYORO_NOTCH_DURATION, self.disableNotch)
 
 	def disableNotch(self):
 		self.notch = False
@@ -107,12 +111,13 @@ class Pyoro(Entity):
 		self.updateSprite()
 
 		if self.dead:
-			if self.pos[1] - self.size[1] / 2 < self.level.nbCases:
+			if self.pos[1] - self.size[1] / 2 < self.level.size[0]:
 				self.pos[1] += PYORO_DIE_SPEED * deltaTime
 
 	def updateSprite(self):
 		if self.eatingCount:
-			self.level.createActionDelay((self, "updateEatingCount"), PYORO_EATING_DURATION, self.updateEatingCount)
+			self.level.createActionDelay((self, "updateEatingCount"), \
+				PYORO_EATING_DURATION, self.updateEatingCount)
 		styleType = self.level.getStyleTypeWithScore()
 		if self.dead:
 			self.currentImageName = "pyoro_{}_die_{}.png".format(styleType, self.direction)
@@ -128,11 +133,12 @@ class Pyoro(Entity):
 	def updateEatingCount(self):
 		self.eatingCount += 1
 		if self.eatingCount < 8:
-			self.level.setActionDelay((self, "updateEatingCount"), PYORO_EATING_DURATION, self.updateEatingCount)
+			self.level.setActionDelay((self, "updateEatingCount"), \
+				PYORO_EATING_DURATION, self.updateEatingCount)
 		else:
 			self.eatingCount = 0
 			self.level.removeActionDelay((self, "updateEatingCount"))
-	
+
 	def enableCapacity(self):
 		if not(self.dead):
 			self.sounds["pyoro_move"].pause()
@@ -140,7 +146,7 @@ class Pyoro(Entity):
 				self.tong.remove()
 			self.tong = Tong(self.level, self.direction)
 			self.level.entities.append(self.tong)
-			
+
 	def disableCapacity(self):
 		if not(self.dead):
 			if self.tong:
@@ -152,8 +158,11 @@ class Pyoro(Entity):
 			if self.tong:
 				self.tong.remove()
 			self.disableMove()
-			self.level.removeActionDelay((self, "enableNotch"), (self, "disableNotch"), (self, "updateEatingCount"))
+			self.level.removeActionDelay((self, "enableNotch"), \
+				(self, "disableNotch"), (self, "updateEatingCount"))
 			self.level.getAudioPlayer().speed = 1
 			self.sounds["pyoro_die"].play()
-			self.level.createActionDelay((self, "gameOver"), 1.28, self.level.activity.gameOver)
-			self.level.createActionDelay((self, "removeGameOverActionDelay"), 1.29, self.level.removeActionDelay, (self, "gameOver"))
+			self.level.createActionDelay((self, "gameOver"), 1.28, \
+				self.level.levelDrawer.activity.gameOver)
+			self.level.createActionDelay((self, "removeGameOverActionDelay"), \
+				1.29, self.level.removeActionDelay, (self, "gameOver"))

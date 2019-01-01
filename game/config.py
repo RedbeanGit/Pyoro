@@ -17,6 +17,7 @@ DEBUG = True														# Debugging mode (if you want to see logs in a console
 FPS = 60															# frame per seconds
 NAME = "PYORO"														# game name
 VERSION = "1.1.1"													# game version
+WINDOW_COLOR = (120, 120, 120)										# background color
 
 # Update server address and login
 UPDATE_HOST = "ftpupload.net"										# FTP host
@@ -26,7 +27,7 @@ UPDATE_PASSWORD = "6UJDteWTmclaL"									# FTP password
 # Some level constants
 AIR_RESISTANCE = 25													# Air resistance value for leaf and seeds wind effect
 BACKGROUND_TRANSITION_DURATION = 3									# Speed of transition between to backgrounds
-CASE_SIZE = 32														# Size of a block (in pixels)
+CASE_SIZE = 10														# Size of a block (in mm)
 GRAVITY_FORCE = 9.81												# Gravity force for seeds falling effect
 SPEED_ACCELERATION = 0.01											# Acceleration of the level speed each second
 BACKGROUND_ANIMATED_DURATION = 1									# Duration of each animated background (for last backgrounds)

@@ -14,7 +14,7 @@ from pygame.locals import MOUSEMOTION
 
 from game.config import GUI_IMAGE_PATH
 from gui.eventable_widget import Eventable_widget
-from gui.image_transformer import Image_transformer
+from gui.image_transformer import stretchImage
 
 class Setting_bar(Eventable_widget):
 
@@ -45,7 +45,7 @@ class Setting_bar(Eventable_widget):
 	def __init__(self, activity, pos, **kwargs):
 		Setting_bar.updateDefaultKwargs(kwargs)
 		Eventable_widget.__init__(self, activity, pos, **kwargs)
-		
+
 		self.lineImage = None
 		self.onHoverLineImage = None
 		self.onClickLineImage = None
@@ -69,18 +69,18 @@ class Setting_bar(Eventable_widget):
 		imageNames = ("lineImage", "onHoverLineImage", "onClickLineImage", "onMiddleClickLineImage", "onRightClickLineImage", "disableLineImage")
 		for imageName in imageNames:
 			if self.kwargs[imageName]:
-				image = Image_transformer.stretch( \
+				image = stretchImage( \
 					self.activity.window.getImage(self.kwargs[imageName]), \
 					(self.kwargs["size"][0], self.kwargs["lineThickness"]), \
 					self.kwargs["lineImageBorderSize"])
-				
+
 				self.__setattr__(imageName, image)
 
 	def loadCursorImages(self):
 		imageNames = ("cursorImage", "onHoverCursorImage", "onClickCursorImage", "onMiddleClickCursorImage", "onRightClickCursorImage", "disableCursorImage")
 		for imageName in imageNames:
 			if self.kwargs[imageName]:
-				image = Image_transformer.stretch( \
+				image = stretchImage( \
 					self.activity.window.getImage(self.kwargs[imageName]), \
 					(self.kwargs["cursorWidth"], self.kwargs["size"][1]), \
 					self.kwargs["cursorImageBorderSize"])
@@ -140,7 +140,9 @@ class Setting_bar(Eventable_widget):
 
 	def getValue(self):
 		realPos = self.getRealPos()
-		return (self.cursorPos - realPos[0] - self.kwargs["cursorWidth"] / 2) / (self.kwargs["size"][0] - self.kwargs["cursorWidth"])
+		if self.kwargs["size"][0] - self.kwargs["cursorWidth"] != 0:
+			return (self.cursorPos - realPos[0] - self.kwargs["cursorWidth"] / 2) / (self.kwargs["size"][0] - self.kwargs["cursorWidth"])
+		return 0.5
 
 	def getCursorPosWithValue(self, value):
 		return value * (self.kwargs["size"][0] - self.kwargs["cursorWidth"]) + self.kwargs["cursorWidth"] / 2 + self.getRealPos()[0]

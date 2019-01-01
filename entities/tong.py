@@ -18,12 +18,12 @@ class Tong(Entity):
 		self.direction = direction
 		self.caughtBean = None
 		self.goBack = False
-		
-		pos = (level.pyoro.pos[0] + (level.pyoro.size[0] / 2 + 0.6) * direction, 
+
+		pos = (level.pyoro.pos[0] + (level.pyoro.size[0] / 2 + 0.6) * direction,
 			level.pyoro.pos[1] - level.pyoro.size[1] / 2 + 0.6)
 
 		Entity.__init__(self, level, pos, (1.2, 1.2))
-	
+
 	def initImages(self):
 		self.__initImages__("tong")
 
@@ -32,7 +32,7 @@ class Tong(Entity):
 		self.sounds["tong"].play()
 
 	def update(self, deltaTime):
-		w, h = self.level.getSize()
+		w, h = self.level.size
 		if self.goBack:
 			self.pos[0] -= TONG_SPEED * 2 * self.direction * deltaTime
 			self.pos[1] += TONG_SPEED * 2 * deltaTime
@@ -54,14 +54,15 @@ class Tong(Entity):
 				if self.isHittingEntity(entity) and isinstance(entity, Bean):
 					entity.catch()
 					self.sounds["tong"].stop()
-					
-					if self.pos[1] < 4:
+
+					w, h = self.level.size
+					if self.pos[1] < h * 0.2:
 						score = 1000
-					elif self.pos[1] < 8:
+					elif self.pos[1] < h * 0.4:
 						score = 300
-					elif self.pos[1] < 12:
+					elif self.pos[1] < h * 0.6:
 						score = 100
-					elif self.pos[1] < 16:
+					elif self.pos[1] < h * 0.8:
 						score = 50
 					else:
 						score = 10
@@ -75,7 +76,7 @@ class Tong(Entity):
 
 	def updateSprite(self):
 		self.currentImageName = "tong_{}_{}.png".format(self.level.getStyleTypeWithScore(), self.direction)
-	
+
 	def remove(self):
 		if self.caughtBean:
 			self.caughtBean.remove()

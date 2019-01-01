@@ -7,10 +7,9 @@ Created on 18/03/2018
 """
 
 from audio.audio_player import Audio_player
-from game.config import NAME, GUI_IMAGE_PATH, CASE_SIZE
+from game.config import NAME, GUI_IMAGE_PATH, CASE_SIZE, WINDOW_COLOR
 from game.util import loadOptions, saveOptions, getResourcePaths, \
-	leaveGame, Game
-from gui.image_transformer import Image_transformer
+	leaveGame, Game, Errors
 from gui.level_activity import Level_activity
 from gui.menu_activity import Menu_activity
 from gui.splash_activity import Splash_activity
@@ -20,11 +19,12 @@ __version__ = "1.1.2"
 
 import os
 import pygame
-from pygame.locals import QUIT
+from pygame.locals import QUIT, K_F4, K_RALT, K_LALT
+
 
 class Window:
 	"""
-	Main game window, manage the levels and all graphical.
+	Main game window, manage the levels and all graphical components.
 	"""
 
 	def __init__(self):
@@ -34,45 +34,45 @@ class Window:
 
 		self.images = {}
 		self.joysticks = []
-		self.root_window = None
-
-		self.initPygameWindow()
-
-		self.options = loadOptions()
+		self.rootSurface = None
 		self.activity = None
-		self.frame = None
 
-	def initPygameWindow(self):
+	def createRootSurface(self):
 		"""
-		Create a pygame window with a defined definition, title and icon.
+		Create a pygame window in fullscreen mode.
 		"""
 
-		print("[INFO] [Window.initPygameWindow] Creating new Pygame window " \
+		print("[INFO] [Window.createRootSurface] Creating new Pygame window " \
 			+ "in fullscreen mode with auto definition")
-		pygame.init()
 
-		self.root_window = pygame.display.set_mode((0, 0), pygame.FULLSCREEN)
-		pygame.display.set_caption(NAME)
 		iconPath = os.path.join(GUI_IMAGE_PATH, "pyoro_icon.png")
-		try:
-			pygame.display.set_icon(pygame.image.load(
-				iconPath).convert_alpha())
-		except pygame.error:
-			print("[WARNING] [Window.initPygameWindow] Unable to load the " \
-				+ 'window\'s icon "%s"' % iconPath)
+		self.rootSurface = pygame.display.set_mode((0, 0), pygame.FULLSCREEN)
+		pygame.display.set_caption(NAME)
 
-	def initJoysticks(self):
+		if os.path.exists(iconPath):
+			try:
+				pygame.display.set_icon(pygame.image.load(
+					iconPath).convert_alpha())
+			except Exception:
+				print("[FATAL ERROR] [Window.createRootSurface] Unable to load" \
+					+ " the window icon")
+				leaveGame(Errors.BAD_RESOURCE)
+		else:
+			print("[WARNING] [Window.createRootSurface] Window icon not found")
+
+	def loadJoysticks(self):
 		"""
 		Initialize all connected joysticks.
 		"""
 
 		print("[INFO] [Window.initJoysticks] Initializing joystick inputs")
+		self.joysticks.clear()
 		for i in range(pygame.joystick.get_count()):
 			joystick = pygame.joystick.Joystick(i)
 			joystick.init()
 			self.joysticks.append(joystick)
 
-	def initImages(self):
+	def loadImages(self):
 		"""
 		Load all images to the RAM.
 		"""
@@ -82,9 +82,9 @@ class Window:
 		imagePaths = getResourcePaths("images")
 		for imagePath in imagePaths:
 			image = os.path.join("data", *imagePath)
-			self.initImage(image)
+			self.loadImage(image)
 
-	def initImage(self, imagePath):
+	def loadImage(self, imagePath):
 		"""
 		Load an image to the RAM.
 
@@ -97,15 +97,6 @@ class Window:
 		else:
 			print("[WARNING] [Window.initImage] Unable" \
 				+ ' to find "%s"' % imagePath)
-
-	def initAudioPlayer(self):
-		"""
-		Initialize the audio player.
-		"""
-
-		if Game.audioPlayer:
-			Game.audioPlayer.loadAudio()
-			Game.audioPlayer.start()
 
 	def createRemplacementImage(self):
 		"""
@@ -120,13 +111,6 @@ class Window:
 		image.fill((255, 0, 255), (0, 0, 8, 8))
 		image.fill((255, 0, 255), (8, 8, 8, 8))
 		return image
-
-	def loadImages(self):
-		w, h = self.getSize()
-		self.initImage(os.path.join(GUI_IMAGE_PATH, "frame.png"))
-		self.frame = Image_transformer.stretch(
-			self.getImage(os.path.join(GUI_IMAGE_PATH, "frame.png")),
-			(w + 10, h + 10), 5)
 
 	def getImage(self, imagePath, alphaChannel = True):
 		"""
@@ -149,40 +133,48 @@ class Window:
 			if alphaChannel:
 				return self.images[imagePath].convert_alpha()
 			return self.images[imagePath].convert()
+
 		print('[WARNING] [Window.getImage] Image "%s" ' % filepath \
 			+ "not loaded! Using a remplacement image")
+
 		if alphaChannel:
 			return self.images["unknown"].convert()
 		return self.images["unknown"].convert_alpha()
+
+	def updateEvents(self):
+		"""
+		Update the activity with the current events in the pygame event buffer.
+		"""
+
+		for event in pygame.event.get():
+			if event.type == QUIT:
+				self.destroy()
+			elif event.type == K_F4 and pygame.key.get_mods() in (K_RALT, K_LALT):
+				self.destroy()
+			elif self.activity:
+				self.activity.updateEvent(event)
 
 	def update(self, deltaTime):
 		"""
 		Update the current level and all graphical components.
 
 		:type deltaTime: float
-		:param deltaTime: Elapsed time since the last update (in seconds).
+		:param deltaTime: Time elapsed since the last update (in seconds).
 		"""
 
-		for event in pygame.event.get():
-			if event.type == QUIT:
-				self.destroy()
-			if self.activity:
-				self.activity.updateEvent(event)
-		self.root_window.blit(self.frame, (0, 0))
+		self.updateEvents()
+		self.rootSurface.fill(WINDOW_COLOR)
 		if self.activity:
 			self.activity.update(deltaTime)
 		pygame.display.update()
 
 	def destroy(self):
 		"""
-		Destroy the current activity, the window, save
-		the options and leave the game.
+		Destroy the current activity and leave the game.
 		"""
 
 		print("[INFO] [Window.destroy] Destroying window")
-		if self.activity:
-			self.activity.destroy()
-		saveOptions(self.options)
+		self.destroyActivity()
 		leaveGame()
 
 	def destroyActivity(self):
@@ -192,31 +184,38 @@ class Window:
 
 		if self.activity:
 			print("[INFO] [Window.destroyActivity] Destroying " \
-				+ "current activity")
+				+ "the current activity")
 			self.activity.destroy()
 			Game.audioPlayer.stopAudio()
 		else:
 			print("[INFO] [Window.destroyActivity] No current activity")
 
-	def setSplashRender(self, option = None):
+	def setSplashRender(self, bootOption = "default"):
 		"""
 		Replace the current activity by a new
 		gui.splash_activity.Splash_activity.
 
-		:type option: str
-		:param option: (Optional) An option for alternate starts.
+		:type bootOption: str
+		:param bootOption: (Optional) An option for alternate starts. It can be
+			"default" (default option) or "update".
 
 		:Example: myWindow.setSplashRender("update") will
 			show an update installation dialog.
 		"""
 
 		self.destroyActivity()
-		print("[INFO] [Window.setSplashRender] Creating splash activity")
+		print("[INFO] [Window.setSplashRender] Creating splash activity " \
+			+ "with bootOption=%s" % bootOption)
 		self.activity = Splash_activity(self)
-		if option == "update":
-			self.activity.installUpdate()
+
+		if bootOption == "update":
+			self.activity.bootUpdate()
+		elif bootOption == "default":
+			self.activity.boot()
 		else:
-			self.activity.waitLoading()
+			print("[FATAL ERROR] [Window.setSplashRender] Unknown boot option" \
+				+ " '%s'" % bootOption)
+			leaveGame(Errors.CODE_ERROR)
 
 	def setMenuRender(self):
 		"""
@@ -225,18 +224,18 @@ class Window:
 		"""
 
 		self.destroyActivity()
-		gameId = self.getOption("last game")
+		gameId = Game.options.get("last game", 0)
 
 		if gameId not in (0, 1):
-			print("[WARNING] [Window.setMenuRender]" \
+			print("[FATAL ERROR] [Window.setMenuRender]" \
 				+ " Unknown gameId %s" % gameId)
-			gameId = 0
+			leaveGame(Errors.BAD_RESOURCE)
 
 		print("[INFO] [Window.setMenuRender] Creating menu" \
 			+ " activity with gameId=%s" % gameId)
 		self.activity = Menu_activity(self, gameId)
 
-	def setGameRender(self, gameId):
+	def setGameRender(self, gameId = 0):
 		"""
 		Replace the current activity by a new
 		gui.level_activity.Level_activity.
@@ -255,6 +254,7 @@ class Window:
 		else:
 			print("[FATAL ERROR] [Window.setGameRender]" \
 				+ " Unknown gameId %s" % gameId)
+			leaveGame(Errors.CODE_ERROR)
 
 	def drawImage(self, image, pos):
 		"""
@@ -263,39 +263,15 @@ class Window:
 		:type image: pygame.surface.Surface
 		:param image: The surface to draw on the screen.
 
-		:type pos: list<int>
+		:type pos: tuple<int>
 		:param pos: The (x, y) position of the surface on the screen.
 			(0, 0) = the top left corner of the screen.
 		"""
 
-		x, y = int(pos[0]), int(pos[1])
-		self.root_window.blit(image, (x + 5, y + 5))
-
-	def getOption(self, optionKey):
-		"""
-		Get an option value.
-
-		:type optionKey: str
-		:param optionKey: The option name.
-
-		:rtype: object
-		:returns: The option's value.
-		"""
-
-		if optionKey in self.options:
-			return self.options[optionKey]
-
-	def setOption(self, optionKey, optionValue):
-		"""
-		Define a new option or modify an existing one.
-
-		:type optionKey: str
-		:param optionKey: The name of the option to define.
-
-		:type optionValue: object
-		:param optionValue: The value of the option.
-		"""
-		self.options[optionKey] = optionValue
+		if self.rootSurface:
+			self.rootSurface.blit(image, pos)
+		else:
+			print("[WARNING] [Window.drawImage] No root surface to draw on")
 
 	def getSize(self):
 		"""
@@ -304,19 +280,7 @@ class Window:
 		:rtype: tuple
 		:returns: A (width, height) tuple.
 		"""
-		if self.root_window:
-			w, h = self.root_window.get_size()
-			return w - 10, h - 10
-
-	@staticmethod
-	def getScreenSize():
-		"""
-		Return the size of the default screen.
-		@staticmethod
-
-		:rtype: tuple
-		:returns: A (width, height) tuple.
-		"""
-
-		infos = pygame.display.Info()
-		return infos.current_w, infos.current_h
+		if self.rootSurface:
+			return self.rootSurface.get_size()
+		else:
+			print("[WARNING] [Window.getSize] Non root surface")

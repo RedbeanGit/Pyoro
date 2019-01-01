@@ -12,8 +12,9 @@
 import os, math
 
 from entities.entity import Entity
-from gui.image_transformer import Image_transformer
-from game.config import SEED_SPEED, AIR_RESISTANCE, GRAVITY_FORCE, ENTITIES_IMAGE_PATH, CASE_SIZE
+from gui.image_transformer import resizeImage
+from game.config import SEED_SPEED, AIR_RESISTANCE, GRAVITY_FORCE, \
+	ENTITIES_IMAGE_PATH
 
 class Seed(Entity):
 	def __init__(self, level, angle, direction):
@@ -33,13 +34,15 @@ class Seed(Entity):
 		self.images = {}
 		folder = os.path.join(ENTITIES_IMAGE_PATH, folderName)
 		imageNames = os.listdir(folder)
+		caseSize = self.level.levelDrawer.getCaseSize()
+
 		for imageName in imageNames:
 			if imageName.split(".")[-1] == "png":
-				self.images[imageName] = Image_transformer.resize(
-					self.level.activity.window.getImage(
+				self.images[imageName] = resizeImage(
+					self.level.levelDrawer.activity.window.getImage(
 						os.path.join(folder, imageName),
 						alphaChannel = False), \
-					(CASE_SIZE * self.size[0], CASE_SIZE * self.size[1]))
+					(caseSize[0] * self.size[0], caseSize[1] * self.size[1]))
 				self.images[imageName].set_alpha(self.spriteAlpha)
 				self.currentImageName = imageName
 

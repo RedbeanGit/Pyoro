@@ -12,6 +12,7 @@
 import os
 
 from game.config import GUI_IMAGE_PATH
+from game.util import Game
 from gui.button import Button
 
 class Play_button(Button):
@@ -32,7 +33,7 @@ class Play_button(Button):
 		self.gameId = gameId
 		Button.__init__(self, activity, pos, **kwargs)
 		if self.kwargs["enable"]:
-			self.config(text = "High Score:{}".format(activity.window.getOption("high score")[gameId]))
+			self.config(text = "High Score:{}".format(Game.options.get("high score", [0, 0])[gameId]))
 
 	def loadBackgroundImages(self):
 		backNames = ("backgroundImage", "onHoverBackgroundImage", "onClickBackgroundImage", "onMiddleClickBackgroundImage", "onRightClickBackgroundImage", "disableBackgroundImage")

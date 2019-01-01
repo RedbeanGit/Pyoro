@@ -40,7 +40,7 @@ class Bean(Entity):
 		self.speed = speed
 		self.spriteIndex = 0
 		Entity.__init__(self, level, pos, (1.5, 1.5))
-	
+
 	def initImages(self):
 		"""
 		Load bean images.
@@ -91,7 +91,7 @@ class Bean(Entity):
 		"""
 
 		self.caught = True
-	
+
 	def explode(self):
 		"""
 		Create an explosion animation with smoke and by playing
@@ -100,7 +100,7 @@ class Bean(Entity):
 
 		self.sounds["bean_explode"].play()
 		self.level.spawnSmoke(self.pos)
-	
+
 	def cut(self):
 		"""
 		Spawn leafs to create a cutting animation.
@@ -118,9 +118,3 @@ class Bean(Entity):
 
 		self.level.removeActionDelay((self, "updateSprite"))
 		Entity.remove(self)
-
-	def stopSounds(self):
-		"""
-		Do nothing: must be implemented!
-		"""
-		pass

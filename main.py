@@ -10,15 +10,16 @@ Created on 17/03/2018
 from audio.audio_player import Audio_player
 from game.debug_logger import Debug_logger
 from game.mod import Mod
-from game.util import checkData, checkModules, Errors, Game, leaveGame
+from game.util import checkData, checkModules, Errors, Game, leaveGame, \
+	loadOptions
+from game.config import VERSION
 from gui.window import Window
 
 __author__ = "Julien Dubois"
-__version__ = "1.1"
+__version__ = "1.1.2"
 
 import os
 import sys
-import traceback
 import pygame
 
 
@@ -28,8 +29,9 @@ def main():
 	"""
 
 	try:
+		print("[INFO] [main] Starting Debug_logger")
 		Game.debugLogger = Debug_logger()
-		print("[INFO] [main] Starting Pyoro v1.1")
+		print("[INFO] [main] Starting Pyoro v1.1.2")
 
 		if not checkModules():
 			print("[FATAL ERROR] [main] Module not found !")
@@ -39,10 +41,12 @@ def main():
 			print("[FATAL ERROR] [main] No data found !")
 			leaveGame(Errors.DATA_NOT_FOUND)
 
-		Game.audioPlayer = Audio_player()
+		pygame.init()
 
+		Game.options = loadOptions()
+		Game.audioPlayer = Audio_player()
 		Game.window = Window()
-		Game.window.loadImages()
+		Game.window.createRootSurface()
 		Game.window.setSplashRender()
 
 		Mod.loadMods()
@@ -51,7 +55,6 @@ def main():
 	except Exception:
 		print("[FATAL ERROR] [loop] An unknown error" \
 			+ " occurred while starting !")
-		print(traceback.format_exc())
 		leaveGame(Errors.BOOT_ERROR)
 
 
@@ -61,11 +64,14 @@ def update():
 	"""
 
 	try:
+		print("[INFO] [main] Starting Debug_logger")
 		Game.debugLogger = Debug_logger()
 		print("[INFO] [update] Starting Pyoro v1.1 to update")
 
+		pygame.init()
+
 		Game.window = Window()
-		Game.window.loadImages()
+		Game.window.createRootSurface()
 		Game.window.setSplashRender("update")
 	except Exception:
 		print("[FATAL ERROR] [update] An unknown error" \
@@ -87,20 +93,20 @@ def loop():
 		try:
 			pygame.event.pump()
 			deltaTime = clock.tick() / 1000
-			
+
 			Game.window.update(deltaTime)
 			Mod.updateMods(Game.window, deltaTime)
-			
+
 			tick += 1
 			totalTime += deltaTime
 		except Exception:
 			print("[FATAL ERROR] [loop] An unknown error " \
 				+ "occurred! tick=%s totalTime=%ss" % (tick, totalTime))
-			print(traceback.format_exc())
 			leaveGame(Errors.LOOP_ERROR)
 
 if __name__ == "__main__":
-	if len(sys.argv) > 1: 
+	os.chdir(os.path.dirname(sys.argv[0]))
+	if len(sys.argv) > 1:
 		if sys.argv[1] == "update":
 			update()
 		else:

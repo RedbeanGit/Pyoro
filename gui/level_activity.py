@@ -1,37 +1,50 @@
 # -*- coding: utf-8 -*-
 
 """
-=========================
-	@name: Pyoro
-	@author: Ptijuju22
-	@date: 10/04/2018
-	@version: 1
-=========================
-"""
+Provide an activity to manage the real game view.
 
-import os, pygame
-from pygame.locals import KEYDOWN, KEYUP, JOYBUTTONDOWN, JOYBUTTONUP, \
-	JOYHATMOTION, JOYAXISMOTION
+Created on 10/04/2018
+"""
 
 from game.config import LEVEL_IMAGE_PATH
 from game.level import Level
 from game.util import Game
 
-from gui.game_over_menu import Game_over_menu
-from gui.image_transformer import Image_transformer
 from gui.activity import Activity
+from gui.game_over_menu import Game_over_menu
+from gui.level_drawer import Level_drawer
 from gui.pause_menu import Pause_menu
 from gui.text import Text
-from gui.level_drawer import Level_drawer
+
+__author__ = "Julien Dubois"
+__version__ = "1.1.2"
+
+import os
+import pygame
+
+from pygame.locals import KEYDOWN, KEYUP, JOYBUTTONDOWN, JOYBUTTONUP, \
+	JOYHATMOTION, JOYAXISMOTION
+
 
 class Level_activity(Activity):
-	""" Activity managing the level's components """
+	"""
+	Activity managing in-game graphical components.
+	"""
 
-	# init some data
 	def __init__(self, window, gameId = 0):
+		"""
+		Initialize a new Level_activity object.
+
+		:type window: gui.window.Window
+		:param window: The parent game window.
+
+		:type gameId: int
+		:param gameId: (Optional) The id of the game to load. It can be 0 or 1.
+			0 = Pyoro, 1 = Pyoro 2. Default is 0.
+		"""
+
 		self.window = window
-		self.level = Level(self, gameId)
-		self.levelDrawer = Level_drawer(self.level, self.window)
+		self.levelDrawer = Level_drawer(self, gameId)
 
 		self.lastLevelStyleType = 0
 		self.lastLevelScore = 0
@@ -39,21 +52,26 @@ class Level_activity(Activity):
 		self.joyHatStates = []
 		self.joyAxisStates = []
 
-		self.initJoyStates()
-		self.level.init()
 		Activity.__init__(self, window)
-
-	def initImages(self):
-		self.levelDrawer.initImages()
-		Activity.initImages(self)
+		self.initJoyStates()
 
 	def initSounds(self):
+		"""
+		Load sounds and musics which will be used later by this activity.
+		"""
+
 		self.__initSounds__(("music_0", "music_1", "music_2",
 			"drums", "organ", "game_over", "speed_drums"),
 			os.path.join("data", "audio", "musics"), "music")
-		self.sounds["music_0"].play()
+		Game.audioPlayer.setSpeed(1)
+		self.sounds["music_0"].play(-1)
 
 	def initWidgets(self):
+		"""
+		Create widgets which will be used later by this activity ("score" and "high
+		score" text).
+		"""
+
 		spos = self.layout.getWidgetPos("score_text")
 		ssize = self.layout.getFontSize("score_text")
 
@@ -67,8 +85,14 @@ class Level_activity(Activity):
 			fontSize = hsize, anchor = (0, -1))
 
 	def initJoyStates(self):
-		bestJoyHats = max(self.window.joysticks, key = lambda x: x.get_numhats(), default = None)
-		bestJoyAxis = max(self.window.joysticks, key = lambda x: x.get_numaxes(), default = None)
+		"""
+		Initialize joystick hat and axis values.
+		"""
+
+		bestJoyHats = max(self.window.joysticks, key = lambda x: x.get_numhats(),
+			default = None)
+		bestJoyAxis = max(self.window.joysticks, key = lambda x: x.get_numaxes(),
+			default = None)
 		if bestJoyHats:
 			for i in range(bestJoyHats.get_numhats()):
 				self.joyHatStates.append(None)
@@ -78,67 +102,97 @@ class Level_activity(Activity):
 
 	# score
 	def getHighScore(self):
-		return self.window.getOption("high score")[self.level.gameId]
+		"""
+		Return the highest score from options.
+
+		:rtype: int
+		:returns: The highest score for the current gameId.
+		"""
+
+		return Game.options.get("high score", [0, 0])[self.levelDrawer.level.gameId]
 
 	def setHighScore(self, score):
-		lastOptions = self.window.getOption("high score")
-		lastOptions[self.level.gameId] = score
-		self.window.setOption("high score", lastOptions)
+		"""
+		Define a new high score for the current gameId.
+		"""
+
+		if "high score" not in Game.options:
+			Game.options["high score"] = [0, 0]
+		Game.options["high score"][self.levelDrawer.level.gameId] = score
 
 	def updateScore(self):
-		self.widgets["score_text"].text = "Score: %s" % self.level.score
-		if self.level.score > self.getHighScore():
-			self.widgets["high_score_text"].text = "High Score: %s" % self.level.score
+		"""
+		Update the score text widget with the current score.
+		"""
+
+		self.widgets["score_text"].text = "Score: %s" % self.levelDrawer.level.score
+		if self.levelDrawer.level.score > self.getHighScore():
+			self.widgets["high_score_text"].text = \
+				"High Score: %s" % self.levelDrawer.level.score
 
 
-	# sounds
 	def updateSounds(self, deltaTime):
-		styleType = self.level.getStyleTypeWithScore()
-		if styleType == 0:
-			if self.lastLevelScore != self.level.score:
+		"""
+		Start or stop musics according to the current score.
+		"""
 
-				if self.lastLevelScore < 5000 and self.level.score >= 5000:
+		styleType = self.levelDrawer.level.getStyleTypeWithScore()
+
+		# Normal style
+		if styleType == 0:
+			if self.lastLevelScore != self.levelDrawer.level.score:
+
+				if self.lastLevelScore < 5000 and self.levelDrawer.level.score >= 5000:
 					print("[INFO] [Level_activity.updateSounds] Drums added to the music")
-					self.sounds["drums"].play()
+					self.sounds["drums"].play(-1)
 					self.sounds["drums"].setPos(self.sounds["music_0"].pos)
 
-				elif self.lastLevelScore < 10000 and self.level.score >= 10000:
+				elif self.lastLevelScore < 10000 and self.levelDrawer.level.score >= 10000:
 					print("[INFO] [Level_activity.updateSounds] Organ added to the music")
-					self.sounds["organ"].play()
+					self.sounds["organ"].play(-1)
 					self.sounds["organ"].setPos(self.sounds["music_0"].pos)
 
+		# Black and white style
 		elif styleType == 1:
 			if self.lastLevelStyleType != styleType:
 				print("[INFO] [Level_activity.updateSounds] Music 2 started")
 				Game.audioPlayer.setSpeed(1)
 				Game.audioPlayer.stopAudio()
-				self.sounds["music_1"].play()
+				self.sounds["music_1"].play(-1)
 
+		# Flashy style
 		elif styleType == 2:
 			if self.lastLevelStyleType != styleType:
 				print("[INFO] [Level_activity.updateSounds] Music 3 started")
 				Game.audioPlayer.setSpeed(1)
 				Game.audioPlayer.stopAudio()
-				self.sounds["music_2"].play()
+				self.sounds["music_2"].play(-1)
 
-			if self.lastLevelScore < 41000 and self.level.score >= 41000:
+			if self.lastLevelScore < 41000 and self.levelDrawer.level.score >= 41000:
 				print("[INFO] [Level_activity.updateSounds] Speed drums added to the music")
-				self.sounds["speed_drums"].play()
+				self.sounds["speed_drums"].play(-1)
 				self.sounds["speed_drums"].setPos(self.sounds["music_2"].pos)
 
 		self.lastLevelStyleType = styleType
-		self.lastLevelScore = self.level.score
-		if not self.level.pyoro.dead:
+		self.lastLevelScore = self.levelDrawer.level.score
+		if not self.levelDrawer.level.pyoro.dead:
 			Game.audioPlayer.setSpeed(Game.audioPlayer.getSpeed() + 0.002 * deltaTime)
 
 	def saveLevelState(self):
-		if self.level.score > self.getHighScore():
-			self.setHighScore(self.level.score)
-		self.window.setOption("last game", self.level.gameId)
+		"""
+		Save the score and the gameId of the current level.
+		"""
+
+		if self.levelDrawer.level.score > self.getHighScore():
+			self.setHighScore(self.levelDrawer.level.score)
+		Game.options["last game"] = self.levelDrawer.level.gameId
 
 	def pauseGame(self):
+		"""
+		Stop updating the level.
+		"""
 		if "pause_menu" in self.widgets:
-			self.widgets["pause_menu"].destroy()
+			self.onPauseMenuDestroy()
 		else:
 			#Game.audioPlayer.pauseAudio()
 			size = self.layout.getWidgetSize("pause_menu")
@@ -148,15 +202,23 @@ class Level_activity(Activity):
 			self.addWidget("pause_menu", Pause_menu, pos, \
 				self.onPauseMenuDestroy, self.window.setMenuRender, \
 				size = size, anchor = anchor)
-
-			self.level.loopActive = False
+			self.levelDrawer.level.loopActive = False
 
 	def onPauseMenuDestroy(self):
+		"""
+		This method is called when the pause menu is destroyed. It re-enable the
+		level to be updated.
+		"""
+
 		self.removeWidget("pause_menu")
-		self.level.loopActive = True
+		self.levelDrawer.level.loopActive = True
 		#Game.audioPlayer.unpauseAudio()
 
 	def gameOver(self):
+		"""
+		Stop sounds and create a "game over" menu dialog.
+		"""
+
 		Game.audioPlayer.stopAudio()
 		Game.audioPlayer.setSpeed(1)
 		self.sounds["game_over"].play(1)
@@ -164,41 +226,51 @@ class Level_activity(Activity):
 		size = self.layout.getWidgetSize("game_over_menu")
 		pos = self.layout.getWidgetPos("game_over_menu")
 		anchor = self.layout.getWidgetAnchor("game_over_menu")
-		self.addWidget("game_over_menu", Game_over_menu, pos, self.level.score, \
-			self.onGameOverMenuDestroy, size = size, anchor = anchor)
+
+		self.addWidget("game_over_menu", Game_over_menu, pos, \
+			self.levelDrawer.level.score, self.onGameOverMenuDestroy, \
+			size = size, anchor = anchor)
 
 	def onGameOverMenuDestroy(self):
+		"""
+		This method is called when the game over menu is destroyed. It makes the
+		game return to the main menu.
+		"""
+
 		self.removeWidget("game_over_menu")
 		self.window.setMenuRender()
 
-
-
 	def updateEvent(self, event):
-		if self.level.loopActive:
-			keyboard = self.window.getOption("keyboard")
-			joystick = self.window.getOption("joystick")
+		"""
+		Update the level with
+		"""
+
+		if self.levelDrawer.level.loopActive:
+			keyboard = Game.options.get("keyboard", {})
+			joystick = Game.options.get("joystick", {})
+			pyoro = self.levelDrawer.level.pyoro
 
 			enableKeys = {
-				"left": self.level.pyoro.enableMoveLeft,
-				"right": self.level.pyoro.enableMoveRight,
-				"action": self.level.pyoro.enableCapacity,
+				"left": pyoro.enableMoveLeft,
+				"right": pyoro.enableMoveRight,
+				"action": pyoro.enableCapacity,
 				"pause": self.pauseGame
 			}
 			disableKeys = {
-				"left": self.level.pyoro.disableMove,
-				"right": self.level.pyoro.disableMove,
-				"action": self.level.pyoro.disableCapacity,
+				"left": pyoro.disableMove,
+				"right": pyoro.disableMove,
+				"action": pyoro.disableCapacity,
 				"pause": lambda:None
 			}
 
 			if event.type == KEYDOWN:
 				for actionName, action in enableKeys.items():
-					if event.key == keyboard[actionName]:
+					if event.key == keyboard.get(actionName, None):
 						action()
 
 			elif event.type == KEYUP:
 				for actionName, action in disableKeys.items():
-					if event.key == keyboard[actionName]:
+					if event.key == keyboard.get(actionName, None):
 						action()
 
 			elif event.type == JOYBUTTONDOWN:
@@ -243,14 +315,24 @@ class Level_activity(Activity):
 		Activity.updateEvent(self, event)
 
 	def update(self, deltaTime):
-		self.level.update(deltaTime)
-		self.levelDrawer.update(deltaTime)
+		"""
+		Update all graphical components of this activity.
 
-		if self.level.loopActive:
+		:type deltaTime: float
+		:param deltaTime: Time elapsed since the last call of this method (in
+			seconds).
+		"""
+
+		self.levelDrawer.update(deltaTime)
+		if self.levelDrawer.level.loopActive:
 			self.updateScore()
 			self.updateSounds(deltaTime)
 		Activity.update(self, deltaTime)
 
 	def destroy(self):
+		"""
+		Destroy the activity and all its components.
+		"""
+
 		self.saveLevelState()
 		Activity.destroy(self)

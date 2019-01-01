@@ -12,7 +12,7 @@
 import os
 
 from game.config import GUI_IMAGE_PATH
-from gui.image_transformer import Image_transformer
+from gui.image_transformer import stretchImage
 from gui.widget import Widget
 
 class Menu_widget(Widget):
@@ -33,7 +33,7 @@ class Menu_widget(Widget):
 
 	def loadBackgroundImage(self):
 		if self.kwargs["backgroundImage"]:
-			self.backgroundImage = Image_transformer.stretch(self.activity.window.getImage(self.kwargs["backgroundImage"]), self.kwargs["size"], 5)
+			self.backgroundImage = stretchImage(self.activity.window.getImage(self.kwargs["backgroundImage"]), self.kwargs["size"], 5)
 
 	def initWidgets(self):
 		pass

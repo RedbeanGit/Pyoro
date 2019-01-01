@@ -18,7 +18,7 @@ class Pyobot_2(Pyoro_2):
 
 	def update(self, deltaTime):
 		pos = self.getNearestPos(*self.getPosToEat())
-		if pos > 0 and pos < self.level.nbCases:
+		if pos > 0 and pos < self.level.size[0]:
 			if self.pos[0] > pos:
 				self.enableMoveLeft()
 			elif self.pos[0] < pos:
@@ -34,9 +34,10 @@ class Pyobot_2(Pyoro_2):
 	def getPosToEat(self):
 		lowestBean = self.getLowestBean()
 		if lowestBean:
-			return [lowestBean.pos[0] - (self.level.nbCases - lowestBean.pos[1]), lowestBean.pos[0] + (self.level.nbCases - lowestBean.pos[1])]
+			return [lowestBean.pos[0] - (self.level.size[0] - lowestBean.pos[1]), \
+				lowestBean.pos[0] + (self.level.size[0] - lowestBean.pos[1])]
 		else:
-			return [-1, self.level.nbCases]
+			return [-1, self.level.size[0]]
 
 	def lookBean(self):
 		lowestBean = self.getLowestBean()
@@ -49,7 +50,7 @@ class Pyobot_2(Pyoro_2):
 
 	def getNearestPos(self, pos1, pos2):
 		pos = sorted([pos1, pos2], key = lambda x: abs(self.pos[0] - x))
-		if pos[0] <= 0 or pos[0] >= self.level.nbCases:
+		if pos[0] <= 0 or pos[0] >= self.level.size[0]:
 			return pos[1]
 		return pos[0]
 

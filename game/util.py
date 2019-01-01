@@ -159,6 +159,8 @@ def stopGame():
 	pygame.quit()
 	if Game.audioPlayer:
 		Game.audioPlayer.stop()
+	if Game.options:
+		saveOptions(Game.options)
 	if Game.debugLogger:
 		Game.debugLogger.close()
 
@@ -175,32 +177,27 @@ def leaveGame(errorId = 0):
 
 	print("[INFO] [util.leaveGame] Leaving %s v%s" % (NAME.capitalize(), VERSION))
 	stopGame()
-	logMessage = "Consultez les logs pour plus de détails"
+	logMessage = " Consultez les logs pour plus de détails "
+	message = "Une erreur est survenue ! "
 
 	if errorId == 0:
 		sys.exit()
 	if errorId == Errors.MODULE_NOT_FOUND:
-		raise ImportError("Une erreur est survenue ! " \
-			+ "Il semblerait qu'un module Python essentiel" \
-			+ " au fonctionnement du jeu soit absent")
+		message += "Un module Python essentiel est absent !"
 	elif errorId == Errors.DATA_NOT_FOUND:
-		raise RuntimeError("Une erreur est survenue ! " \
-			+ "Il manque les données du jeu " \
-			+ "(images, sons, polices d'écriture, json) ! " + logMessage)
+		message += "Impossible de trouver les ressources du jeu !"
 	elif errorId == Errors.BOOT_ERROR:
-		raise RuntimeError("Une erreur est survenue pendant" \
-			+ " le démarrage du jeu ! " + logMessage)
+		message += "Le jeu n'a pas réussi à démarrer !"
 	elif errorId == Errors.LOOP_ERROR:
-		raise RuntimeError("Une erreur est survenue pendant la" \
-			+ " boucle de jeu ! " + logMessage)
+		message += "Plantage pendant la boucle de jeu boucle de jeu !"
 	elif errorId == Errors.UPDATE_ERROR:
-		raise RuntimeError("Une erreur est survenue pendant l'installation" \
-			+ " des mises à jours ! " + logMessage)
+		message += "Problème pendant l'installation des mises à jours !"
 	elif errorId == Errors.BAD_RESOURCE:
-		raise RuntimeError("Il semblerait qu'une ressource du jeu (image, son" \
-			+ ", json) soit manquante ou endommagée ! " + logMessage)
-	raise RuntimeError("Une erreur inconnue est survenue " \
-		+ "(errorId=%s) ! " % errorId + logMessage)
+		message += "Une ressource du jeu (image, son, json) est endommagée !"
+	elif errorId == Errors.CODE_ERROR:
+		message += "Mauvaise utilisation du code par l'un des mods !"
+
+	raise RuntimeError(message + logMessage + "(error=%s)" % errorId)
 
 
 def restart(*args):
@@ -302,7 +299,7 @@ def checkModules():
 	print("[INFO] [util.chechModules] Checking required modules")
 	required = ("os", "sys", "pygame", "json", "wave", "audioop", "pyaudio",
 		"threading", "traceback", "time", "platform", "shutil", "ftplib",
-		"enum", "gi")
+		"enum", "gi", "collections")
 
 	for moduleName in required:
 		try:
@@ -510,6 +507,12 @@ def getScreenRatio():
 	return 1
 
 
+def getMonitorDensity():
+	wm, hm = getMonitorSize()
+	wp, hp = getScreenSize()
+	return wp / wm, hp / hm
+
+
 ##############################################################################
 ### Enumerations #############################################################
 ##############################################################################
@@ -519,6 +522,7 @@ class Game:
 	window = None
 	debugLogger = None
 	audioPlayer = None
+	options = None
 
 
 class Errors(enum.Enum):
@@ -528,3 +532,4 @@ class Errors(enum.Enum):
 	LOOP_ERROR = 4
 	UPDATE_ERROR = 5
 	BAD_RESOURCE = 6
+	CODE_ERROR = 7

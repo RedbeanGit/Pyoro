@@ -33,7 +33,7 @@ class Layout:
 		self.height = 1
 		self.width_mm = 1
 		self.height_mm = 1
-		self.pixelSize = 1
+		self.dpm = 1
 		self.template = {}
 
 	def load(self, width = None, height = None):
@@ -51,7 +51,7 @@ class Layout:
 
 		self.width, self.height = getScreenSize()
 		self.width_mm, self.height_mm = getMonitorSize()
-		self.pixelSize = (self.width / self.width_mm \
+		self.dpm = (self.width / self.width_mm \
 			+ self.height / self.height_mm) / 2
 		self.template = getLayoutTemplate(getScreenRatio())
 
@@ -87,10 +87,10 @@ class Layout:
 		w, h = wp * self.width / 100, hp * self.height / 100
 
 		if self.width_mm >= mw:
-			w = wm * self.pixelSize
+			w = wm * self.dpm
 
 		if self.height_mm >= mh:
-			h = hm * self.pixelSize
+			h = hm * self.dpm
 
 		return int(w), int(h)
 
@@ -126,7 +126,7 @@ class Layout:
 
 		if self.height_mm < mh or self.width_mm < mw:
 			return int(sp * (self.height + self.width) / 200)
-		return int(sm * self.pixelSize)
+		return int(sm * self.dpm)
 
 	def getWidgetInfo(self, widgetName, info, defaultValue = None):
 		"""
