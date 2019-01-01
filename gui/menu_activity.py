@@ -123,9 +123,11 @@ class Menu_activity(Activity):
 		size = self.layout.getWidgetSize("option_menu")
 		pos = self.layout.getWidgetPos("option_menu")
 		anchor = self.layout.getWidgetAnchor("option_menu")
+		fsize = self.layout.getFontSize("option_menu")
 
 		self.addWidget("option_menu", Option_menu, pos, \
-			self.onOptionMenuDestroy, size = size, anchor = anchor)
+			self.onOptionMenuDestroy, size = size, anchor = anchor, \
+			fontSize = fsize)
 
 	def onOptionMenuDestroy(self):
 		"""

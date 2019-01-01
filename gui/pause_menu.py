@@ -63,22 +63,22 @@ class Pause_menu(Menu_widget):
 		realPos = self.getRealPos()
 		w, h = self.kwargs["size"]
 		f = self.kwargs["font"]
-		fs = self.kwargs["fontSize"]
+		ts = self.kwargs["fontSize"]; ms = ts - 3
 
 		px = int(w * 0.5)
 		py = int(h * 0.2)
 		self.addSubWidget("titleText", Text, (px, py), "Pause", \
-			anchor=(0, 0), font=f, fontSize=fs + 15)
+			anchor=(0, 0), font=f, fontSize=ts)
 		py = int(h * 0.4)
 		self.addSubWidget("resumeClickableText", Clickable_text, (px, py), \
-			"continuer", anchor=(0, 0), font=f, fontSize=fs, onClickFct=self.destroy)
+			"continuer", anchor=(0, 0), font=f, fontSize=ms, onClickFct=self.destroy)
 		py = int(h * 0.6)
 		self.addSubWidget("optionClickableText", Clickable_text, (px, py), \
-			"options", anchor=(0, 0), font=f, fontSize=fs, \
+			"options", anchor=(0, 0), font=f, fontSize=ms, \
 			onClickFct=self.openOptionMenu)
 		py = int(h * 0.8)
 		self.addSubWidget("quitClickableText", Clickable_text, (px, py), \
-			"quitter", anchor=(0, 0), font=f, fontSize=fs, onClickFct=self.leaveLevel)
+			"quitter", anchor=(0, 0), font=f, fontSize=ms, onClickFct=self.leaveLevel)
 
 	def destroy(self):
 		"""
@@ -105,11 +105,13 @@ class Pause_menu(Menu_widget):
 		x, y = layout.getWidgetPos("option_menu")
 		size = layout.getWidgetSize("option_menu")
 		anchor = layout.getWidgetAnchor("option_menu")
+		fsize = layout.getFontSize("option_menu")
 
 		rx, ry = self.getRealPos()
 		x, y = x - rx, y - ry
 		self.addSubWidget("option_menu", Option_menu, (x, y), \
-			self.onOptionMenuDestroy, size = size, anchor = anchor)
+			self.onOptionMenuDestroy, size = size, anchor = anchor, \
+			fontSize = fsize)
 
 	def onOptionMenuDestroy(self):
 		"""

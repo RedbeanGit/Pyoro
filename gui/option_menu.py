@@ -15,7 +15,7 @@ from gui.text import Text
 from gui.menu_widget import Menu_widget
 
 __author__ = "Julien Dubois"
-__version__ = "1.1"
+__version__ = "1.1.2"
 
 import os
 from pygame.locals import KEYDOWN, JOYBUTTONDOWN, JOYAXISMOTION, JOYHATMOTION
@@ -27,7 +27,8 @@ class Option_menu(Menu_widget):
 	"""
 
 	DEFAULT_KWARGS = {
-		"font": os.path.join(GUI_IMAGE_PATH, "font.ttf")
+		"font": os.path.join(GUI_IMAGE_PATH, "font.ttf"),
+		"fontSize": 20
 	}
 
 	def __init__(self, activity, pos, quitFct, **kwargs):
@@ -64,7 +65,7 @@ class Option_menu(Menu_widget):
 		jo = Game.options.get("joystick", {})
 		mv = Game.options.get("music volume", 1)
 		sv = Game.options.get("sound volume", 1)
-		ts = 20; ms = 15; ls = 12
+		ts = self.kwargs["fontSize"]; ms = ts - 3; ls = ms - 3
 
 		px = int(w * 0.05)
 		py = int(h * 0.15)
@@ -94,8 +95,9 @@ class Option_menu(Menu_widget):
 		px = int(w * 0.25)
 		py = int(h * 0.95)
 		self.addSubWidget("resetButton", Button, (px, py), \
-			text = "Réinitialiser", anchor = (0, 0), fontSize = ts, font = f, \
-			size = (int(w * 0.4), int(h * 0.06)), onClickFct = resetGame)
+			text = "Réinitialiser", anchor = (0, 0), textKwargs = {\
+			"fontSize": ms, "font": f}, size = (int(w * 0.4), \
+			int(h * 0.06)), onClickFct = resetGame)
 
 		px = int(w * 0.5)
 		py = int(h * 0.05)
@@ -110,32 +112,32 @@ class Option_menu(Menu_widget):
 		self.addSubWidget(("commandButton", "keyboard", "right"), Button, \
 			(px, py), text = getKeyName(ko["right"]), size = (int(w * 0.18), \
 			int(h * 0.08)), onClickFct = self.inputCommand, \
-			onClickArgs = ("keyboard", "right"), anchor = (0, 0), \
-			fontSize = ms, font = f)
+			onClickArgs = ("keyboard", "right"), anchor = (0, 0), textKwargs = { \
+			"fontSize": ls, "font": f})
 		py = int(h * 0.55)
 		self.addSubWidget(("commandButton", "keyboard", "left"), Button, \
 			(px, py), text = getKeyName(ko["left"]), size = (int(w * 0.18), \
 			int(h * 0.08)), onClickFct = self.inputCommand, \
-			onClickArgs = ("keyboard", "left"), anchor = (0, 0), fontSize = ms, \
-			font = f)
+			onClickArgs = ("keyboard", "left"), anchor = (0, 0), textKwargs = { \
+			"fontSize": ls, "font": f})
 		py = int(h * 0.65)
 		self.addSubWidget(("commandButton", "keyboard", "action"), Button, \
 			(px, py), text = getKeyName(ko["action"]), size = (int(w * 0.18), \
 			int(h * 0.08)), onClickFct = self.inputCommand, \
-			onClickArgs = ("keyboard", "action"), anchor = (0, 0), \
-			fontSize = ms, font = f)
+			onClickArgs = ("keyboard", "action"), anchor = (0, 0), textKwargs = { \
+			"fontSize": ls, "font": f})
 		py = int(h * 0.75)
 		self.addSubWidget(("commandButton", "keyboard", "pause"), Button, \
 			(px, py), text = getKeyName(ko["pause"]), size = (int(w * 0.18), \
 			int(h * 0.08)), onClickFct = self.inputCommand, \
-			onClickArgs = ("keyboard", "pause"), anchor = (0, 0), fontSize = ms, \
-			font = f)
+			onClickArgs = ("keyboard", "pause"), anchor = (0, 0), textKwargs = { \
+			"fontSize": ls, "font": f})
 
 		px = int(w * 0.75)
 		py = int(h * 0.95)
 		self.addSubWidget("backButton", Button, (px, py), text = "Retour", \
-			anchor = (0, 0), fontSize = ts, font = f, size = (int(w * 0.4), \
-			int(h * 0.06)), onClickFct = self.destroy)
+			anchor = (0, 0), textKwargs = {"fontSize": ms, "font": f}, \
+			size = (int(w * 0.4), int(h * 0.06)), onClickFct = self.destroy)
 
 		px = int(w * 0.86)
 		py = int(h * 0.35)
@@ -146,27 +148,27 @@ class Option_menu(Menu_widget):
 			(px, py), text = getJoyKeyName(**jo["right"]), \
 			size = (int(w * 0.18), int(h * 0.08)), \
 			onClickFct = self.inputCommand, \
-			onClickArgs = ("joystick", "right"), anchor = (0, 0), fontSize = ms, \
-			font = f)
+			onClickArgs = ("joystick", "right"), anchor = (0, 0), textKwargs = { \
+			"fontSize": ls, "font": f})
 		py = int(h * 0.55)
 		self.addSubWidget(("commandButton", "joystick", "left"), Button, \
 			(px, py), text = getJoyKeyName(**jo["left"]), \
 			size = (int(w * 0.18), int(h * 0.08)), \
 			onClickFct = self.inputCommand, onClickArgs = ("joystick", "left"), \
-			anchor = (0, 0), fontSize = ms, font = f)
+			anchor = (0, 0), textKwargs = {"fontSize": ls, "font": f})
 		py = int(h * 0.65)
 		self.addSubWidget(("commandButton", "joystick", "action"), Button, \
 			(px, py), text = getJoyKeyName(**jo["action"]), \
 			size = (int(w * 0.18), int(h * 0.08)), \
 			onClickFct = self.inputCommand, \
-			onClickArgs = ("joystick", "action"), anchor = (0, 0), \
-			fontSize = ms, font = f)
+			onClickArgs = ("joystick", "action"), anchor = (0, 0), textKwargs = { \
+			"fontSize": ls, "font": f})
 		py = int(h * 0.75)
 		self.addSubWidget(("commandButton", "joystick", "pause"), Button, \
 			(px, py), text = getJoyKeyName(**jo["pause"]), \
 			size = (int(w * 0.18), int(h * 0.08)), \
 			onClickFct = self.inputCommand, onClickArgs = ("joystick", "pause"), \
-			anchor = (0, 0), fontSize = ms, font = f)
+			anchor = (0, 0), textKwargs = {"fontSize": ls, "font": f})
 
 		px = int(w * 0.95)
 		py = int(h * 0.15)
@@ -184,6 +186,13 @@ class Option_menu(Menu_widget):
 			"%s v%s" % (NAME, VERSION), font = f, fontSize = ls, anchor = (1, 0))
 
 	def onEvent(self, event):
+		"""
+		Update subwidgets of this menu by passing to the given event.
+
+		:type event: pygame.event.Event
+		:param event: The pygame event to give to all subwidgets.
+		"""
+
 		Menu_widget.onEvent(self, event)
 		if self.waitingInput:
 			if self.waitingInput[0] == "keyboard":

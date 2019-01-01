@@ -191,18 +191,21 @@ class Level_activity(Activity):
 		"""
 		Stop updating the level.
 		"""
+
 		if "pause_menu" in self.widgets:
 			self.onPauseMenuDestroy()
 		else:
-			#Game.audioPlayer.pauseAudio()
-			size = self.layout.getWidgetSize("pause_menu")
-			pos = self.layout.getWidgetPos("pause_menu")
-			anchor = self.layout.getWidgetAnchor("pause_menu")
+			if "game_over_menu" not in self.widgets:
+				#Game.audioPlayer.pauseAudio()
+				size = self.layout.getWidgetSize("pause_menu")
+				pos = self.layout.getWidgetPos("pause_menu")
+				anchor = self.layout.getWidgetAnchor("pause_menu")
+				fsize = self.layout.getFontSize("pause_menu")
 
-			self.addWidget("pause_menu", Pause_menu, pos, \
-				self.onPauseMenuDestroy, self.window.setMenuRender, \
-				size = size, anchor = anchor)
-			self.levelDrawer.level.loopActive = False
+				self.addWidget("pause_menu", Pause_menu, pos, \
+					self.onPauseMenuDestroy, self.window.setMenuRender, \
+					size = size, anchor = anchor, fontSize = fsize)
+				self.levelDrawer.level.loopActive = False
 
 	def onPauseMenuDestroy(self):
 		"""
@@ -221,15 +224,16 @@ class Level_activity(Activity):
 
 		Game.audioPlayer.stopAudio()
 		Game.audioPlayer.setSpeed(1)
-		self.sounds["game_over"].play(1)
+		self.sounds["game_over"].play()
 
 		size = self.layout.getWidgetSize("game_over_menu")
 		pos = self.layout.getWidgetPos("game_over_menu")
 		anchor = self.layout.getWidgetAnchor("game_over_menu")
+		fsize = self.layout.getFontSize("game_over_menu")
 
 		self.addWidget("game_over_menu", Game_over_menu, pos, \
 			self.levelDrawer.level.score, self.onGameOverMenuDestroy, \
-			size = size, anchor = anchor)
+			size = size, anchor = anchor, fontSize = fsize)
 
 	def onGameOverMenuDestroy(self):
 		"""

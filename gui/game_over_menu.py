@@ -35,15 +35,20 @@ class Game_over_menu(Menu_widget):
 		realPos = self.getRealPos()
 		w, h = self.kwargs["size"]
 		f = self.kwargs["font"]
-		fs = self.kwargs["fontSize"]
+		ts = self.kwargs["fontSize"]; ms = ts - 3
 
 		px = int(w * 0.5)
 		py = int(h * 0.25)
-		self.addSubWidget("titleText", Text, (px, py), "Game Over", anchor = (0, 0), font = f, fontSize = fs + 15)
+		self.addSubWidget("titleText", Text, (px, py), "Game Over", \
+			anchor = (0, 0), font = f, fontSize = ts)
 		py = int(h * 0.50)
-		self.addSubWidget("scoreText", Text, (px, py), "score : {}".format(self.score), anchor = (0, 0), font = f, fontSize = fs)
+		self.addSubWidget("scoreText", Text, (px, py), \
+			"score : {}".format(self.score), anchor = (0, 0), font = f, \
+			fontSize = ms)
 		py = int(h * 0.75)
-		self.addSubWidget("quitClickableText", Clickable_text, (px, py), "quitter", anchor = (0, 0), font = f, fontSize = fs, onClickFct = self.destroy)
+		self.addSubWidget("quitClickableText", Clickable_text, (px, py), \
+			"quitter", anchor = (0, 0), font = f, fontSize = ms, \
+			onClickFct = self.destroy)
 
 	def destroy(self):
 		Menu_widget.destroy(self)
