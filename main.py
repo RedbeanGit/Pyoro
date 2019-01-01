@@ -105,7 +105,7 @@ def loop():
 			leaveGame(Errors.LOOP_ERROR)
 
 if __name__ == "__main__":
-	os.chdir(os.path.dirname(sys.argv[0]))
+	os.chdir(os.path.dirname(os.path.abspath(sys.argv[0])))
 	if len(sys.argv) > 1:
 		if sys.argv[1] == "update":
 			update()
