@@ -18,6 +18,8 @@ FPS = 60															# frame per seconds
 NAME = "PYORO"														# game name
 VERSION = "1.1.1"													# game version
 WINDOW_COLOR = (120, 120, 120)										# background color
+LOW_AUDIO = True													# If True, use less resources but cannot read several...
+																	# ...sounds at the same time
 
 # Update server address and login
 UPDATE_HOST = "ftpupload.net"										# FTP host

@@ -9,6 +9,7 @@ Created on 27/08/2018
 
 from audio.sound import Sound
 from audio.music import Music
+from game.config import LOW_AUDIO
 from game.util import getResourcePaths
 
 __author__ = "Julien Dubois"
@@ -192,7 +193,10 @@ class Audio_player:
 
 		def loop():
 			while self.active:
-				self.update()
+				if LOW_AUDIO:
+					self.updateLow()
+				else:
+					self.update()
 
 		self.active = True
 		self.thread = threading.Thread(target = loop)
@@ -249,6 +253,29 @@ class Audio_player:
 						chunks = chunk
 			if chunks:
 				self.stream.write(chunks)
+
+	def updateLow(self):
+		"""
+		Update sounds and music and play a new audio samples but use less
+		resources than Audio_player.update() method.
+		"""
+
+		with self.lock:
+			framerate = int(self.framerate)
+			chunks = bytes(self.chunkSize * self.samplesWidth * self.nbChannels // 2)
+
+			for sound in self.mixer:
+				if sound.isPlaying and self.isPlayable(sound):
+					if self.isMusic(sound):
+						volume = self.musicVolume
+					else:
+						volume = self.soundVolume
+					chunk = sound.update()
+					chunks = audioop.add(chunks, chunk, self.samplesWidth)
+			chunks = audioop.ratecv(chunks, self.samplesWidth, self.nbChannels, \
+				Audio_player.defaultFramerate, framerate * 2, None)[0]
+			self.stream.write(chunks)
+
 
 	def getMusicInMixer(self):
 		"""

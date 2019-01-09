@@ -60,7 +60,7 @@ class Sound:
 					self.framerate = wf.getframerate()
 					self.nbChannels = wf.getnchannels()
 					self.samplesWidth = wf.getsampwidth()
-					
+
 					# Loading sounds samples
 					self.samples = wf.readframes(wf.getnframes() - 1)
 					self.isLoaded = True
@@ -230,7 +230,7 @@ class Sound:
 		"""
 
 		if self.isLoaded:
-			return audioop.mul(chunk, 
+			return audioop.mul(chunk,
 				self.samplesWidth,
 				volume)
 		else:
