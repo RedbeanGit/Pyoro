@@ -13,11 +13,12 @@ from game.mod import Mod
 from game.util import checkData, checkModules, Errors, Game, leaveGame, \
 	loadOptions
 from game.config import VERSION
-from gui.window import Window
+
 
 __author__ = "Julien Dubois"
 __version__ = "1.1.2"
 
+import lemapi
 import os
 import sys
 import pygame
@@ -56,6 +57,19 @@ def main():
 		print("[FATAL ERROR] [loop] An unknown error" \
 			+ " occurred while starting !")
 		leaveGame(Errors.BOOT_ERROR)
+
+
+def loadImages(self):
+	"""
+	Load all images to the RAM.
+	"""
+
+	print("[INFO] [Pyoro_gui.initImages] Loading images to RAM memory")
+	imagePaths = getResourcePaths("images")
+	gui = get_gui()
+	for imagePath in imagePaths:
+		image = os.path.join("data", *imagePath)
+		gui.loadImage(image)
 
 
 def update():
