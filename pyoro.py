@@ -32,20 +32,20 @@ def exit():
 
 def create_splash():
     view = Splash_view()
+    view.init_widgets()
     activity = Splash_activity(view, create_menu)
-    set_view(view)
     set_activity(activity)
 
 
-def create_menu():
-    view = Menu_view()
-    activity = Menu_activity(view, create_level)
-    set_view(view)
+def create_menu(gameId = 0):
+    view = Menu_view(gameId)
+    view.init_widgets()
+    activity = Menu_activity(view, create_level, gameId)
     set_activity(activity)
 
 
 def create_level(gameId = 0):
     view = Level_view(gameId)
+    view.init_widgets()
     activity = Level_activity(view, menu_activity, gameId)
-    set_view(view)
     set_activity(activity)

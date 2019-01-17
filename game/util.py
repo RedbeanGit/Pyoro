@@ -23,6 +23,7 @@ import sys
 import threading
 
 from gi.repository import Gdk
+from lemapi.api import get_gui
 from pygame.locals import K_1, K_2, K_3, K_4, K_5, K_6, K_7, K_8, K_9, K_0, \
 	K_q, K_w, K_z, K_m, K_a, K_MINUS, K_LEFTBRACKET, K_RIGHTBRACKET, \
 	K_SEMICOLON, K_QUOTE, K_COMMA, K_PERIOD, K_SLASH, JOYBUTTONDOWN, \
@@ -310,6 +311,15 @@ def checkModules():
 				+ '"%s" detected !' % moduleName)
 			return False
 	return True
+
+
+def loadImages():
+	print("[INFO] [util.loadImages] Loading images to RAM")
+	imagePaths = getResourcePaths("images")
+	gui = get_gui()
+	for imagePath in imagePaths:
+		image = os.path.join("data", *imagePath)
+		gui.loadImage(image)
 
 
 def getResourcePaths(resourceType):
