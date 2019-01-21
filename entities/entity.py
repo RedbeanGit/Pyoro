@@ -8,12 +8,12 @@ Created on 18/03/2018
 
 from game.config import ENTITIES_IMAGE_PATH
 from game.util import Game
-from gui.image_transformer import resizeImage
 
 __author__ = "Julien Dubois"
 __version__ = "1.1.1"
 
 import os
+from lemapi.util import resize_image
 
 
 class Entity:
@@ -78,8 +78,8 @@ class Entity:
 
 		for imageName in imageNames:
 			if imageName.split(".")[-1] == "png":
-				self.images[imageName] = resizeImage(
-					self.level.levelDrawer.activity.window.getImage(
+				self.images[imageName] = resize_image(
+					self.level.levelDrawer.gui.get_image(
 						os.path.join(ENTITIES_IMAGE_PATH,
 							folderName, imageName)), \
 					(caseSize[0] * self.size[0], caseSize[1] * self.size[1]))

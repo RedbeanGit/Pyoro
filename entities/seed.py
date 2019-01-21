@@ -9,12 +9,17 @@
 =========================
 """
 
-import os, math
-
 from entities.entity import Entity
-from gui.image_transformer import resizeImage
 from game.config import SEED_SPEED, AIR_RESISTANCE, GRAVITY_FORCE, \
 	ENTITIES_IMAGE_PATH
+
+__author__ = "Julien Dubois"
+__version__ = "2.0.0"
+
+import os
+import math
+from lemapi.util import resize_image
+
 
 class Seed(Entity):
 	def __init__(self, level, angle, direction):
@@ -38,10 +43,10 @@ class Seed(Entity):
 
 		for imageName in imageNames:
 			if imageName.split(".")[-1] == "png":
-				self.images[imageName] = resizeImage(
-					self.level.levelDrawer.activity.window.getImage(
+				self.images[imageName] = resize_image(
+					self.level.levelDrawer.gui.get_image(
 						os.path.join(folder, imageName),
-						alphaChannel = False), \
+						alpha = False), \
 					(caseSize[0] * self.size[0], caseSize[1] * self.size[1]))
 				self.images[imageName].set_alpha(self.spriteAlpha)
 				self.currentImageName = imageName

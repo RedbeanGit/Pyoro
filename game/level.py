@@ -41,7 +41,7 @@ class Level:
 		"""
 		Initialize a new Level object.
 
-		:type levelDrawer: gui.level_drawer.Level_drawer
+		:type levelDrawer: graphism.level_drawer.Level_drawer
 		:param activity: The graphical representation of this level.
 
 		:type gameId: int

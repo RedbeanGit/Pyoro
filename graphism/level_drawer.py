@@ -9,19 +9,18 @@ Created on 11/10/2018
 from game.config import CASE_SIZE, BACKGROUND_TRANSITION_DURATION, \
 	LEVEL_IMAGE_PATH
 from game.level import Level
-from game.util import getMonitorSize, getScreenSize, getMonitorDensity
-from gui.image_transformer import resizeImage
 
 __author__ = "Julien Dubois"
 __version__ = "1.1.2"
 
 import os
 import pygame
+from lemapi.util import resize_image, get_monitor_density
 
 
 class Level_drawer:
-	def __init__(self, activity, gameId, botMode = False):
-		self.activity = activity
+	def __init__(self, gui, gameId, botMode = False):
+		self.gui = gui
 		self.images = {}
 		self.caseSize = ()
 		self.level = None
@@ -37,14 +36,14 @@ class Level_drawer:
 		self.level = Level(self, gameId, self.getLevelSize(), botMode)
 
 	def getLevelSize(self):
-		wp, hp = getScreenSize()
-		wd, hd = getMonitorDensity()
+		wp, hp = self.gui.get_size()
+		wd, hd = get_monitor_density()
 		wc, hc = wd * CASE_SIZE, hd * CASE_SIZE
 		return int(wp / wc), hp / hc
 
 	def getCaseSize(self):
 		if not self.caseSize:
-			wp, hp = getScreenSize()
+			wp, hp = self.gui.get_size()
 			if self.level:
 				wc, hc = self.level.size
 			else:
@@ -57,18 +56,16 @@ class Level_drawer:
 		size = self.getCaseSize()
 		for i in range(3):
 			imageName = "block_%s.png" % i
-			self.images[imageName] = resizeImage(
-				self.activity.window.getImage(os.path.join(folder, imageName)), \
-				size)
+			self.images[imageName] = resize_image(self.gui.get_image( \
+				os.path.join(folder, imageName)), size)
 
-		folder = os.path.join(LEVEL_IMAGE_PATH, \
-			"background %s" % (self.level.gameId + 1))
-		size = self.activity.window.getSize()
+		folder = os.path.join(LEVEL_IMAGE_PATH, "background %s" % \
+			(self.level.gameId + 1))
+		size = self.gui.get_size()
 		for i in range(21):
 			imageName = "background_%s.png" % i
-			self.images[imageName] = resizeImage(
-				self.activity.window.getImage(os.path.join(folder, imageName), \
-				alphaChannel = False), size)
+			self.images[imageName] = resize_image(self.gui.get_image( \
+				os.path.join(folder, imageName), alpha = False), size)
 
 	def drawPyoro(self):
 		p = self.level.pyoro
@@ -102,15 +99,13 @@ class Level_drawer:
 				y = int(pos[1] * self.caseSize[1] + 5)
 				tCoords[key] = (x, y)
 
-			pygame.draw.polygon(self.activity.window.rootSurface, color[0], tCoords)
-			pygame.draw.line(self.activity.window.rootSurface, color[1],
-				tCoords[0], tCoords[1], int(0.115 * caseSize[0]))
-			pygame.draw.line(self.activity.window.rootSurface, color[1],
-				tCoords[2], tCoords[3], int(3.68))
+			self.gui.draw_polygon(color[0], tCoords)
+			self.gui.draw_line(color[1], tCoords[0], tCoords[1], \
+				int(0.115 * caseSize[0]))
+			self.gui.draw_line(color[1], tCoords[2], tCoords[3], int(3.68))
 
-		self.activity.window.drawImage(p.images[p.currentImageName],
-			((p.pos[0] - p.size[0] / 2) * caseSize[0],
-				(p.pos[1] - p.size[1] / 2) * caseSize[1]))
+		self.gui.draw_image(p.images[p.currentImageName], ((p.pos[0] - p.size[0] \
+			/ 2) * caseSize[0], (p.pos[1] - p.size[1] / 2) * caseSize[1]))
 
 	def drawBackground(self):
 		backId = self.level.getBackgroundIdWithScore()
@@ -128,17 +123,17 @@ class Level_drawer:
 				background.set_alpha(0)
 
 				self.updateBackgroundTransition(0)
-			self.activity.window.drawImage(self.lastBackground, (0, 0))
-		self.activity.window.drawImage(background, (0, 0))
+			self.gui.draw_image(self.lastBackground, (0, 0))
+		self.gui.draw_image(background, (0, 0))
 
 	def drawBlocks(self):
-		w, h = self.activity.window.getSize()
+		w, h = self.gui.get_size()
 		caseSize = self.getCaseSize()
 		for i in range(self.level.size[0]):
 			if self.level.cases[i].exists:
-				self.activity.window.drawImage(self.images[
-					"block_%s.png" % self.level.getStyleTypeWithScore()],
-					(i * caseSize[0], h - caseSize[1]))
+				self.gui.draw_image(self.images["block_%s.png" % \
+					self.level.getStyleTypeWithScore()], (i * caseSize[0], h - \
+					caseSize[1]))
 
 	def updateBackgroundTransition(self, opacity):
 		self.images["background_%s.png" \
@@ -156,8 +151,7 @@ class Level_drawer:
 		for entity in self.level.entities:
 			x = (entity.pos[0] - entity.size[0] / 2) * w
 			y = (entity.pos[1] - entity.size[1] / 2) * h
-			self.activity.window.drawImage(entity.images[entity.currentImageName],
-				(x, y))
+			self.gui.draw_image(entity.images[entity.currentImageName], (x, y))
 
 	def update(self, deltaTime):
 		self.level.update(deltaTime)

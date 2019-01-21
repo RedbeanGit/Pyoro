@@ -23,7 +23,7 @@ import sys
 import threading
 
 from gi.repository import Gdk
-from lemapi.api import get_gui
+from lemapi.api import get_gui, restart_app
 from pygame.locals import K_1, K_2, K_3, K_4, K_5, K_6, K_7, K_8, K_9, K_0, \
 	K_q, K_w, K_z, K_m, K_a, K_MINUS, K_LEFTBRACKET, K_RIGHTBRACKET, \
 	K_SEMICOLON, K_QUOTE, K_COMMA, K_PERIOD, K_SLASH, JOYBUTTONDOWN, \
@@ -146,122 +146,8 @@ def loadOptions():
 			return json.load(file)
 	return DEFAULT_OPTIONS
 
-##############################################################################
-### Leave, reset and restart #################################################
-##############################################################################
 
-
-def stopGame():
-	"""
-	Stop the audio player, the debug logger and close the current window.
-	"""
-
-	print("[INFO] [util.stopGame] Stopping %s" % NAME.capitalize())
-	pygame.quit()
-	if Game.audioPlayer:
-		Game.audioPlayer.stop()
-	if Game.options:
-		saveOptions(Game.options)
-	if Game.debugLogger:
-		Game.debugLogger.close()
-
-
-def leaveGame(errorId = 0):
-	"""
-	Stop the game and send an error message if something
-	wrong happened.
-
-	:type errorId: int
-	:param errorId: Optional. An error id. 0 is used if
-		not defined.
-	"""
-
-	print("[INFO] [util.leaveGame] Leaving %s v%s" % (NAME.capitalize(), VERSION))
-	stopGame()
-	logMessage = " Consultez les logs pour plus de détails "
-	message = "Une erreur est survenue ! "
-
-	if errorId == 0:
-		sys.exit()
-	if errorId == Errors.MODULE_NOT_FOUND:
-		message += "Un module Python essentiel est absent !"
-	elif errorId == Errors.DATA_NOT_FOUND:
-		message += "Impossible de trouver les ressources du jeu !"
-	elif errorId == Errors.BOOT_ERROR:
-		message += "Le jeu n'a pas réussi à démarrer !"
-	elif errorId == Errors.LOOP_ERROR:
-		message += "Plantage pendant la boucle de jeu boucle de jeu !"
-	elif errorId == Errors.UPDATE_ERROR:
-		message += "Problème pendant l'installation des mises à jours !"
-	elif errorId == Errors.BAD_RESOURCE:
-		message += "Une ressource du jeu (image, son, json) est endommagée !"
-	elif errorId == Errors.CODE_ERROR:
-		message += "Mauvaise utilisation du code par l'un des mods !"
-
-	raise RuntimeError(message + logMessage + "(error=%s)" % errorId)
-
-
-def restart(*args):
-	"""
-	Restart the game with defined arguments.
-
-	:type *args: str
-	:param *args: The arguments to pass on reboot.
-	"""
-
-	print("[INFO] [util.restart] Restarting game")
-	if sys.executable == sys.argv[0]:
-		subprocess.Popen([sys.executable] + list(args))
-	else:
-		subprocess.Popen([sys.executable, sys.argv[0]] + list(args))
-	leaveGame()
-
-
-def adminRestart(*args):
-	"""
-	Restart by requesting administrator or root privileges.
-
-	:type *args: str
-	:param *args: The arguments to pass on reboot.
-	"""
-
-	print("[INFO] [util.adminRestart] Restarting game with admin elevation")
-	systemName = platform.system()
-	args = list(args)
-
-	if sys.executable != sys.argv[0]:
-		args.insert(0, sys.argv[0])
-
-	def uacPrompt():
-		ctypes.windll.shell32.ShellExecuteW(
-				None,
-				"runas",
-				sys.executable,
-				" ".join(args),
-				None,
-				1
-			)
-
-	def rootPrompt():
-		toReturn = 0
-		# If the user isn't a super user
-		if os.geteuid() != 0:
-			msg = "[sudo] password for %u:"
-			toReturn = subprocess.check_call("sudo -v -p '%s'" % msg, shell=True)
-		return toReturn
-
-	if systemName == "Windows":
-		threading.Thread(target = uacPrompt).start()
-		leaveGame()
-	else:
-		if rootPrompt() == 0:
-			restart()
-		else:
-			print("[WARNING] [util.adminRestart] Unable to get root privileges")
-			leaveGame()
-
-
-def resetGame():
+def reset():
 	"""
 	Reset the game and restart.
 	"""
@@ -270,47 +156,11 @@ def resetGame():
 	optionFilePath = os.path.join(getExternalDataPath(), "options.json")
 	if os.path.exists(optionFilePath):
 		os.remove(optionFilePath)
-	restart()
+	restart_app(Game.appId)
 
 ##############################################################################
 ### Data and modules managment ###############################################
 ##############################################################################
-
-
-def checkData():
-	"""
-	Check if there is resources.json file.
-
-	:rtype: bool
-	:returns: True if found, otherwise False.
-	"""
-
-	print("[INFO] [util.checkData] Checking data")
-	return os.path.exists(os.path.join("data", "resources.json"))
-
-
-def checkModules():
-	"""
-	Check needed python modules.
-
-	:rtype: bool
-	:returns: True if all needed modules are installed, otherwise False.
-	"""
-
-	print("[INFO] [util.chechModules] Checking required modules")
-	required = ("os", "sys", "pygame", "json", "wave", "audioop", "pyaudio",
-		"threading", "traceback", "time", "platform", "shutil", "ftplib",
-		"enum", "gi", "collections")
-
-	for moduleName in required:
-		try:
-			print("[INFO] [util.chechModules] Checking \"%s\"" % moduleName)
-			exec("import " + moduleName)
-		except ImportError:
-			print("[WARNING] [util.chechModules] No module " \
-				+ '"%s" detected !' % moduleName)
-			return False
-	return True
 
 
 def loadImages():
@@ -319,7 +169,7 @@ def loadImages():
 	gui = get_gui()
 	for imagePath in imagePaths:
 		image = os.path.join("data", *imagePath)
-		gui.loadImage(image)
+		gui.load_image(image)
 
 
 def getResourcePaths(resourceType):
@@ -381,98 +231,9 @@ def getExternalDataPath():
 	print("[WARNING] [util.getExternalDataPath] Unknown operating system")
 	return "saves"
 
-
-def copyDirectory(fromPath, toPath):
-	"""
-	Recursion copy file or folder.
-
-	:type fromPath: str
-	:param fromPath: The folder path to copy from.
-
-	:type toPath: str
-	:param toPath: The destination file or folder.
-
-	:rtype: bool
-	:returns: True if files and folders has been copied successfuly,
-		otherwise False.
-	"""
-
-	print("[INFO] [util.copyDirectory] Copying folder " \
-		+ "%s to %s" % (fromPath, toPath))
-	toReturn = True
-
-	if os.path.isdir(fromPath):
-		fileNames = os.listdir(fromPath)
-		for fileName in fileNames:
-			sourceFilePath = os.path.join(fromPath, fileName)
-			newFilePath = os.path.join(toPath, fileName)
-			if not copyDirectory(sourceFilePath, newFilePath):
-				toReturn = False
-	else:
-		if os.path.exists(fromPath):
-			if not os.path.exists(os.path.dirname(toPath)):
-				os.makedirs(os.path.dirname(toPath))
-
-			try:
-				shutil.copyfile(fromPath, toPath)
-			except Exception:
-				print("[WARNING] [util.copyDirectory] Error while copying" \
-					" %s to %s ! Ignoring it" % (fromPath, toPath))
-				toReturn = False
-		else:
-			print("[WARNING] [util.copyDirectory] File " \
-				"\"%s\" doesn't exist" % fromPath)
-			toReturn = False
-
-	return toReturn
-
 ##############################################################################
 ### Screen Infos #############################################################
 ##############################################################################
-
-
-def getLayoutTemplate(ratio):
-	"""
-	Get the best layout for a given ratio.
-
-	:type ratio: float
-	:param ratio: The ratio of the game window.
-
-	:rtype: dict
-	:returns: A dictionary representing placement informations about
-		the graphical components of the game menu.
-	"""
-
-	# Detecting best layout name accourding to the resolution
-	if ratio > 1:
-		bestLayoutName = "Wide"
-	elif ratio < 1:
-		bestLayoutName = "Narrow"
-	else:
-		bestLayoutName = "Square"
-
-	layoutFilePath = os.path.join("data", "layouts.json")
-	if os.path.exists(layoutFilePath):
-		with open(layoutFilePath, "r") as file:
-			layouts = json.load(file)
-
-			# Searching the best layout
-			for layout in layouts:
-				if "name" in layout:
-					if layout["name"] == bestLayoutName:
-						print("[INFO] [util.getLayoutTemplate] Layout" \
-							+ ' "%s" choosen' % bestLayoutName)
-						return layout
-				else:
-					print("[WARNING] [util.getLayoutTemplate] Some layouts" \
-						+ " aren't named")
-
-		print("[WARNING] [util.getLayoutTemplate] Unable to find a layout" \
-			+ " which fit the given ratio")
-		return {}
-	print("[WARNING] [util.getLayoutTemplate] Unable" \
-		+ ' to find "%s"' % layoutFilePath)
-	leaveGame(Errors.BAD_RESOURCE)
 
 
 def getMonitorSize():
@@ -529,8 +290,7 @@ def getMonitorDensity():
 
 
 class Game:
-	window = None
-	debugLogger = None
+	appId = 0
 	audioPlayer = None
 	options = None
 
