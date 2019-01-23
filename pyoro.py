@@ -6,7 +6,6 @@ Main module for Pyoro to start from lem launcher.
 Created on 16/01/2019
 """
 
-from audio.audio_player import Audio_player
 from game.util import Game, loadOptions, saveOptions
 from game.config import VERSION
 from game.activity import Splash_activity, Menu_activity, Level_activity
@@ -22,14 +21,11 @@ def main(appId):
 	print("[INFO] [main] Starting pyoro v" + VERSION)
 	Game.appId = appId
 	Game.options = loadOptions()
-	Game.audioPlayer = Audio_player()
 	create_splash()
 
 
 def exit():
 	print("[INFO] [exit] Stopping Pyoro v" + VERSION)
-	if Game.audioPlayer:
-		Game.audioPlayer.stop()
 	if Game.options:
 		saveOptions(Game.options)
 

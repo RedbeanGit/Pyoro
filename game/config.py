@@ -39,6 +39,8 @@ SPLASH_ANIMATION_DURATION = 0.125									# Duration of each animation during sp
 GUI_IMAGE_PATH = os.path.join("data", "images", "gui")				# File path to Graphical User Interface images
 ENTITIES_IMAGE_PATH = os.path.join("data", "images", "entities")	# File path to entities images
 LEVEL_IMAGE_PATH = os.path.join("data", "images", "level")			# File path to level images (backgrounds, blocks,...)
+SOUND_PATH = os.path.join("data", "audio", "sounds")				# File path to sounds
+MUSIC_PATH = os.path.join("data", "audio", "musics")				# File path to musics
 
 # Entities info
 ANGEL_SPEED = 35													# Angel speed (in case per second)

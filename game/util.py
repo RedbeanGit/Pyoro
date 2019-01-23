@@ -23,7 +23,7 @@ import sys
 import threading
 
 from gi.repository import Gdk
-from lemapi.api import get_gui, restart_app
+from lemapi.api import get_gui, restart_app, get_audio_player
 from pygame.locals import K_1, K_2, K_3, K_4, K_5, K_6, K_7, K_8, K_9, K_0, \
 	K_q, K_w, K_z, K_m, K_a, K_MINUS, K_LEFTBRACKET, K_RIGHTBRACKET, \
 	K_SEMICOLON, K_QUOTE, K_COMMA, K_PERIOD, K_SLASH, JOYBUTTONDOWN, \
@@ -172,6 +172,19 @@ def loadImages():
 		gui.load_image(image)
 
 
+def loadSounds():
+	print("[INFO] [util.loadSounds] Loading sounds to RAM")
+	soundPaths = getResourcePaths("sounds")
+	ap = get_audio_player()
+	for soundPath in soundPaths:
+		sound = os.path.join("data", *soundPath)
+		ap.load_sound(sound)
+	musicPaths = getResourcePaths("musics")
+	for musicPath in musicPaths:
+		music = os.path.join("data", *musicPath)
+		ap.load_music(music)
+
+
 def getResourcePaths(resourceType):
 	"""
 	Get the path of all resources in a defined category.
@@ -291,7 +304,6 @@ def getMonitorDensity():
 
 class Game:
 	appId = 0
-	audioPlayer = None
 	options = None
 
 

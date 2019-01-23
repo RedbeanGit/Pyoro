@@ -25,12 +25,18 @@ class Score_text(Entity):
 		Entity.__init__(self, level, pos, (pixelSize * 0.125, 0.875))
 
 	def initImages(self):
-		self.__initImages__("score text")
-	
+		imageNames = []
+		for i in (10, 50, 100):
+			imageNames.append("number_%s.png" % i)
+		for i in (300, 1000):
+			for j in range(6):
+				imageNames.append("number_%s_%s.png" % (i, j))
+		self.__initImages__("score text", imageNames)
+
 	def update(self, deltaTime):
 		self.level.createActionDelay((self, "destroy"), SCORE_TEXT_LIFE_DURATION, self.remove)
 		Entity.update(self, deltaTime)
-	
+
 	def updateSprite(self):
 		if self.value in (300, 1000):
 			self.colorIndex = self.colorIndex + 1 if self.colorIndex < 5 else 0
@@ -38,7 +44,7 @@ class Score_text(Entity):
 		else:
 			self.currentImageName = "number_{}.png".format(self.value)
 		self.level.setActionDelay((self, "updateSprite"), SCORE_TEXT_BLINK_DURATION, self.updateSprite)
-	
+
 	def remove(self):
 		self.level.removeActionDelay((self, "destroy"), (self, "updateSprite"))
 		Entity.remove(self)

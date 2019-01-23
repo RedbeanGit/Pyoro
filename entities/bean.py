@@ -46,7 +46,11 @@ class Bean(Entity):
 		Load bean images.
 		"""
 
-		self.__initImages__("bean")
+		imageNames = []
+		for i in range(3):
+			for j in range(3):
+				imageNames.append("bean_%s_%s.png" % (i, j))
+		self.__initImages__("bean", imageNames)
 
 	def initSounds(self):
 		"""

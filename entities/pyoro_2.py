@@ -21,7 +21,16 @@ class Pyoro_2(Pyoro):
 		Pyoro.__init__(self, level)
 
 	def initImages(self):
-		self.__initImages__("pyoro 2")
+		imageNames = []
+		for i in range(3):
+			for j in (-1, 1):
+				imageNames.append("pyoro_%s_die_%s.png" % (i, j))
+				imageNames.append("pyoro_%s_jump_%s.png" % (i, j))
+				imageNames.append("pyoro_%s_normal_%s.png" % (i, j))
+				for k in range(4):
+					imageNames.append("pyoro_%s_shoot_%s_%s.png" % (i, k, j))
+
+		self.__initImages__("pyoro 2", imageNames)
 
 	def initSounds(self):
 		self.__initSounds__(("pyoro_shoot",))

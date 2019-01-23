@@ -35,10 +35,9 @@ class Seed(Entity):
 
 		Entity.__init__(self, level, pos, (0.125, 0.125))
 
-	def __initImages__(self, folderName):
+	def __initImages__(self, folderName, imageNames):
 		self.images = {}
 		folder = os.path.join(ENTITIES_IMAGE_PATH, folderName)
-		imageNames = os.listdir(folder)
 		caseSize = self.level.levelDrawer.getCaseSize()
 
 		for imageName in imageNames:
@@ -52,7 +51,7 @@ class Seed(Entity):
 				self.currentImageName = imageName
 
 	def initImages(self):
-		self.__initImages__("seed")
+		self.__initImages__("seed", ("seed_0.png", "seed_1.png", "seed_2.png"))
 
 	def update(self, deltaTime):
 		self.vel[0] -= AIR_RESISTANCE * self.direction * deltaTime

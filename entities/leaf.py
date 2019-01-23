@@ -23,8 +23,12 @@ class Leaf(Entity):
 		Entity.__init__(self, level, pos, (0.75, 0.75))
 
 	def initImages(self):
-		self.__initImages__(self.leafType)
-	
+		imageNames = []
+		for i in range(3):
+			for j in range(3):
+				imageNames.append("leaf_%s_%s.png" % (i, j))
+		self.__initImages__(self.leafType, imageNames)
+
 	def update(self, deltaTime):
 		self.pos[0] += self.vel * deltaTime
 		self.pos[1] += (LEAF_SPEED - abs(self.vel)) * self.speed * deltaTime
@@ -42,19 +46,19 @@ class Leaf(Entity):
 		self.spriteIndex = self.spriteIndex + 1 if self.spriteIndex < 2 else 0
 		self.currentImageName = "leaf_{}_{}.png".format(self.level.getStyleTypeWithScore(), self.spriteIndex)
 		self.level.setActionDelay((self, "updateSprite"), LEAF_SPRITE_DURATION, self.updateSprite)
-	
+
 	def setLeftWind(self):
 		self.vel = -LEAF_WIND_SPEED
-	
+
 	def setRightWind(self):
 		self.vel = LEAF_WIND_SPEED
-	
+
 	def cut(self):
 		if not random.randint(0, 2):
 			for deltaPos in (-self.size[0], self.size[0]):
 				self.level.spawnLeafPiece((self.pos[0] + deltaPos / 2, self.pos[1]), self.speed, self.leafType + " piece", self.vel / 2)
 			self.remove()
-	
+
 	def remove(self):
 		self.level.removeActionDelay((self, "updateSprite"))
 		Entity.remove(self)

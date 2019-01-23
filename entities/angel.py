@@ -41,7 +41,11 @@ class Angel(Entity):
 		Load angel images.
 		"""
 
-		self.__initImages__("angel")
+		imageNames = []
+		for i in range(3):
+			for j in range(2):
+				imageNames.append("angel_%s_%s.png" % (i, j))
+		self.__initImages__("angel", imageNames)
 
 	def initSounds(self):
 		"""
@@ -50,7 +54,7 @@ class Angel(Entity):
 
 		self.__initSounds__(("angel_down",))
 		self.sounds["angel_down"].play()
-	
+
 	def update(self, deltaTime):
 		"""
 		Update the angel (position, sprite).
@@ -89,7 +93,7 @@ class Angel(Entity):
 		self.spriteIndex = 1 if self.spriteIndex == 0 else 0
 		self.currentImageName = "angel_{}_{}.png".format(self.level.getStyleTypeWithScore(), self.spriteIndex)
 		self.level.setActionDelay((self, "updateSprite"), ANGEL_SPRITE_DURATION, self.updateSprite)
-		
+
 	def remove(self):
 		"""
 		Remove the angel from its level and stop all actions delayed.

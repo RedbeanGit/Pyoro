@@ -25,7 +25,11 @@ class Tong(Entity):
 		Entity.__init__(self, level, pos, (1.2, 1.2))
 
 	def initImages(self):
-		self.__initImages__("tong")
+		imageNames = []
+		for i in range(3):
+			for j in (-1, 1):
+				imageNames.append("tong_%s_%s.png" % (i, j))
+		self.__initImages__("tong", imageNames)
 
 	def initSounds(self):
 		self.__initSounds__(("tong", "pyoro_eat"))

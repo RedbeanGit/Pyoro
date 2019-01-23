@@ -30,6 +30,8 @@ __version__ = "1.1"
 
 import os
 import random
+from lemapi.api import get_audio_player
+from lemapi.audio import Mixer
 
 
 class Level:
@@ -71,6 +73,11 @@ class Level:
 		self.cases = []
 		self.entities = []
 		self.actionDelays = {}
+
+		self.mixer = Mixer(get_audio_player())
+
+		if not botMode:
+			get_audio_player().add_mixer(self.mixer)
 
 		self.initCases(self.size[0])
 		self.initPyoro()
@@ -410,3 +417,7 @@ class Level:
 
 		self.size = tuple(size)
 		self.initCases(int(size[0]))
+
+	def end_level(self):
+		self.mixer.clear()
+		get_audio_player().remove_mixer(self.mixer)

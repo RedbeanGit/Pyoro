@@ -21,7 +21,11 @@ class Super_bean(Bean):
 		Bean.__init__(self, level, pos, speed)
 
 	def initImages(self):
-		self.__initImages__("super bean")
+		imageNames = []
+		for i in range(3):
+			for j in range(6):
+				imageNames.append("bean_%s_%s.png" % (i, j))
+		self.__initImages__("super bean", imageNames)
 
 	def initSounds(self):
 		Bean.initSounds(self)

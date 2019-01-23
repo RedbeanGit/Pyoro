@@ -18,7 +18,11 @@ class Leaf_piece(Leaf):
 		self.vel = vel
 
 	def initImages(self):
-		self.__initImages__(self.leafType)
+		imageNames = []
+		for i in range(3):
+			for j in range(3):
+				imageNames.append("leafpiece_%s_%s.png" % (i, j))
+		self.__initImages__(self.leafType, imageNames)
 
 	def updateSprite(self):
 		self.spriteIndex = self.spriteIndex + 1 if self.spriteIndex < 2 else 0

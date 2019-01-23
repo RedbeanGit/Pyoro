@@ -6,13 +6,14 @@ Provide a base abstract class to create entities
 Created on 18/03/2018
 """
 
-from game.config import ENTITIES_IMAGE_PATH
+from game.config import ENTITIES_IMAGE_PATH, SOUND_PATH
 from game.util import Game
 
 __author__ = "Julien Dubois"
 __version__ = "1.1.1"
 
 import os
+from lemapi.api import get_audio_player
 from lemapi.util import resize_image
 
 
@@ -61,7 +62,7 @@ class Entity:
 		return "<{} at pos x={:.2f}, y={:.2f}>".format(
 			type(self).__name__, *self.pos)
 
-	def __initImages__(self, folderName):
+	def __initImages__(self, folderName, imageNames):
 		"""
 		Reference all images in a specific folder to use them later.
 		This method should be used internally by Entity.initImages
@@ -74,7 +75,6 @@ class Entity:
 
 		self.images = {}
 		caseSize = self.level.levelDrawer.getCaseSize()
-		imageNames = os.listdir(os.path.join(ENTITIES_IMAGE_PATH, folderName))
 
 		for imageName in imageNames:
 			if imageName.split(".")[-1] == "png":
@@ -103,10 +103,10 @@ class Entity:
 		:param soundNames: The name of the sounds to load.
 		"""
 
-		ap = self.level.getAudioPlayer()
 		for soundName in soundNames:
-			self.sounds[soundName] = ap.getSound(os.path.join(
-				"data", "audio", "sounds", "{}.wav".format(soundName)))
+			self.sounds[soundName] = get_audio_player().get_sound(os.path.join(
+				SOUND_PATH, "{}.wav".format(soundName)))
+			self.level.mixer.add_sound(self.sounds[soundName])
 
 	def initSounds(self):
 		"""
@@ -205,6 +205,6 @@ class Entity:
 		"""
 
 		for sound in self.sounds.values():
-			if sound.isPlaying:
-				sound.stop()
-			Game.audioPlayer.removeSound(sound)
+			sound.stop()
+			self.level.mixer.remove_sound(sound)
+			sound.unload()

@@ -26,26 +26,35 @@ class Pyoro(Entity):
 		Entity.__init__(self, level, (2, h - 2), (2, 2))
 
 	def initImages(self):
-		self.__initImages__("pyoro 1")
+		imageNames = []
+		for i in range(3):
+			for j in (-1, 1):
+				imageNames.append("pyoro_%s_die_%s.png" % (i, j))
+				imageNames.append("pyoro_%s_eat_0_%s.png" % (i, j))
+				imageNames.append("pyoro_%s_eat_1_%s.png" % (i, j))
+				imageNames.append("pyoro_%s_jump_%s.png" % (i, j))
+				imageNames.append("pyoro_%s_normal_%s.png" % (i, j))
+		self.__initImages__("pyoro 1", imageNames)
 
 	def initSounds(self):
 		self.__initSounds__(("pyoro_move", "pyoro_die"))
+		self.sounds["pyoro_move"].set_play_count(-1)
 
 	# directions
 	def enableMoveRight(self):
 		if not(self.dead) and not(self.tong):
 			self.direction = 1
 			self.moving = True
-			self.sounds["pyoro_move"].play(-1)
+			self.sounds["pyoro_move"].play()
 
 	def enableMoveLeft(self):
 		if not(self.dead) and not(self.tong):
 			self.direction = -1
 			self.moving = True
-			self.sounds["pyoro_move"].play(-1)
+			self.sounds["pyoro_move"].play()
 
 	def disableMove(self):
-		if self.sounds["pyoro_move"].isPlaying:
+		if self.sounds["pyoro_move"].playing:
 			self.sounds["pyoro_move"].pause()
 		self.moving = False
 		self.notch = False
