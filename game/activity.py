@@ -46,14 +46,13 @@ class Menu_activity(Activity):
 		self.playFct = playFct
 		self.gameId = gameId
 		self.levelDrawer = Level_drawer(get_gui(), gameId, botMode = True)
-		self.mixer = Mixer(get_audio_player())
+		self.mixer = None
 
-		get_audio_player().add_mixer(self.mixer)
 		super().__init__(view)
 
 		self.initEvents()
 		self.initScore()
-		self.initSounds()
+		self.initMixer()
 
 	def initEvents(self):
 		event = Event(self.playFct, 0)
@@ -73,8 +72,11 @@ class Menu_activity(Activity):
 		else:
 			self.view.widgets["play_button_2"].config(enable=False)
 
-	def initSounds(self):
+	def initMixer(self):
 		ap = get_audio_player()
+		self.mixer = Mixer(ap)
+		ap.add_mixer(self.mixer)
+
 		msc = ap.get_music(join(MUSIC_PATH, "intro.wav"))
 		msc.play()
 		msc.set_play_count(-1)
@@ -110,9 +112,20 @@ class Menu_activity(Activity):
 		highScore = Game.options.get("high score", [0, 0])
 		return highScore[0] >= 10000
 
-	def destroy(self):
-		get_audio_player().remove_mixer(self.mixer)
+	def stopMixer(self):
 		self.mixer.clear()
+		get_audio_player().remove_mixer(self.mixer)
+
+	def sleep(self):
+		self.stopMixer()
+		super().sleep()
+
+	def wakeup(self):
+		self.initMixer()
+		super().wakeup()
+
+	def destroy(self):
+		self.stopMixer()
 		super().destroy()
 
 
@@ -121,23 +134,22 @@ class Level_activity(Activity):
 		self.exitFct = exitFct
 		self.gameId = gameId
 		self.levelDrawer = Level_drawer(get_gui(), gameId)
-		self.pauseEvent = None
-		self.mixer = Mixer(get_audio_player())
+		self.pauseEvents = {"keyboard": None, "joystick": None, "console": None}
+		self.mixer = None
 		self.musics = {}
 		self.last_score = 0
 
-		get_audio_player().add_mixer(self.mixer)
 		super().__init__(view)
 
 		self.initEvents()
 		self.initScore()
-		self.initSounds()
+		self.initMixer()
 
 	def initEvents(self):
 		lmgr = get_listener_manager()
 		# key down
-		self.pauseEvent = Event(self.onPauseGame)
-		lmgr.add_key_down_event(self.pauseEvent, K_ESCAPE)
+		self.pauseEvents["keyboard"] = Event(self.onPauseGame)
+		lmgr.add_key_down_event(self.pauseEvents["keyboard"], K_ESCAPE)
 		event = Event(self.levelDrawer.level.pyoro.enableMoveRight)
 		lmgr.add_key_down_event(event, K_RIGHT)
 		event = Event(self.levelDrawer.level.pyoro.enableMoveLeft)
@@ -157,14 +169,18 @@ class Level_activity(Activity):
 		hs = self.getHighScore()
 		self.view.widgets["high_score_text"].text = "Meilleur score : %s" % hs
 
-	def initSounds(self):
+	def initMixer(self):
 		music_names = ("drums.wav", "game_over.wav", "music_0.wav", \
 			"music_1.wav", "music_2.wav", "organ.wav", "speed_drums.wav")
 		ap = get_audio_player()
+		self.mixer = Mixer(ap)
+		ap.add_mixer(self.mixer)
+
 		for music_name in music_names:
 			self.musics[music_name] = ap.get_music(music_name)
 			self.musics[music_name].set_play_count(-1)
 			self.mixer.add_music(self.musics[music_name])
+
 		self.musics["game_over.wav"].set_play_count(1)
 		self.musics["music_0.wav"].play()
 
@@ -173,6 +189,11 @@ class Level_activity(Activity):
 			widget.config(enable=False)
 		sv = Game.options.get("sound volume", 1)
 		mv = Game.options.get("music volume", 1)
+
+		for event in self.pauseEvents.values():
+			if event:
+				event.enable = False
+
 		self.view.createOptionMenu(self.onOptionMenuDestroy, lambda x, y: None, \
 			(sv, mv))
 
@@ -180,7 +201,10 @@ class Level_activity(Activity):
 		self.view.remove_widget("option_menu")
 		for widget in self.view.widgets.values():
 			widget.config(enable=True)
-		self.view.widgets["play_button_2"].config(enable = self.isPyoro2Unlocked())
+
+		for event in self.pauseEvents.values():
+			if event:
+				event.enable = True
 
 	def onPauseGame(self):
 		self.view.createPauseMenu(self.onPauseMenuDestroy, self.exitFct, \
@@ -189,10 +213,9 @@ class Level_activity(Activity):
 		self.mixer.pause()
 		self.levelDrawer.level.mixer.pause()
 
-		lmgr = get_listener_manager()
-		lmgr.remove_event(self.pauseEvent)
-		self.pauseEvent = Event(self.onPauseMenuDestroy)
-		lmgr.add_key_down_event(self.pauseEvent, K_ESCAPE)
+		for event in self.pauseEvents.values():
+			if event:
+				event.fct = self.onPauseMenuDestroy
 
 	def onPauseMenuDestroy(self):
 		self.view.remove_widget("pause_menu")
@@ -200,16 +223,16 @@ class Level_activity(Activity):
 		self.mixer.play()
 		self.levelDrawer.level.mixer.play()
 
-		lmgr = get_listener_manager()
-		lmgr.remove_event(self.pauseEvent)
-		self.pauseEvent = Event(self.onPauseGame)
-		lmgr.add_key_down_event(self.pauseEvent, K_ESCAPE)
+		for event in self.pauseEvents.values():
+			if event:
+				event.fct = self.onPauseGame
 
 	def onGameOver(self):
 		self.view.createGameOverMenu(self.onGameOverMenuDestroy, \
 			self.levelDrawer.level.score)
-		lmgr = get_listener_manager()
-		lmgr.remove_event(self.pauseEvent)
+		for event in self.pauseEvents.values():
+			if event:
+				event.enable = False
 
 	def onGameOverMenuDestroy(self):
 		"""
@@ -303,12 +326,24 @@ class Level_activity(Activity):
 		self.updateScore()
 		super().update(deltaTime)
 
+	def stopMixer(self):
+		self.mixer.clear()
+		get_audio_player().remove_mixer(self.mixer)
+
+	def sleep(self):
+		self.stopMixer()
+		super().sleep()
+
+	def wakeup(self):
+		self.initMixer()
+		super().wakeup()
+
 	def destroy(self):
 		"""
 		Destroy the activity and all its components.
 		"""
 
+		self.levelDrawer.level.endLevel()
 		self.saveLevelState()
-		get_audio_player().remove_mixer(self.mixer)
-		self.mixer.clear()
+		self.stopMixer()
 		super().destroy()

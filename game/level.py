@@ -388,15 +388,6 @@ class Level:
 				BACKGROUND_ANIMATED_DURATION, self.updateAnimatedBackground)
 			return self.animatedBackgroundId
 
-	def getAudioPlayer(self):
-		"""
-		Get the current audio player.
-
-		:rtype: audio.audio_player.Audio_player
-		:returns: The audio player currently used by the game.
-		"""
-		return Game.audioPlayer
-
 	def getVoidCases(self):
 		"""
 		Get the destroyed blocks that are not being repaired.
@@ -418,6 +409,6 @@ class Level:
 		self.size = tuple(size)
 		self.initCases(int(size[0]))
 
-	def end_level(self):
+	def endLevel(self):
 		self.mixer.clear()
 		get_audio_player().remove_mixer(self.mixer)

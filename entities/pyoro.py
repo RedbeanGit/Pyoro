@@ -169,7 +169,6 @@ class Pyoro(Entity):
 			self.disableMove()
 			self.level.removeActionDelay((self, "enableNotch"), \
 				(self, "disableNotch"), (self, "updateEatingCount"))
-			self.level.getAudioPlayer().speed = 1
 			self.sounds["pyoro_die"].play()
 			#self.level.createActionDelay((self, "gameOver"), 1.28, \
 			#	self.level.levelDrawer.activity.gameOver)
