@@ -205,9 +205,9 @@ class Game_over_menu(Menu_widget):
 		"backgroundBorderSize": 5
 	}
 
-	def __init__(self, gui, pos, destroyFct, score, **kwargs):
+	def __init__(self, gui, pos, quitFct, score, **kwargs):
 		Game_over_menu.updateDefaultKwargs(kwargs)
-		self.destroyFct = destroyFct
+		self.quitFct = quitFct
 		self.score = score
 		super().__init__(gui, pos, **kwargs)
 		self.initEvents()
@@ -230,5 +230,5 @@ class Game_over_menu(Menu_widget):
 			"quitter", anchor=(0, 0), font=f, fontSize=ms)
 
 	def initEvents(self):
-		event = Event(self.destroyFct)
+		event = Event(self.quitFct)
 		self.subWidgets["quit_clickable_text"].clickEvents.append(event)

@@ -137,7 +137,9 @@ class Level_activity(Activity):
 		self.pauseEvents = {"keyboard": None, "joystick": None, "console": None}
 		self.mixer = None
 		self.musics = {}
-		self.last_score = 0
+
+		self.lastScore = 0
+		self.gameOverListener = True
 
 		super().__init__(view)
 
@@ -177,7 +179,7 @@ class Level_activity(Activity):
 		ap.add_mixer(self.mixer)
 
 		for music_name in music_names:
-			self.musics[music_name] = ap.get_music(music_name)
+			self.musics[music_name] = ap.get_music(join(music_name))
 			self.musics[music_name].set_play_count(-1)
 			self.mixer.add_music(self.musics[music_name])
 
@@ -230,6 +232,7 @@ class Level_activity(Activity):
 	def onGameOver(self):
 		self.view.createGameOverMenu(self.onGameOverMenuDestroy, \
 			self.levelDrawer.level.score)
+
 		for event in self.pauseEvents.values():
 			if event:
 				event.enable = False
@@ -282,26 +285,31 @@ class Level_activity(Activity):
 
 	def updateSounds(self, deltaTime):
 		s = self.levelDrawer.level.score
-		if s >= 5000 and self.last_score < 5000:
+		if s >= 5000 and self.lastScore < 5000:
+			print("[INFO] [Level_activity.updateSounds] Drums added")
 			self.musics["drums.wav"].play()
 			self.musics["drums.wav"].set_pos(self.musics["music_0.wav"].pos)
-		if s >= 10000 and self.last_score < 10000:
+		if s >= 10000 and self.lastScore < 10000:
+			print("[INFO] [Level_activity.updateSounds] Organ added")
 			self.musics["organ.wav"].play()
 			self.musics["organ.wav"].set_pos(self.musics["music_0.wav"].pos)
-		if s >= 20000 and self.last_score < 20000:
+		if s >= 20000 and self.lastScore < 20000:
+			print("[INFO] [Level_activity.updateSounds] Music 2 started")
 			self.musics["drums.wav"].stop()
 			self.musics["organ.wav"].stop()
 			self.musics["music_0.wav"].stop()
 			self.mixer.set_speed(1)
 			self.musics["music_1.wav"].play()
-		if s >= 30000 and self.last_score < 30000:
+		if s >= 30000 and self.lastScore < 30000:
+			print("[INFO] [Level_activity.updateSounds] Music 3 started")
 			self.musics["music_1.wav"].stop()
 			self.mixer.set_speed(1)
 			self.musics["music_2.wav"].play()
-		if s >= 41000 and self.last_score < 41000:
+		if s >= 41000 and self.lastScore < 41000:
+			print("[INFO] [Level_activity.updateSounds] Fast drums added")
 			self.musics["speed_drums.wav"].play()
 			self.musics["speed_drums.wav"].set_pos(self.musics["music_2.wav"].pos)
-		self.last_score = s
+		self.lastScore = s
 		self.mixer.set_speed(self.mixer.get_speed() + 0.002 * deltaTime)
 
 	def saveLevelState(self):
@@ -324,6 +332,12 @@ class Level_activity(Activity):
 
 		self.levelDrawer.update(deltaTime)
 		self.updateScore()
+
+		if self.gameOverListener:
+			if self.levelDrawer.level.pyoro.dead:
+				self.gameOverListener = False
+				self.onGameOver()
+
 		super().update(deltaTime)
 
 	def stopMixer(self):

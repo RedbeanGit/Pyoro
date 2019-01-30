@@ -164,13 +164,13 @@ class Pyoro(Entity):
 	def remove(self):
 		if not(self.dead):
 			self.dead = True
+
+			self.disableMove()
 			if self.tong:
 				self.tong.remove()
-			self.disableMove()
+
 			self.level.removeActionDelay((self, "enableNotch"), \
 				(self, "disableNotch"), (self, "updateEatingCount"))
 			self.sounds["pyoro_die"].play()
-			#self.level.createActionDelay((self, "gameOver"), 1.28, \
-			#	self.level.levelDrawer.activity.gameOver)
 			self.level.createActionDelay((self, "removeGameOverActionDelay"), \
 				1.29, self.level.removeActionDelay, (self, "gameOver"))

@@ -89,9 +89,9 @@ class Level_view(View):
         w, h = get_gui().get_size()
         self.add_widget("pause_menu", Pause_menu, (w * 0.5, h * 0.5), \
             destroyFct, quitFct, optionFct, anchor=(0, 0), \
-            size=(w * 0.25, h * 0.25))
+            size=(w * 0.25, h * 0.4))
 
-    def createGameOverMenu(self, destroyFct, score):
+    def createGameOverMenu(self, quitFct, score):
         w, h = get_gui().get_size()
         self.add_widget("option_menu", Game_over_menu, (w * 0.5, h * 0.5), \
-            destroyFct, score, anchor=(0, 0), size=(w * 0.25, h * 0.2))
+            quitFct, score, anchor=(0, 0), size=(w * 0.25, h * 0.4))
