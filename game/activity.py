@@ -74,6 +74,7 @@ class Menu_activity(Activity):
 
 	def initMixer(self):
 		ap = get_audio_player()
+		ap.set_speed(1)
 		self.mixer = Mixer(ap)
 		ap.add_mixer(self.mixer)
 
@@ -169,17 +170,19 @@ class Level_activity(Activity):
 
 	def initScore(self):
 		hs = self.getHighScore()
+		self.lastScore = 0
 		self.view.widgets["high_score_text"].text = "Meilleur score : %s" % hs
 
 	def initMixer(self):
 		music_names = ("drums.wav", "game_over.wav", "music_0.wav", \
 			"music_1.wav", "music_2.wav", "organ.wav", "speed_drums.wav")
 		ap = get_audio_player()
+		ap.set_speed(1)
 		self.mixer = Mixer(ap)
 		ap.add_mixer(self.mixer)
 
 		for music_name in music_names:
-			self.musics[music_name] = ap.get_music(join(music_name))
+			self.musics[music_name] = ap.get_music(join(MUSIC_PATH, music_name))
 			self.musics[music_name].set_play_count(-1)
 			self.mixer.add_music(self.musics[music_name])
 
@@ -285,6 +288,8 @@ class Level_activity(Activity):
 
 	def updateSounds(self, deltaTime):
 		s = self.levelDrawer.level.score
+		ap = get_audio_player()
+
 		if s >= 5000 and self.lastScore < 5000:
 			print("[INFO] [Level_activity.updateSounds] Drums added")
 			self.musics["drums.wav"].play()
@@ -298,19 +303,20 @@ class Level_activity(Activity):
 			self.musics["drums.wav"].stop()
 			self.musics["organ.wav"].stop()
 			self.musics["music_0.wav"].stop()
-			self.mixer.set_speed(1)
+			ap.set_speed(1)
 			self.musics["music_1.wav"].play()
 		if s >= 30000 and self.lastScore < 30000:
 			print("[INFO] [Level_activity.updateSounds] Music 3 started")
 			self.musics["music_1.wav"].stop()
-			self.mixer.set_speed(1)
+			ap.set_speed(1)
 			self.musics["music_2.wav"].play()
 		if s >= 41000 and self.lastScore < 41000:
 			print("[INFO] [Level_activity.updateSounds] Fast drums added")
 			self.musics["speed_drums.wav"].play()
 			self.musics["speed_drums.wav"].set_pos(self.musics["music_2.wav"].pos)
+
 		self.lastScore = s
-		self.mixer.set_speed(self.mixer.get_speed() + 0.002 * deltaTime)
+		ap.set_speed(ap.speed + 0.002 * deltaTime)
 
 	def saveLevelState(self):
 		"""
@@ -331,7 +337,10 @@ class Level_activity(Activity):
 		"""
 
 		self.levelDrawer.update(deltaTime)
-		self.updateScore()
+
+		if self.levelDrawer.level.loopActive:
+			self.updateScore()
+			self.updateSounds(deltaTime)
 
 		if self.gameOverListener:
 			if self.levelDrawer.level.pyoro.dead:
