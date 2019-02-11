@@ -14,11 +14,13 @@ from graphism.view import Splash_view, Menu_view, Level_view
 __author__ = "Julien Dubois"
 __version__ = "2.0.0"
 
-from lemapi.api import start_activity
+import os
+from lemapi.api import start_activity, stop_activity, get_app_path
 
 
 def main(appId):
-	print("[INFO] [main] Starting pyoro v" + VERSION)
+	print("[Pyoro] [INFO] [main] Starting pyoro v" + VERSION)
+	os.chdir(get_app_path())
 	Game.appId = appId
 	Game.options = loadOptions()
 	create_splash()
@@ -38,6 +40,7 @@ def create_splash():
 
 
 def create_menu(gameId = 0):
+	stop_activity()
 	view = Menu_view()
 	activity = Menu_activity(view, create_level, gameId)
 	start_activity(activity)
@@ -45,5 +48,5 @@ def create_menu(gameId = 0):
 
 def create_level(gameId = 0):
 	view = Level_view()
-	activity = Level_activity(view, create_menu, gameId)
+	activity = Level_activity(view, stop_activity, gameId)
 	start_activity(activity)

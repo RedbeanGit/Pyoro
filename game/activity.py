@@ -78,6 +78,9 @@ class Menu_activity(Activity):
 		self.mixer = Mixer(ap)
 		ap.add_mixer(self.mixer)
 
+		self.setSoundVolume(Game.options.get("sound volume", 1), \
+			Game.options.get("music volume", 1))
+
 		msc = ap.get_music(join(MUSIC_PATH, "intro.wav"))
 		msc.play()
 		msc.set_play_count(-1)
@@ -88,7 +91,7 @@ class Menu_activity(Activity):
 			widget.config(enable=False)
 		sv = Game.options.get("sound volume", 1)
 		mv = Game.options.get("music volume", 1)
-		self.view.createOptionMenu(self.onOptionMenuDestroy, lambda x, y: None, \
+		self.view.createOptionMenu(self.onOptionMenuDestroy, self.setSoundVolume, \
 			(sv, mv))
 
 	def onOptionMenuDestroy(self):
@@ -97,8 +100,19 @@ class Menu_activity(Activity):
 			widget.config(enable=True)
 		self.view.widgets["play_button_2"].config(enable = self.isPyoro2Unlocked())
 
+	def setSoundVolume(self, sound, music):
+		self.mixer.set_volume(music)
+
+		Game.options["sound volume"] = sound
+		Game.options["music volume"] = music
+
 	def update(self, deltaTime):
 		self.levelDrawer.update(deltaTime)
+
+		scores = Game.options.get("high score", [0, 0])
+		self.view.widgets["play_button"].config(text=scores[0])
+		self.view.widgets["play_button_2"].config(text=scores[1])
+
 		super().update(deltaTime)
 
 	def isPyoro2Unlocked(self):
@@ -181,6 +195,9 @@ class Level_activity(Activity):
 		self.mixer = Mixer(ap)
 		ap.add_mixer(self.mixer)
 
+		self.setSoundVolume(Game.options.get("sound volume", 1), \
+			Game.options.get("music volume", 1))
+
 		for music_name in music_names:
 			self.musics[music_name] = ap.get_music(join(MUSIC_PATH, music_name))
 			self.musics[music_name].set_play_count(-1)
@@ -199,8 +216,15 @@ class Level_activity(Activity):
 			if event:
 				event.enable = False
 
-		self.view.createOptionMenu(self.onOptionMenuDestroy, lambda x, y: None, \
+		self.view.createOptionMenu(self.onOptionMenuDestroy, self.setSoundVolume, \
 			(sv, mv))
+
+	def setSoundVolume(self, sound, music):
+		self.mixer.set_volume(music)
+		self.levelDrawer.level.mixer.set_volume(sound)
+
+		Game.options["sound volume"] = sound
+		Game.options["music volume"] = music
 
 	def onOptionMenuDestroy(self):
 		self.view.remove_widget("option_menu")
@@ -247,7 +271,7 @@ class Level_activity(Activity):
 		"""
 
 		self.view.remove_widget("game_over_menu")
-		self.exitFct(self.gameId)
+		self.exitFct()
 
 	def update(self, deltaTime):
 		self.levelDrawer.update(deltaTime)

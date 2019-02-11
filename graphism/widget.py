@@ -122,7 +122,7 @@ class Option_menu(Menu_widget):
 	def update(self):
 		mv = self.subWidgets["music_volume_setting_bar"].getValue()
 		sv = self.subWidgets["sound_volume_setting_bar"].getValue()
-		self.soundFct(mv, sv)
+		self.soundFct(sv, mv)
 		super().update()
 
 

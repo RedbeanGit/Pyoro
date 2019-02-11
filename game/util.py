@@ -11,16 +11,13 @@ from game.config import DEFAULT_OPTIONS, NAME, VERSION
 __author__ = "Julien Dubois"
 __version__ = "1.1.2"
 
-import ctypes
+import copy
 import enum
 import json
 import os
 import platform
 import pygame
-import shutil
-import subprocess
 import sys
-import threading
 
 from gi.repository import Gdk
 from lemapi.api import get_gui, restart_app, get_audio_player
@@ -125,7 +122,12 @@ def saveOptions(options):
 	"""
 
 	print("[INFO] [util.saveOptions] Saving game options")
-	optionFilePath = os.path.join(getExternalDataPath(), "options.json")
+	optionFolder = getExternalDataPath()
+	optionFilePath = os.path.join(optionFolder, "options.json")
+
+	if not os.path.exists(optionFolder):
+		os.makedirs(optionFolder)
+
 	with open(optionFilePath, "w") as file:
 		json.dump(options, file, indent = "\t")
 
@@ -144,7 +146,11 @@ def loadOptions():
 	if os.path.exists(optionFilePath):
 		with open(optionFilePath, "r") as file:
 			return json.load(file)
-	return DEFAULT_OPTIONS
+	return getDefaultOptions()
+
+
+def getDefaultOptions():
+	return copy.deepcopy(DEFAULT_OPTIONS)
 
 
 def reset():
@@ -156,7 +162,8 @@ def reset():
 	optionFilePath = os.path.join(getExternalDataPath(), "options.json")
 	if os.path.exists(optionFilePath):
 		os.remove(optionFilePath)
-	restart_app(Game.appId)
+	Game.options = getDefaultOptions()
+	restart_app()
 
 ##############################################################################
 ### Data and modules managment ###############################################
@@ -243,59 +250,6 @@ def getExternalDataPath():
 			)
 	print("[WARNING] [util.getExternalDataPath] Unknown operating system")
 	return "saves"
-
-##############################################################################
-### Screen Infos #############################################################
-##############################################################################
-
-
-def getMonitorSize():
-	"""
-	Return the screen size in mm.
-
-	:rtype: tuple
-	:returns: (width, height) tuple where width and height are ints which
-		represent the default screen size in millimeters.
-	"""
-
-	display = Gdk.Display.get_default()
-	monitor = display.get_monitor(0)
-	return monitor.get_width_mm(), monitor.get_height_mm()
-
-
-def getScreenSize():
-	"""
-	Return the screen size in pixels.
-
-	:rtype: tuple
-	:returns: (width, height) tuple where width and height are ints which
-		represent the default screen size in pixels.
-	"""
-
-	screen = Gdk.Screen.get_default()
-	return screen.get_width(), screen.get_height()
-
-
-def getScreenRatio():
-	"""
-	Return the screen resolution (width / height).
-
-	:rtype: float
-	:returns: A floating point value representing the ratio width / height.
-	"""
-
-	w, h = getScreenSize()
-	if h:
-		return w / h
-	print("[WARNING] [util.getScreenRatio] Height can't be null")
-	return 1
-
-
-def getMonitorDensity():
-	wm, hm = getMonitorSize()
-	wp, hp = getScreenSize()
-	return wp / wm, hp / hm
-
 
 ##############################################################################
 ### Enumerations #############################################################
