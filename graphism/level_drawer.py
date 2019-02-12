@@ -57,7 +57,7 @@ class Level_drawer:
 		for i in range(3):
 			imageName = "block_%s.png" % i
 			self.images[imageName] = resize_image(self.gui.get_image( \
-				os.path.join(folder, imageName)), size)
+				os.path.join(folder, imageName)), size, antialiasing=False)
 
 		folder = os.path.join(LEVEL_IMAGE_PATH, "background %s" % \
 			(self.level.gameId + 1))
@@ -65,7 +65,8 @@ class Level_drawer:
 		for i in range(21):
 			imageName = "background_%s.png" % i
 			self.images[imageName] = resize_image(self.gui.get_image( \
-				os.path.join(folder, imageName), alpha = False), size)
+				os.path.join(folder, imageName), alpha=False), size, \
+				antialiasing=False)
 
 	def drawPyoro(self):
 		p = self.level.pyoro

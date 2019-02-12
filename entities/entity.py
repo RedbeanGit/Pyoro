@@ -82,7 +82,8 @@ class Entity:
 					self.level.levelDrawer.gui.get_image(
 						os.path.join(ENTITIES_IMAGE_PATH,
 							folderName, imageName)), \
-					(caseSize[0] * self.size[0], caseSize[1] * self.size[1]))
+					(caseSize[0] * self.size[0], caseSize[1] * self.size[1]),
+					antialiasing=False)
 		self.updateSprite()
 
 	def initImages(self):
