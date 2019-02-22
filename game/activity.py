@@ -166,21 +166,38 @@ class Level_activity(Activity):
 		lmgr = get_listener_manager()
 		# key down
 		self.pauseEvents["keyboard"] = Event(self.onPauseGame)
-		lmgr.add_key_down_event(self.pauseEvents["keyboard"], K_ESCAPE)
+		lmgr.km.add_key_down_event(self.pauseEvents["keyboard"], K_ESCAPE)
+		lmgr.cm.add_button_pressed_event(self.pauseEvents["keyboard"], "button_b")
 		event = Event(self.levelDrawer.level.pyoro.enableMoveRight)
-		lmgr.add_key_down_event(event, K_RIGHT)
+		lmgr.km.add_key_down_event(event, K_RIGHT)
 		event = Event(self.levelDrawer.level.pyoro.enableMoveLeft)
-		lmgr.add_key_down_event(event, K_LEFT)
+		lmgr.km.add_key_down_event(event, K_LEFT)
 		event = Event(self.levelDrawer.level.pyoro.enableCapacity)
-		lmgr.add_key_down_event(event, K_SPACE)
+		lmgr.km.add_key_down_event(event, K_SPACE)
+		lmgr.cm.add_button_pressed_event(event, "button_a")
 
 		# key up
 		event = Event(self.levelDrawer.level.pyoro.disableMove)
-		lmgr.add_key_up_event(event, K_RIGHT)
+		lmgr.km.add_key_up_event(event, K_RIGHT)
 		event = Event(self.levelDrawer.level.pyoro.disableMove)
-		lmgr.add_key_up_event(event, K_LEFT)
+		lmgr.km.add_key_up_event(event, K_LEFT)
 		event = Event(self.levelDrawer.level.pyoro.disableCapacity)
-		lmgr.add_key_up_event(event, K_SPACE)
+		lmgr.km.add_key_up_event(event, K_SPACE)
+		lmgr.cm.add_button_released_event(event, "button_a")
+
+		event = Event(self.onJoystickMotion)
+		lmgr.cm.add_joy_motion_event(event)
+
+	def onJoystickMotion(self, x, y, lastX, lastY):
+		pyoro = self.levelDrawer.level.pyoro
+		if x > 0.05:
+			if lastX <= 0.05:
+				pyoro.enableMoveRight()
+		elif x < -0.05:
+			if lastX >= -0.05:
+				pyoro.enableMoveLeft()
+		elif lastX > 0.05 or lastX < -0.05:
+			pyoro.disableMove()
 
 	def initScore(self):
 		hs = self.getHighScore()
