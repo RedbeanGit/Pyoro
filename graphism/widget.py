@@ -115,9 +115,9 @@ class Option_menu(Menu_widget):
 
 	def initEvents(self):
 		event = Event(reset)
-		self.subWidgets["reset_button"].clickEvents.append(event)
+		self.subWidgets["reset_button"].endClickEvents.append(event)
 		event = Event(self.destroyFct)
-		self.subWidgets["back_button"].clickEvents.append(event)
+		self.subWidgets["back_button"].endClickEvents.append(event)
 
 	def update(self):
 		mv = self.subWidgets["music_volume_setting_bar"].getValue()
@@ -190,11 +190,11 @@ class Pause_menu(Menu_widget):
 
 	def initEvents(self):
 		event = Event(self.resumeFct)
-		self.subWidgets["resume_clickable_text"].clickEvents.append(event)
+		self.subWidgets["resume_clickable_text"].endClickEvents.append(event)
 		event = Event(self.optionFct)
-		self.subWidgets["option_clickable_text"].clickEvents.append(event)
+		self.subWidgets["option_clickable_text"].endClickEvents.append(event)
 		event = Event(self.quitFct)
-		self.subWidgets["quit_clickable_text"].clickEvents.append(event)
+		self.subWidgets["quit_clickable_text"].endClickEvents.append(event)
 
 
 class Game_over_menu(Menu_widget):
@@ -231,4 +231,4 @@ class Game_over_menu(Menu_widget):
 
 	def initEvents(self):
 		event = Event(self.quitFct)
-		self.subWidgets["quit_clickable_text"].clickEvents.append(event)
+		self.subWidgets["quit_clickable_text"].endClickEvents.append(event)

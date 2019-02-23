@@ -56,13 +56,13 @@ class Menu_activity(Activity):
 
 	def initEvents(self):
 		event = Event(self.playFct, 0)
-		self.view.widgets["play_button"].clickEvents.append(event)
+		self.view.widgets["play_button"].endClickEvents.append(event)
 		event = Event(self.playFct, 1)
-		self.view.widgets["play_button_2"].clickEvents.append(event)
+		self.view.widgets["play_button_2"].endClickEvents.append(event)
 		event = Event(self.onClickOption)
-		self.view.widgets["option_button"].clickEvents.append(event)
+		self.view.widgets["option_button"].endClickEvents.append(event)
 		event = Event(stop_app)
-		self.view.widgets["quit_button"].clickEvents.append(event)
+		self.view.widgets["quit_button"].endClickEvents.append(event)
 
 	def initScore(self):
 		scores = Game.options.get("high score", (0, 0))
