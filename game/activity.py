@@ -149,7 +149,7 @@ class Level_activity(Activity):
 		self.exitFct = exitFct
 		self.gameId = gameId
 		self.levelDrawer = Level_drawer(get_gui(), gameId)
-		self.pauseEvents = {"keyboard": None, "joystick": None, "console": None}
+		self.pauseEvent = None
 		self.mixer = None
 		self.musics = {}
 
@@ -165,9 +165,9 @@ class Level_activity(Activity):
 	def initEvents(self):
 		lmgr = get_listener_manager()
 		# key down
-		self.pauseEvents["keyboard"] = Event(self.onPauseGame)
-		lmgr.km.add_key_down_event(self.pauseEvents["keyboard"], K_ESCAPE)
-		lmgr.cm.add_button_pressed_event(self.pauseEvents["keyboard"], "button_b")
+		self.pauseEvent = Event(self.onPauseGame)
+		lmgr.km.add_key_down_event(self.pauseEvent, K_ESCAPE)
+		lmgr.cm.add_button_pressed_event(self.pauseEvent, "button_b")
 		event = Event(self.levelDrawer.level.pyoro.enableMoveRight)
 		lmgr.km.add_key_down_event(event, K_RIGHT)
 		event = Event(self.levelDrawer.level.pyoro.enableMoveLeft)
@@ -229,9 +229,8 @@ class Level_activity(Activity):
 		sv = Game.options.get("sound volume", 1)
 		mv = Game.options.get("music volume", 1)
 
-		for event in self.pauseEvents.values():
-			if event:
-				event.enable = False
+		if self.pauseEvent:
+			self.pauseEvent.enable = False
 
 		self.view.createOptionMenu(self.onOptionMenuDestroy, self.setSoundVolume, \
 			(sv, mv))
@@ -248,9 +247,8 @@ class Level_activity(Activity):
 		for widget in self.view.widgets.values():
 			widget.config(enable=True)
 
-		for event in self.pauseEvents.values():
-			if event:
-				event.enable = True
+		if self.pauseEvent:
+			self.pauseEvent.enable = True
 
 	def onPauseGame(self):
 		self.view.createPauseMenu(self.onPauseMenuDestroy, self.exitFct, \
