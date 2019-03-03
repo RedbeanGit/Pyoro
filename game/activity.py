@@ -149,7 +149,7 @@ class Level_activity(Activity):
 		self.exitFct = exitFct
 		self.gameId = gameId
 		self.levelDrawer = Level_drawer(get_gui(), gameId)
-		self.pauseEvent = None
+		self.pauseEvents = []
 		self.mixer = None
 		self.musics = {}
 
@@ -165,9 +165,12 @@ class Level_activity(Activity):
 	def initEvents(self):
 		lmgr = get_listener_manager()
 		# key down
-		self.pauseEvent = Event(self.onPauseGame)
-		lmgr.km.add_key_down_event(self.pauseEvent, K_ESCAPE)
-		lmgr.cm.add_button_pressed_event(self.pauseEvent, "button_b")
+		event = Event(self.onPauseGame)
+		self.pauseEvents.append(event)
+		lmgr.km.add_key_down_event(event, K_ESCAPE, copy=False)
+		event = Event(self.onPauseGame)
+		self.pauseEvents.append(event)
+		lmgr.cm.add_button_pressed_event(event, "button_b", copy=False)
 		event = Event(self.levelDrawer.level.pyoro.enableMoveRight)
 		lmgr.km.add_key_down_event(event, K_RIGHT)
 		event = Event(self.levelDrawer.level.pyoro.enableMoveLeft)
@@ -229,8 +232,8 @@ class Level_activity(Activity):
 		sv = Game.options.get("sound volume", 1)
 		mv = Game.options.get("music volume", 1)
 
-		if self.pauseEvent:
-			self.pauseEvent.enable = False
+		for event in self.pauseEvents:
+			event.enable = False
 
 		self.view.createOptionMenu(self.onOptionMenuDestroy, self.setSoundVolume, \
 			(sv, mv))
@@ -247,8 +250,8 @@ class Level_activity(Activity):
 		for widget in self.view.widgets.values():
 			widget.config(enable=True)
 
-		if self.pauseEvent:
-			self.pauseEvent.enable = True
+		for event in self.pauseEvents:
+			event.enable = True
 
 	def onPauseGame(self):
 		self.view.createPauseMenu(self.onPauseMenuDestroy, self.exitFct, \
@@ -257,8 +260,8 @@ class Level_activity(Activity):
 		self.mixer.pause()
 		self.levelDrawer.level.mixer.pause()
 
-		if self.pauseEvent:
-			self.pauseEvent.fct = self.onPauseMenuDestroy
+		for event in self.pauseEvents:
+			event.fct = self.onPauseMenuDestroy
 
 	def onPauseMenuDestroy(self):
 		self.view.remove_widget("pause_menu")
@@ -266,15 +269,15 @@ class Level_activity(Activity):
 		self.mixer.play()
 		self.levelDrawer.level.mixer.play()
 
-		if self.pauseEvent:
-			self.pauseEvent.fct = self.onPauseGame
+		for event in self.pauseEvents:
+			event.fct = self.onPauseGame
 
 	def onGameOver(self):
 		self.view.createGameOverMenu(self.onGameOverMenuDestroy, \
 			self.levelDrawer.level.score)
 
-		if self.pauseEvent:
-			self.pauseEvent.enable = False
+		for event in self.pauseEvents:
+			event.enable = False
 
 	def onGameOverMenuDestroy(self):
 		"""
