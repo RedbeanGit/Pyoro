@@ -257,9 +257,8 @@ class Level_activity(Activity):
 		self.mixer.pause()
 		self.levelDrawer.level.mixer.pause()
 
-		for event in self.pauseEvents.values():
-			if event:
-				event.fct = self.onPauseMenuDestroy
+		if self.pauseEvent:
+			self.pauseEvent.fct = self.onPauseMenuDestroy
 
 	def onPauseMenuDestroy(self):
 		self.view.remove_widget("pause_menu")
@@ -267,17 +266,15 @@ class Level_activity(Activity):
 		self.mixer.play()
 		self.levelDrawer.level.mixer.play()
 
-		for event in self.pauseEvents.values():
-			if event:
-				event.fct = self.onPauseGame
+		if self.pauseEvent:
+			self.pauseEvent.fct = self.onPauseGame
 
 	def onGameOver(self):
 		self.view.createGameOverMenu(self.onGameOverMenuDestroy, \
 			self.levelDrawer.level.score)
 
-		for event in self.pauseEvents.values():
-			if event:
-				event.enable = False
+		if self.pauseEvent:
+			self.pauseEvent.enable = False
 
 	def onGameOverMenuDestroy(self):
 		"""
