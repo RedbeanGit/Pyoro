@@ -63,6 +63,8 @@ class Menu_activity(Activity):
 		self.view.widgets["option_button"].endClickEvents.append(event)
 		event = Event(stop_app)
 		self.view.widgets["quit_button"].endClickEvents.append(event)
+		self.listener_manager.km.add_key_down_event(event, K_ESCAPE)
+		self.listener_manager.cm.add_button_pressed_event(event, "button_b")
 
 	def initScore(self):
 		scores = Game.options.get("high score", (0, 0))
@@ -163,7 +165,7 @@ class Level_activity(Activity):
 		self.initMixer()
 
 	def initEvents(self):
-		lmgr = get_listener_manager()
+		lmgr = self.listener_manager
 		# key down
 		event = Event(self.onPauseGame)
 		self.pauseEvents.append(event)
@@ -171,10 +173,15 @@ class Level_activity(Activity):
 		event = Event(self.onPauseGame)
 		self.pauseEvents.append(event)
 		lmgr.cm.add_button_pressed_event(event, "button_b", copy=False)
+
 		event = Event(self.levelDrawer.level.pyoro.enableMoveRight)
 		lmgr.km.add_key_down_event(event, K_RIGHT)
+		lmgr.cm.add_joy_right_event(event)
+
 		event = Event(self.levelDrawer.level.pyoro.enableMoveLeft)
 		lmgr.km.add_key_down_event(event, K_LEFT)
+		lmgr.cm.add_joy_left_event(event)
+
 		event = Event(self.levelDrawer.level.pyoro.enableCapacity)
 		lmgr.km.add_key_down_event(event, K_SPACE)
 		lmgr.cm.add_button_pressed_event(event, "button_a")
@@ -182,25 +189,15 @@ class Level_activity(Activity):
 		# key up
 		event = Event(self.levelDrawer.level.pyoro.disableMove)
 		lmgr.km.add_key_up_event(event, K_RIGHT)
+		lmgr.cm.add_joy_dead_event(event)
+
 		event = Event(self.levelDrawer.level.pyoro.disableMove)
 		lmgr.km.add_key_up_event(event, K_LEFT)
+		lmgr.cm.add_joy_dead_event(event)
+
 		event = Event(self.levelDrawer.level.pyoro.disableCapacity)
 		lmgr.km.add_key_up_event(event, K_SPACE)
 		lmgr.cm.add_button_released_event(event, "button_a")
-
-		event = Event(self.onJoystickMotion)
-		lmgr.cm.add_joy_motion_event(event)
-
-	def onJoystickMotion(self, x, y, lastX, lastY):
-		pyoro = self.levelDrawer.level.pyoro
-		if x > 0.05:
-			if lastX <= 0.05:
-				pyoro.enableMoveRight()
-		elif x < -0.05:
-			if lastX >= -0.05:
-				pyoro.enableMoveLeft()
-		elif lastX > 0.05 or lastX < -0.05:
-			pyoro.disableMove()
 
 	def initScore(self):
 		hs = self.getHighScore()

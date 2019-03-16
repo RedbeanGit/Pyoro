@@ -9,12 +9,14 @@ Created on 16/01/2019
 from game.util import Game, loadOptions, saveOptions
 from game.config import VERSION
 from game.activity import Splash_activity, Menu_activity, Level_activity
+
 from graphism.view import Splash_view, Menu_view, Level_view
 
 __author__ = "Julien Dubois"
 __version__ = "2.0.0"
 
 import os
+
 from lemapi.api import start_activity, stop_activity, get_app_path
 
 

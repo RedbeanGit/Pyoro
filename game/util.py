@@ -20,93 +20,8 @@ import pygame
 import sys
 
 from gi.repository import Gdk
-from lemapi.api import get_gui, restart_app, get_audio_player
-from pygame.locals import K_1, K_2, K_3, K_4, K_5, K_6, K_7, K_8, K_9, K_0, \
-	K_q, K_w, K_z, K_m, K_a, K_MINUS, K_LEFTBRACKET, K_RIGHTBRACKET, \
-	K_SEMICOLON, K_QUOTE, K_COMMA, K_PERIOD, K_SLASH, JOYBUTTONDOWN, \
-	JOYHATMOTION, JOYAXISMOTION
+from lemapi.api import get_gui, restart_app, get_audio_player, get_save_path
 
-##############################################################################
-### Input representation #####################################################
-##############################################################################
-
-def getKeyName(keyCode):
-	"""
-	Get azerty equivalent of a key from a qwerty keyboard
-
-	:type keyCode: int
-	:param keyCode: The pygame code of a key.
-
-	:rtype: str
-	:returns: A key representation.
-	"""
-
-	newKeys = {
-		K_1: "&", K_2: "é", K_3: "\"", K_4: "'",
-		K_5: "(", K_6: "-", K_7: "è", K_8: "_",
-		K_9: "ç", K_0: "à", K_MINUS: ")", K_q: "a",
-		K_w: "z", K_LEFTBRACKET: "^", K_RIGHTBRACKET: "$", K_a: "q",
-		K_SEMICOLON: "m", K_QUOTE: "ù", K_z: "w", K_m: ",",
-		K_COMMA: ";", K_PERIOD: ":", K_SLASH: "!"
-	}
-
-	if keyCode in newKeys:
-		return newKeys[keyCode]
-	return pygame.key.name(keyCode)
-
-
-def getJoyKeyName(inputType, **inputKwargs):
-	"""
-	Get a representation of a joystick input.
-
-	:type inputType: int
-	:param inputType: The pygame code of a joystick input type.
-		It can be JOYBUTTONDOWN, JOYHATMOTION or JOYAXISMOTION.
-
-	:type **inputKwargs: object
-	:param **inputKwargs: Some data about the input.
-
-	:rtype: str
-	:returns: A representation of the joystick input.
-	"""
-
-	if inputType == JOYBUTTONDOWN:
-		if "buttonId" not in inputKwargs:
-			inputKwargs["buttonId"] = "inconnu"
-		return "Bouton {}".format(inputKwargs["buttonId"])
-	elif inputType == JOYHATMOTION:
-		if "value" not in inputKwargs:
-			inputKwargs["value"] = (0, 0)
-		inputKwargs["value"] = tuple(inputKwargs["value"])
-		if inputKwargs["value"] == (-1, 0):
-			return "gauche"
-		elif inputKwargs["value"] == (1, 0):
-			return "droite"
-		elif inputKwargs["value"] == (0, -1):
-			return "bas"
-		elif inputKwargs["value"] == (0, 1):
-			return "haut"
-		else:
-			return "direction ?"
-	elif inputType == JOYAXISMOTION:
-		if "axisId" not in inputKwargs:
-			inputKwargs["axisId"] = 0
-		if "value" not in inputKwargs:
-			inputKwargs["value"] = 0
-		if inputKwargs["axisId"] == 0:
-			if inputKwargs["value"] < 0:
-				return "gauche"
-			elif inputKwargs["value"] > 0:
-				return "droite"
-			else:
-				return "direction ?"
-		elif inputKwargs["axisId"] == 1:
-			if inputKwargs["value"] < 0:
-				return "haut"
-			elif inputKwargs["value"] > 0:
-				return "bas"
-			else:
-				return "direction ?"
 
 ##############################################################################
 ### Options ##################################################################
@@ -122,7 +37,7 @@ def saveOptions(options):
 	"""
 
 	print("[INFO] [util.saveOptions] Saving game options")
-	optionFolder = getExternalDataPath()
+	optionFolder = get_save_path()
 	optionFilePath = os.path.join(optionFolder, "options.json")
 
 	if not os.path.exists(optionFolder):
@@ -142,7 +57,7 @@ def loadOptions():
 	"""
 
 	print("[INFO] [util.loadOptions] Loading game options")
-	optionFilePath = os.path.join(getExternalDataPath(), "options.json")
+	optionFilePath = os.path.join(get_save_path(), "options.json")
 	if os.path.exists(optionFilePath):
 		with open(optionFilePath, "r") as file:
 			return json.load(file)
@@ -159,7 +74,7 @@ def reset():
 	"""
 
 	print("[INFO] [util.resetGame] Reseting game! Restarting...")
-	optionFilePath = os.path.join(getExternalDataPath(), "options.json")
+	optionFilePath = os.path.join(get_save_path(), "options.json")
 	if os.path.exists(optionFilePath):
 		os.remove(optionFilePath)
 	Game.options = getDefaultOptions()
@@ -219,37 +134,6 @@ def getResourcePaths(resourceType):
 		print("[WARNING] [util.getResourcePaths] " \
 			+ "Unable to find \"%s\"" % resFilePath)
 	leaveGame(Errors.BAD_RESOURCE)
-
-
-def getExternalDataPath():
-	r"""
-	Get the path to the game data folder according to the host
-	operating system.
-		- %AppData%\Pyoro on Window
-		- /home/<user>/share/Pyoro on Linux distributions
-		- /home/<user>/Library/Pyoro on MacOS.
-	"""
-
-	systemName = platform.system()
-	if systemName == "Windows":
-		return os.path.join(
-				os.environ["APPDATA"],
-				NAME.capitalize()
-			)
-	elif systemName == "Linux":
-		return os.path.join(
-				os.path.expanduser("~"),
-				"share",
-				NAME.capitalize()
-			)
-	elif systemName == "Darwin":
-		return os.path.join(
-				os.path.expanduser("~"),
-				"Library",
-				NAME.capitalize()
-			)
-	print("[WARNING] [util.getExternalDataPath] Unknown operating system")
-	return "saves"
 
 ##############################################################################
 ### Enumerations #############################################################

@@ -15,6 +15,7 @@ __version__ = "1.1.2"
 
 import os
 import pygame
+
 from lemapi.util import resize_image, get_monitor_density
 
 
