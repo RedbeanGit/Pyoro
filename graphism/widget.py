@@ -57,6 +57,7 @@ class Option_menu(Menu_widget):
 	DEFAULT_KWARGS = {
 		"font": join(GUI_IMAGE_PATH, "font.ttf"),
 		"fontSize": 20,
+		"backgroundImage": join(GUI_IMAGE_PATH, "frame.png"),
 		"backgroundBorderSize": 5
 	}
 
@@ -134,6 +135,7 @@ class Pause_menu(Menu_widget):
 	DEFAULT_KWARGS = {
 		"fontSize": 20,
 		"font": join(GUI_IMAGE_PATH, "font.ttf"),
+		"backgroundImage": join(GUI_IMAGE_PATH, "frame.png"),
 		"backgroundBorderSize": 5
 	}
 
@@ -202,6 +204,7 @@ class Game_over_menu(Menu_widget):
 	DEFAULT_KWARGS = {
 		"fontSize": 20,
 		"font": join(GUI_IMAGE_PATH, "font.ttf"),
+		"backgroundImage": join(GUI_IMAGE_PATH, "frame.png"),
 		"backgroundBorderSize": 5
 	}
 
