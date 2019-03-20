@@ -7,7 +7,7 @@ Created on 16/01/2019
 """
 
 from game.config import ENTITIES_IMAGE_PATH, WINDOW_COLOR, GUI_IMAGE_PATH
-from graphism.widget import Play_button, Option_menu, Pause_menu, Game_over_menu
+from graphism.widget import Play_button, Option_menu, Pause_menu, Game_over_menu, Normal_button
 
 __author__ = "Julien Dubois"
 __version__ = "2.0.0"
@@ -15,7 +15,7 @@ __version__ = "2.0.0"
 import os
 from lemapi.api import get_gui
 from lemapi.view import View
-from lemapi.widget import Image_widget, Text, Button
+from lemapi.widget import Image_widget, Text
 
 
 class Splash_view(View):
@@ -56,9 +56,9 @@ class Menu_view(View):
             anchor=(0, 0), size=(h * 0.3, h * 0.3))
         self.add_widget("play_button_2", Play_button, (w * 0.7, h * 0.55), 1, \
             anchor=(0, 0), size=(h * 0.3, h * 0.3))
-        self.add_widget("option_button", Button, (w * 0.3, h * 0.8), \
+        self.add_widget("option_button", Normal_button, (w * 0.3, h * 0.8), \
             anchor=(0, 0), size=(h * 0.3, h * 0.1), text="Options")
-        self.add_widget("quit_button", Button, (w * 0.7, h * 0.8), \
+        self.add_widget("quit_button", Normal_button, (w * 0.7, h * 0.8), \
             anchor=(0, 0), size=(h * 0.3, h * 0.1), text="Quitter")
 
     def createOptionMenu(self, destroyFct, soundFct, soundVolumes):

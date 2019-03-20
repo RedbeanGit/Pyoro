@@ -17,6 +17,24 @@ from lemapi.event_manager import Event
 from lemapi.widget import Button, Menu_widget, Text, Setting_bar, Clickable_text
 
 
+class Normal_button(Button):
+
+	images_path = join(GUI_IMAGE_PATH, "button")
+	DEFAULT_KWARGS = {
+		"backgroundImage": join(images_path, "normal.png"),
+		"onHoverBackgroundImage": join(images_path, "hover.png"),
+		"onClickBackgroundImage": join(images_path, "click.png"),
+		"onMiddleClickBackgroundImage": join(images_path, "middle_click.png"),
+		"onRightClickBackgroundImage": join(images_path, "right_click.png"),
+		"disableBackgroundImage": join(images_path, "disable.png"),
+		"borderSize": 0
+	}
+
+	def __init__(self, gui, pos, **kwargs):
+		Normal_button.updateDefaultKwargs(kwargs)
+		super().__init__(gui, pos, **kwargs)
+
+
 class Play_button(Button):
 
 	DEFAULT_KWARGS = {
@@ -86,7 +104,7 @@ class Option_menu(Menu_widget):
 
 		px = int(w * 0.25)
 		py = int(h * 0.95)
-		self.addSubWidget("reset_button", Button, (px, py), \
+		self.addSubWidget("reset_button", Normal_button, (px, py), \
 			text="Réinitialiser", anchor=(0, 0), textKwargs={"fontSize": ms, \
 			"font": f}, size=(int(w * 0.4), int(h * 0.06)))
 
@@ -97,7 +115,7 @@ class Option_menu(Menu_widget):
 
 		px = int(w * 0.75)
 		py = int(h * 0.95)
-		self.addSubWidget("back_button", Button, (px, py), text="Retour", \
+		self.addSubWidget("back_button", Normal_button, (px, py), text="Retour", \
 			anchor=(0, 0), textKwargs={"fontSize": ms, "font": f}, \
 			size=(int(w * 0.4), int(h * 0.06)))
 
