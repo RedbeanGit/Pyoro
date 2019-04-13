@@ -1,16 +1,14 @@
 # -*- coding: utf-8 -*-
 
 """
-=========================
-	@name: Pyoro
-	@author: Ptijuju22
-	@date: 08/05/2018
-	@version: 1
-=========================
+Provides a class to create cut leafs.
+
+Created on 08/05/2018
 """
 
-from game.config import LEAF_SPRITE_DURATION
-from entities.leaf import Leaf
+from pyoro_core.constants import LEAF_SPRITE_DURATION
+from pyoro_entities.leaf import Leaf
+
 
 class Leaf_piece(Leaf):
 	def __init__(self, level, pos, speed, leafpieceType, vel = 0):

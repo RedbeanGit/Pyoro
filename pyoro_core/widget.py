@@ -6,27 +6,28 @@ Provide high level widgets based on lemapi widgets for Pyoro.
 Created on 19/01/2019
 """
 
-from game.config import GUI_IMAGE_PATH, NAME, VERSION
-from game.util import reset
+from pyoro_core.constants import GUI_IMAGE_PATH, NAME, VERSION
+from pyoro_core.util import reset
 
 __author__ = "Julien Dubois"
 __version__ = "2.0.0"
 
-from os.path import join
+import os
+
 from lemapi.event_manager import Event
 from lemapi.widget import Button, Menu_widget, Text, Setting_bar, Clickable_text
 
 
 class Normal_button(Button):
 
-	images_path = join(GUI_IMAGE_PATH, "button")
+	images_path = os.path.join(GUI_IMAGE_PATH, "button")
 	DEFAULT_KWARGS = {
-		"backgroundImage": join(images_path, "normal.png"),
-		"onHoverBackgroundImage": join(images_path, "hover.png"),
-		"onClickBackgroundImage": join(images_path, "click.png"),
-		"onMiddleClickBackgroundImage": join(images_path, "middle_click.png"),
-		"onRightClickBackgroundImage": join(images_path, "right_click.png"),
-		"disableBackgroundImage": join(images_path, "disable.png"),
+		"backgroundImage": os.path.join(images_path, "normal.png"),
+		"onHoverBackgroundImage": os.path.join(images_path, "hover.png"),
+		"onClickBackgroundImage": os.path.join(images_path, "click.png"),
+		"onMiddleClickBackgroundImage": os.path.join(images_path, "middle_click.png"),
+		"onRightClickBackgroundImage": os.path.join(images_path, "right_click.png"),
+		"disableBackgroundImage": os.path.join(images_path, "disable.png"),
 		"borderSize": 0
 	}
 
@@ -39,17 +40,17 @@ class Play_button(Button):
 
 	DEFAULT_KWARGS = {
 		"textAnchor": (0, -0.05),
-		"backgroundImage": join(GUI_IMAGE_PATH, "play button {}", \
+		"backgroundImage": os.path.join(GUI_IMAGE_PATH, "play button {}", \
 			"play_button.png"),
-		"onHoverBackgroundImage": join(GUI_IMAGE_PATH, "play button {}", \
+		"onHoverBackgroundImage": os.path.join(GUI_IMAGE_PATH, "play button {}", \
 			"play_button_hover.png"),
-		"onClickBackgroundImage": join(GUI_IMAGE_PATH, "play button {}", \
+		"onClickBackgroundImage": os.path.join(GUI_IMAGE_PATH, "play button {}", \
 			"play_button_click.png"),
-		"onMiddleClickBackgroundImage": join(GUI_IMAGE_PATH, "play button {}", \
+		"onMiddleClickBackgroundImage": os.path.join(GUI_IMAGE_PATH, "play button {}", \
 			"play_button_middle_click.png"),
-		"onRightClickBackgroundImage": join(GUI_IMAGE_PATH, "play button {}", \
+		"onRightClickBackgroundImage": os.path.join(GUI_IMAGE_PATH, "play button {}", \
 			"play_button_right_click.png"),
-		"disableBackgroundImage": join(GUI_IMAGE_PATH, "play button {}", \
+		"disableBackgroundImage": os.path.join(GUI_IMAGE_PATH, "play button {}", \
 			"play_button_disable.png")
 	}
 
@@ -73,9 +74,9 @@ class Play_button(Button):
 class Option_menu(Menu_widget):
 
 	DEFAULT_KWARGS = {
-		"font": join(GUI_IMAGE_PATH, "font.ttf"),
+		"font": os.path.join(GUI_IMAGE_PATH, "font.ttf"),
 		"fontSize": 20,
-		"backgroundImage": join(GUI_IMAGE_PATH, "frame.png"),
+		"backgroundImage": os.path.join(GUI_IMAGE_PATH, "frame.png"),
 		"backgroundBorderSize": 5
 	}
 
@@ -152,8 +153,8 @@ class Pause_menu(Menu_widget):
 
 	DEFAULT_KWARGS = {
 		"fontSize": 20,
-		"font": join(GUI_IMAGE_PATH, "font.ttf"),
-		"backgroundImage": join(GUI_IMAGE_PATH, "frame.png"),
+		"font": os.path.join(GUI_IMAGE_PATH, "font.ttf"),
+		"backgroundImage": os.path.join(GUI_IMAGE_PATH, "frame.png"),
 		"backgroundBorderSize": 5
 	}
 
@@ -221,8 +222,8 @@ class Game_over_menu(Menu_widget):
 
 	DEFAULT_KWARGS = {
 		"fontSize": 20,
-		"font": join(GUI_IMAGE_PATH, "font.ttf"),
-		"backgroundImage": join(GUI_IMAGE_PATH, "frame.png"),
+		"font": os.path.join(GUI_IMAGE_PATH, "font.ttf"),
+		"backgroundImage": os.path.join(GUI_IMAGE_PATH, "frame.png"),
 		"backgroundBorderSize": 5
 	}
 

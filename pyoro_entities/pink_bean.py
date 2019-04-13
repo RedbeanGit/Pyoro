@@ -1,17 +1,18 @@
 # -*- coding: utf-8 -*-
 
 """
-=========================
-	@name: Pyoro
-	@author: Ptijuju22
-	@date: 21/03/2018
-	@version: 1
-=========================
+Provides a class to create pink beans.
+
+Created on 21/03/2018
 """
+
+from pyoro_entities.bean import Bean
+
+__author__ = "Julien Dubois"
+__version__ = "2.0.0"
 
 import random
 
-from entities.bean import Bean
 
 class Pink_bean(Bean):
 	def initImages(self):

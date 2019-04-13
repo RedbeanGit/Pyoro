@@ -1,16 +1,17 @@
 # -*- coding: utf-8 -*-
 
 """
-=========================
-	@name: Pyoro
-	@author: Ptijuju22
-	@date: 21/03/2018
-	@version: 1
-=========================
+Provide a class to create text (only some numbers) as an entity
+
+Created on 21/03/2018
 """
 
-from entities.entity import Entity
-from game.config import SCORE_TEXT_BLINK_DURATION, SCORE_TEXT_LIFE_DURATION
+from pyoro_entities.entity import Entity
+from pyoro_core.constants import SCORE_TEXT_BLINK_DURATION, SCORE_TEXT_LIFE_DURATION
+
+__author__ = "Julien Dubois"
+__verison__ = "2.0.0"
+
 
 class Score_text(Entity):
 	def __init__(self, level, pos, value):

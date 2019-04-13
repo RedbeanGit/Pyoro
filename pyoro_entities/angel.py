@@ -8,8 +8,8 @@ This entity is used to repair destroyed cases
 Created on 21/03/2018
 """
 
-from entities.entity import Entity
-from game.config import ANGEL_SPEED, ANGEL_SPRITE_DURATION
+from pyoro_entities.entity import Entity
+from pyoro_core.constants import ANGEL_SPEED, ANGEL_SPRITE_DURATION
 
 __author__ = "Julien Dubois"
 __version__ = "1.1"

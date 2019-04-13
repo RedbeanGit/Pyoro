@@ -1,17 +1,13 @@
 # -*- coding: utf-8 -*-
 
 """
-=========================
-	@name: Pyoro
-	@author: Ptijuju22
-	@date: 27/03/2018
-	@version: 1
-=========================
+Provide a class to create seeds (pulled by the yellow bird)
+
+Created on 27/03/2018
 """
 
-from entities.entity import Entity
-from game.config import SEED_SPEED, AIR_RESISTANCE, GRAVITY_FORCE, \
-	ENTITIES_IMAGE_PATH
+from pyoro_entities.entity import Entity
+from pyoro_core.constants import SEED_SPEED, AIR_RESISTANCE, GRAVITY_FORCE, ENTITIES_IMAGE_PATH
 
 __author__ = "Julien Dubois"
 __version__ = "2.0.0"

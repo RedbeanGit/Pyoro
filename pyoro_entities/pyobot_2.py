@@ -1,16 +1,17 @@
 # -*- coding: utf-8 -*-
 
 """
-=========================
-	@name: Pyoro
-	@author: Ptijuju22
-	@date: 01/09/2018
-	@version: 1.1
-=========================
+Provide a class to create a yellow bird managed by the computer
+
+Created on 01/09/2018
 """
 
-from entities.bean import Bean
-from entities.pyoro_2 import Pyoro_2
+from pyoro_entities.bean import Bean
+from pyoro_entities.pyoro_2 import Pyoro_2
+
+__author__ = "Julien Dubois"
+__version__ = "2.0.0"
+
 
 class Pyobot_2(Pyoro_2):
 	def __init__(self, level):

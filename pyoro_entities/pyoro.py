@@ -1,18 +1,18 @@
 ﻿# -*- coding: utf-8 -*-
 
 """
-=========================
-	@name: Pyoro
-	@author: Ptijuju22
-	@date: 18/03/2018
-	@version: 1
-=========================
+Provide a class to create a red bird managed by the player
+
+Created on 18/03/2018
 """
 
-from entities.entity import Entity
-from entities.tong import Tong
-from game.config import PYORO_SPEED, PYORO_NOTCH_DURATION, PYORO_EATING_DURATION, \
-	PYORO_DIE_SPEED
+from pyoro_entities.entity import Entity
+from pyoro_entities.tong import Tong
+from pyoro_core.constants import PYORO_SPEED, PYORO_NOTCH_DURATION, PYORO_EATING_DURATION, PYORO_DIE_SPEED
+
+__author__ = "Julien Dubois"
+__version__ = "2.0.0"
+
 
 class Pyoro(Entity):
 	def __init__(self, level):

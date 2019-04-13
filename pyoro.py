@@ -6,11 +6,10 @@ Main module for Pyoro to start from lem launcher.
 Created on 16/01/2019
 """
 
-from game.util import Game, loadOptions, saveOptions
-from game.config import VERSION
-from game.activity import Splash_activity, Menu_activity, Level_activity
-
-from graphism.view import Splash_view, Menu_view, Level_view
+from pyoro_core.util import loadOptions, saveOptions
+from pyoro_core.constants import VERSION, Game
+from pyoro_core.activity import Splash_activity, Menu_activity, Level_activity
+from pyoro_core.view import Splash_view, Menu_view, Level_view
 
 __author__ = "Julien Dubois"
 __version__ = "2.0.0"
@@ -23,15 +22,14 @@ from lemapi.api import start_activity, stop_activity, get_app_path
 def main(appId):
 	print("[Pyoro] [INFO] [main] Starting pyoro v" + VERSION)
 	os.chdir(get_app_path())
-	Game.appId = appId
-	Game.options = loadOptions()
+	Game.ID = appId
+	loadOptions()
 	create_splash()
 
 
 def exit():
 	print("[INFO] [exit] Stopping Pyoro v" + VERSION)
-	if Game.options:
-		saveOptions(Game.options)
+	saveOptions()
 
 
 def create_splash():

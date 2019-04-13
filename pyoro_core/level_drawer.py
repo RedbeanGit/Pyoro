@@ -6,9 +6,8 @@ Provide a class to draw a game.level.Level and entities.entity.Entity
 Created on 11/10/2018
 """
 
-from game.config import CASE_SIZE, BACKGROUND_TRANSITION_DURATION, \
-	LEVEL_IMAGE_PATH
-from game.level import Level
+from pyoro_core.constants import CASE_SIZE, BACKGROUND_TRANSITION_DURATION, LEVEL_IMAGE_PATH
+from pyoro_core.level import Level
 
 __author__ = "Julien Dubois"
 __version__ = "1.1.2"

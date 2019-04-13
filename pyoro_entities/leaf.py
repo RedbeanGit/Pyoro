@@ -1,18 +1,19 @@
 # -*- coding: utf-8 -*-
 
 """
-=========================
-	@name: Pyoro
-	@author: Ptijuju22
-	@date: 07/05/2018
-	@version: 1.1
-=========================
+Provides a class to create Leaf objects.
+
+Created on 07/05/2018
 """
+
+from pyoro_core.constants import LEAF_SPEED, LEAF_SPRITE_DURATION, LEAF_WIND_SPEED, AIR_RESISTANCE
+from pyoro_entities.entity import Entity
+
+__author__ = "Julien Dubois"
+__version__ = "2.0.0"
 
 import random
 
-from game.config import LEAF_SPEED, LEAF_SPRITE_DURATION, LEAF_WIND_SPEED, AIR_RESISTANCE
-from entities.entity import Entity
 
 class Leaf(Entity):
 	def __init__(self, level, pos, speed, leafType):

@@ -1,16 +1,17 @@
 # -*- coding: utf-8 -*-
 
 """
-=========================
-	@name: Pyoro
-	@author: Ptijuju22
-	@date: 11/04/2018
-	@version: 1.1
-=========================
+Provides a class to create a red bird managed by the computer
+
+Created on 11/04/2018
 """
 
-from entities.bean import Bean
-from entities.pyoro import Pyoro
+from pyoro_entities.bean import Bean
+from pyoro_entities.pyoro import Pyoro
+
+__author__ = "Julien Dubois"
+__version__ = "2.0.0"
+
 
 class Pyobot(Pyoro):
 	def __init__(self, level):

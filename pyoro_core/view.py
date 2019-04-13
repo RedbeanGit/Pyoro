@@ -6,13 +6,14 @@ Provide activities used to manage the game view.
 Created on 16/01/2019
 """
 
-from game.config import ENTITIES_IMAGE_PATH, WINDOW_COLOR, GUI_IMAGE_PATH
-from graphism.widget import Play_button, Option_menu, Pause_menu, Game_over_menu, Normal_button
+from pyoro_core.constants import ENTITIES_IMAGE_PATH, WINDOW_COLOR, GUI_IMAGE_PATH
+from pyoro_core.widget import Play_button, Option_menu, Pause_menu, Game_over_menu, Normal_button
 
 __author__ = "Julien Dubois"
 __version__ = "2.0.0"
 
 import os
+
 from lemapi.api import get_gui
 from lemapi.view import View
 from lemapi.widget import Image_widget, Text

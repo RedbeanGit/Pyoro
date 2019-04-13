@@ -8,8 +8,8 @@ if they touch it.
 Created on 18/03/2018
 """
 
-from entities.entity import Entity
-from game.config import BEAN_SPEED, BEAN_SPRITE_DURATION
+from pyoro_entities.entity import Entity
+from pyoro_core.constants import BEAN_SPEED, BEAN_SPRITE_DURATION
 
 __author__ = "Julien Dubois"
 __version__ = "1.1"

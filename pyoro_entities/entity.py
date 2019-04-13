@@ -6,13 +6,13 @@ Provide a base abstract class to create entities
 Created on 18/03/2018
 """
 
-from game.config import ENTITIES_IMAGE_PATH, SOUND_PATH
-from game.util import Game
+from pyoro_core.constants import ENTITIES_IMAGE_PATH, SOUND_PATH
 
 __author__ = "Julien Dubois"
 __version__ = "1.1.1"
 
 import os
+
 from lemapi.api import get_audio_player
 from lemapi.util import resize_image
 

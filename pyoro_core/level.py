@@ -6,30 +6,29 @@ Provide a class to manage a game level (entities, flow of time,...)
 Created on 18/03/2018
 """
 
-from entities.angel import Angel
-from entities.bean import Bean
-from entities.leaf import Leaf
-from entities.leaf_piece import Leaf_piece
-from entities.pink_bean import Pink_bean
-from entities.pyobot import Pyobot
-from entities.pyobot_2 import Pyobot_2
-from entities.pyoro import Pyoro
-from entities.pyoro_2 import Pyoro_2
-from entities.score_text import Score_text
-from entities.smoke import Smoke
-from entities.super_bean import Super_bean
+from pyoro_entities.angel import Angel
+from pyoro_entities.bean import Bean
+from pyoro_entities.leaf import Leaf
+from pyoro_entities.leaf_piece import Leaf_piece
+from pyoro_entities.pink_bean import Pink_bean
+from pyoro_entities.pyobot import Pyobot
+from pyoro_entities.pyobot_2 import Pyobot_2
+from pyoro_entities.pyoro import Pyoro
+from pyoro_entities.pyoro_2 import Pyoro_2
+from pyoro_entities.score_text import Score_text
+from pyoro_entities.smoke import Smoke
+from pyoro_entities.super_bean import Super_bean
 
-from game.actionDelay import ActionDelay
-from game.case import Case
-from game.config import BEAN_FREQUENCY, SPEED_ACCELERATION, \
-	BACKGROUND_ANIMATED_DURATION
-from game.util import Game
+from pyoro_core.actionDelay import ActionDelay
+from pyoro_core.case import Case
+from pyoro_core.constants import BEAN_FREQUENCY, SPEED_ACCELERATION, BACKGROUND_ANIMATED_DURATION, Game
 
 __author__ = "Julien Dubois"
 __version__ = "1.1"
 
 import os
 import random
+
 from lemapi.api import get_audio_player
 from lemapi.audio import Mixer
 

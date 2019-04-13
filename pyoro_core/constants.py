@@ -9,7 +9,7 @@ Created on 17/03/2018
 __author__ = "Julien Dubois"
 __version__ = "1.1"
 
-import os
+import enum
 
 
 # General information about the game
@@ -18,13 +18,6 @@ FPS = 60															# frame per seconds
 NAME = "PYORO"														# game name
 VERSION = "1.1.1"													# game version
 WINDOW_COLOR = (120, 120, 120)										# background color
-LOW_AUDIO = True													# If True, use less resources but cannot read several...
-																	# ...sounds at the same time
-
-# Update server address and login
-UPDATE_HOST = "ftpupload.net"										# FTP host
-UPDATE_USER = "epiz_22757918"										# FTP username
-UPDATE_PASSWORD = "6UJDteWTmclaL"									# FTP password
 
 # Some level constants
 AIR_RESISTANCE = 25													# Air resistance value for leaf and seeds wind effect
@@ -36,11 +29,11 @@ BACKGROUND_ANIMATED_DURATION = 1									# Duration of each animated background 
 SPLASH_ANIMATION_DURATION = 0.125									# Duration of each animation during splash screen (currently useless)
 
 # Main file paths
-GUI_IMAGE_PATH = os.path.join("data", "images", "gui")				# File path to Graphical User Interface images
-ENTITIES_IMAGE_PATH = os.path.join("data", "images", "entities")	# File path to entities images
-LEVEL_IMAGE_PATH = os.path.join("data", "images", "level")			# File path to level images (backgrounds, blocks,...)
-SOUND_PATH = os.path.join("data", "audio", "sounds")				# File path to sounds
-MUSIC_PATH = os.path.join("data", "audio", "musics")				# File path to musics
+GUI_IMAGE_PATH = "data/images/gui"									# File path to Graphical User Interface images
+ENTITIES_IMAGE_PATH = "data/images/entities"						# File path to entities images
+LEVEL_IMAGE_PATH = "data/images/level"								# File path to level images (backgrounds, blocks,...)
+SOUND_PATH = "data/audio/sounds"									# File path to sounds
+MUSIC_PATH = "data/audio/musics"									# File path to musics
 
 # Entities info
 ANGEL_SPEED = 35													# Angel speed (in case per second)
@@ -102,7 +95,21 @@ DEFAULT_OPTIONS = {
 		0,
 		0
 	],
-	"last game": 0,
 	"music volume": 1,
 	"sound volume": 1
 }
+
+
+class Game:
+	ID = 0
+	OPTIONS = {}
+
+
+class Errors(enum.Enum):
+	MODULE_NOT_FOUND = 1
+	DATA_NOT_FOUND = 2
+	BOOT_ERROR = 3
+	LOOP_ERROR = 4
+	UPDATE_ERROR = 5
+	BAD_RESOURCE = 6
+	CODE_ERROR = 7

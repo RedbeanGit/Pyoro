@@ -1,19 +1,20 @@
 # -*- coding: utf-8 -*-
 
 """
-=========================
-	@name: Pyoro
-	@author: Ptijuju22
-	@date: 18/03/2018
-	@version: 1
-=========================
+Provide a class to create a yellow bird managed by the player
+
+Created on 18/03/2018
 """
 
-from entities.bean import Bean
-from entities.leaf import Leaf
-from entities.pyoro import Pyoro
-from entities.seed import Seed
-from game.config import PYORO_SHOOT_SPRITE_DURATION
+from pyoro_entities.bean import Bean
+from pyoro_entities.leaf import Leaf
+from pyoro_entities.pyoro import Pyoro
+from pyoro_entities.seed import Seed
+from pyoro_core.constants import PYORO_SHOOT_SPRITE_DURATION
+
+__author__ = "Julien Dubois"
+__version__ = "2.0.0"
+
 
 class Pyoro_2(Pyoro):
 	def __init__(self, level):

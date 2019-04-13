@@ -1,17 +1,18 @@
 # -*- coding: utf-8 -*-
 
 """
-=========================
-	@name: Pyoro
-	@author: Ptijuju22
-	@date: 21/03/2018
-	@version: 1
-=========================
+Provide a class to create the red bird's tang
+
+Created on 21/03/2018
 """
 
-from entities.bean import Bean
-from entities.entity import Entity
-from game.config import TONG_SPEED
+from pyoro_entities.bean import Bean
+from pyoro_entities.entity import Entity
+from pyoro_core.constants import TONG_SPEED
+
+__author__ = "Julien Dubois"
+__version__ = "2.0.0"
+
 
 class Tong(Entity):
 	def __init__(self, level, direction):

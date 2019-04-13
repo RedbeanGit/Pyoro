@@ -1,18 +1,19 @@
 # -*- coding: utf-8 -*-
 
 """
-=========================
-	@name: Pyoro
-	@author: Ptijuju22
-	@date: 17/03/2018
-	@version: 1
-=========================
+Provide a class to create a blinking bean
+
+Created on 17/03/2018
 """
+
+from pyoro_entities.bean import Bean
+from pyoro_core.constants import BEAN_SPRITE_DURATION
+
+__author__ = "Julien Dubois"
+__version__ = "2.0.0"
 
 import random
 
-from entities.bean import Bean
-from game.config import BEAN_SPRITE_DURATION
 
 class Super_bean(Bean):
 	def __init__(self, level, pos, speed):
