@@ -36,6 +36,30 @@ class Normal_button(Button):
 		super().__init__(gui, pos, **kwargs)
 
 
+class Custom_setting_bar(Setting_bar):
+
+	images_path = os.path.join(GUI_IMAGE_PATH, "setting bar")
+	DEFAULT_KWARGS = {
+		"lineImage": os.path.join(images_path, "line.png"),
+		"onHoverLineImage": os.path.join(images_path, "line_hover.png"),
+		"onClickLineImage": os.path.join(images_path, "line_click.png"),
+		"onMiddleClickLineImage": os.path.join(images_path, "line_middle_click.png"),
+		"onRightClickLineImage": os.path.join(images_path, "line_right_click.png"),
+		"disableLineImage": os.path.join(images_path, "line_disable.png"),
+
+		"cursorImage": os.path.join(images_path, "cursor.png"),
+		"onHoverCursorImage": os.path.join(images_path, "cursor_hover.png"),
+		"onClickCursorImage": os.path.join(images_path, "cursor_click.png"),
+		"onMiddleClickCursorImage": os.path.join(images_path, "cursor_middle_click.png"),
+		"onRightClickCursorImage": os.path.join(images_path, "cursor_right_click.png"),
+		"disableCursorImage": os.path.join(images_path, "cursor_disable.png")
+	}
+
+	def __init__(self, gui, pos, **kwargs):
+		Custom_setting_bar.updateDefaultKwargs(kwargs)
+		Setting_bar.__init__(self, gui, pos, **kwargs)
+
+
 class Play_button(Button):
 
 	DEFAULT_KWARGS = {
@@ -122,13 +146,13 @@ class Option_menu(Menu_widget):
 
 		px = int(w * 0.95)
 		py = int(h * 0.15)
-		self.addSubWidget("music_volume_setting_bar", Setting_bar, (px, py), \
-			anchor=(1, 0), size=(int(w * 0.45), int(h * 0.05)), \
-			cursorWidth=int(w * 0.03), lineThickness=int(h * 0.02), value=mv)
+		self.addSubWidget("music_volume_setting_bar", Custom_setting_bar, (px, py), \
+			anchor=(1, 0), size=(int(w * 0.45), int(h * 0.07)), \
+			cursorWidth=int(h * 0.05), lineThickness=int(h * 0.03), value=mv)
 		py = int(h * 0.25)
-		self.addSubWidget("sound_volume_setting_bar", Setting_bar, (px, py), \
-			anchor=(1, 0), size=(int(w * 0.45), int(h * 0.05)), \
-			cursorWidth=int(w * 0.03), lineThickness=int(h * 0.02), value=sv)
+		self.addSubWidget("sound_volume_setting_bar", Custom_setting_bar, (px, py), \
+			anchor=(1, 0), size=(int(w * 0.45), int(h * 0.07)), \
+			cursorWidth=int(h * 0.05), lineThickness=int(h * 0.03), value=sv)
 		py = int(h * 0.85)
 		self.addSubWidget("version_text", Text, (px, py), \
 			"%s v%s" % (NAME, VERSION), font=f, fontSize=ls, anchor=(1, 0))
