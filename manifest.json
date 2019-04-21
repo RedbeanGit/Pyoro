@@ -2,5 +2,6 @@
 	"name": "Pyoro",
 	"version": "2.0.0",
 	"icon_path": "data/images/gui/pyoro_icon.png",
+	"splash_image": "data/images/gui/splash.png",
 	"main_file": "pyoro.py"
 }
