@@ -1,10 +1,31 @@
 # -*- coding: utf-8 -*-
 
+#	This file is part of Pyoro (A Python fan game).
+#
+#	Metawars is free software: you can redistribute it and/or modify
+#	it under the terms of the GNU General Public License as published by
+#	the Free Software Foundation, either version 3 of the License, or
+#	(at your option) any later version.
+#
+#	Metawars is distributed in the hope that it will be useful,
+#	but WITHOUT ANY WARRANTY; without even the implied warranty of
+#	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+#	GNU General Public License for more details.
+#
+#	You should have received a copy of the GNU General Public License
+#	along with Metawars. If not, see <https://www.gnu.org/licenses/>
+
 """
 Provide a class to manage a game level (entities, flow of time,...)
 
 Created on 18/03/2018
 """
+
+import os
+import random
+
+__author__ = "RedbeanGit"
+__repo__ = "https://github.com/RedbeanGit/Pyoro"
 
 from entities.angel import Angel
 from entities.bean import Bean
@@ -25,19 +46,13 @@ from game.config import BEAN_FREQUENCY, SPEED_ACCELERATION, \
 	BACKGROUND_ANIMATED_DURATION
 from game.util import Game
 
-__author__ = "Julien Dubois"
-__version__ = "1.1"
-
-import os
-import random
-
 
 class Level:
 	"""
 	Central class that manages the entities, terrain and more.
 	"""
 
-	def __init__(self, levelDrawer, gameId, size, botMode = False):
+	def __init__(self, levelDrawer, gameId, size, botMode=False):
 		"""
 		Initialize a new Level object.
 
@@ -355,7 +370,7 @@ class Level:
 		else:
 			return 2
 
-	def getBackgroundIdWithScore(self, score = None):
+	def getBackgroundIdWithScore(self, score=None):
 		"""
 		Get the background id associated to a specified score.
 

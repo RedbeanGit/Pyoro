@@ -1,10 +1,31 @@
 # -*- coding: utf-8 -*-
 
+#	This file is part of Pyoro (A Python fan game).
+#
+#	Metawars is free software: you can redistribute it and/or modify
+#	it under the terms of the GNU General Public License as published by
+#	the Free Software Foundation, either version 3 of the License, or
+#	(at your option) any later version.
+#
+#	Metawars is distributed in the hope that it will be useful,
+#	but WITHOUT ANY WARRANTY; without even the implied warranty of
+#	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+#	GNU General Public License for more details.
+#
+#	You should have received a copy of the GNU General Public License
+#	along with Metawars. If not, see <https://www.gnu.org/licenses/>
+
 """
 Provide a class to draw a game.level.Level and entities.entity.Entity
 
 Created on 11/10/2018
 """
+
+import os
+import pygame
+
+__author__ = "RedbeanGit"
+__repo__ = "https://github.com/RedbeanGit/Pyoro"
 
 from game.config import CASE_SIZE, BACKGROUND_TRANSITION_DURATION, \
 	LEVEL_IMAGE_PATH
@@ -12,15 +33,30 @@ from game.level import Level
 from game.util import getMonitorSize, getScreenSize, getMonitorDensity
 from gui.image_transformer import resizeImage
 
-__author__ = "Julien Dubois"
-__version__ = "1.1.2"
-
-import os
-import pygame
-
 
 class Level_drawer:
-	def __init__(self, activity, gameId, botMode = False):
+	"""
+	Create a Level_drawer object, usually used to draw a level and its
+		entities on the screen.
+	"""
+
+	def __init__(self, activity, gameId, botMode=False):
+		"""
+		Initialize a new Level_drawer object, create a new level and load
+			background images.
+
+		:type activity: gui.activity.Activity
+		:param activity: The parent activity where to draw the level.
+
+		:type gameId: int
+		:param gameId: An integer representing Pyoro 1 or 2 (0=Pyoro,
+			1=Pyoro 2).
+
+		:type botMode: bool
+		:param botMode: (Optional) Define if Pyoro have to be replaced by
+			Pyobot. Default is False.
+		"""
+
 		self.activity = activity
 		self.images = {}
 		self.caseSize = ()
@@ -34,15 +70,43 @@ class Level_drawer:
 		self.initImages()
 
 	def initLevel(self, gameId, botMode):
+		"""
+		Create a new level with given gameId and botMode value.
+
+		:type gameId: int
+		:param gameId: An integer representing Pyoro 1 or 2 (0=Pyoro,
+			1=Pyoro 2).
+
+		:type botMode: bool
+		:param botMode: Define if Pyoro have to be replaced by Pyobot. Default
+			is False.
+		"""
+
 		self.level = Level(self, gameId, self.getLevelSize(), botMode)
 
 	def getLevelSize(self):
+		"""
+		Return the size of the level (the scale is expressed in case).
+
+		:rtype: tuple
+		:returns: A (w, h) tuple where w is an integer and h is a float
+			number.
+		"""
+
 		wp, hp = getScreenSize()
 		wd, hd = getMonitorDensity()
 		wc, hc = wd * CASE_SIZE, hd * CASE_SIZE
 		return int(wp / wc), hp / hc
 
 	def getCaseSize(self):
+		"""
+		Return the size of one case in pixel.
+
+		
+		:rtype: tuple
+		:returns: A (w, h) tuple where w and h are both float numbers.
+		"""
+
 		if not self.caseSize:
 			wp, hp = getScreenSize()
 			if self.level:
@@ -53,6 +117,10 @@ class Level_drawer:
 		return self.caseSize
 
 	def initImages(self):
+		"""
+		Initialize background images.
+		"""
+
 		folder = os.path.join(LEVEL_IMAGE_PATH, "block")
 		size = self.getCaseSize()
 		for i in range(3):
@@ -71,11 +139,15 @@ class Level_drawer:
 				alphaChannel = False), size)
 
 	def drawPyoro(self):
+		"""
+		Draw Pyoro (or Pyoro 2) and its tongue when he tries to catch a bean.
+		"""
+
 		p = self.level.pyoro
-		t = p.tong
+		t = p.tongue
 		caseSize = self.getCaseSize()
 		if t:
-			# define tong colors (insideColor, outlineColor)
+			# define tongue colors (insideColor, outlineColor)
 			styleType = self.level.getStyleTypeWithScore()
 			if styleType == 0:
 				color = ((255, 98, 183), (0, 0, 0))
@@ -84,7 +156,7 @@ class Level_drawer:
 			else:
 				color = ((0, 0, 0), (255, 255, 255))
 
-			# define tong pos
+			# define tongue pos
 			tx1 = t.pos[0] - t.size[0] * 0.5 * p.direction
 			tx2 = t.pos[0] - t.size[0] * 0.4 * p.direction
 			px1 = p.pos[0] + p.size[0] * 0.25 * p.direction
@@ -113,6 +185,11 @@ class Level_drawer:
 				(p.pos[1] - p.size[1] / 2) * caseSize[1]))
 
 	def drawBackground(self):
+		"""
+		Draw the appropriate background image by handling smooth transition
+			animations between different background images.
+		"""
+
 		backId = self.level.getBackgroundIdWithScore()
 		background = self.images["background_%s.png" % backId]
 
@@ -132,6 +209,10 @@ class Level_drawer:
 		self.activity.window.drawImage(background, (0, 0))
 
 	def drawBlocks(self):
+		"""
+		Draw the cases which are not destroyed.
+		"""
+
 		w, h = self.activity.window.getSize()
 		caseSize = self.getCaseSize()
 		for i in range(self.level.size[0]):
@@ -141,6 +222,15 @@ class Level_drawer:
 					(i * caseSize[0], h - caseSize[1]))
 
 	def updateBackgroundTransition(self, opacity):
+		"""
+		Increase new background opacity to create a smooth transition
+			animation.
+
+		:type opacity: float
+		:param opacity: Opacity of the new background image (1 <= opacity 
+			<= 255).
+		"""
+
 		self.images["background_%s.png" \
 			% self.level.getBackgroundIdWithScore()].set_alpha(opacity)
 
@@ -152,6 +242,11 @@ class Level_drawer:
 			self.level.removeActionDelay((self, "updateBackgroundTransition"))
 
 	def drawEntities(self):
+		"""
+		Draw all entities stored in the level except Pyoro (There is another
+			method to draw Pyoro).
+		"""
+
 		w, h = self.getCaseSize()
 		for entity in self.level.entities:
 			x = (entity.pos[0] - entity.size[0] / 2) * w
@@ -160,6 +255,14 @@ class Level_drawer:
 				(x, y))
 
 	def update(self, deltaTime):
+		"""
+		Update the level drawer by drawing background, blocks, Pyoro and
+			entities images.
+
+		:type deltaTime: float
+		:param deltaTime: Time elapsed since the last update.
+		"""
+
 		self.level.update(deltaTime)
 		self.drawBackground()
 		self.drawBlocks()

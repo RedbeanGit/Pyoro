@@ -1,5 +1,20 @@
 # -*- coding: utf-8 -*-
 
+#	This file is part of Pyoro (A Python fan game).
+#
+#	Metawars is free software: you can redistribute it and/or modify
+#	it under the terms of the GNU General Public License as published by
+#	the Free Software Foundation, either version 3 of the License, or
+#	(at your option) any later version.
+#
+#	Metawars is distributed in the hope that it will be useful,
+#	but WITHOUT ANY WARRANTY; without even the implied warranty of
+#	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+#	GNU General Public License for more details.
+#
+#	You should have received a copy of the GNU General Public License
+#	along with Metawars. If not, see <https://www.gnu.org/licenses/>
+
 """
 Provides a Music class for loading and managing musics.
 Ideal for large audio files. For more reactivity, it's better
@@ -8,18 +23,18 @@ to use audio.sound.Sound.
 Created on 27/08/2018
 """
 
-from audio.sound import Sound
-
-__author__ = "Julien Dubois"
-__version__ = "1.1.2"
-
 import os
 import wave
+
+__author__ = "RedbeanGit"
+__repo__ = "https://github.com/RedbeanGit/Pyoro"
+
+from audio.sound import Sound
 
 
 class Music(Sound):
 	"""
-	Made for loading and playing large audio files
+	Made for loading and playing large audio files.
 	"""
 
 	def __init__(self, audioPlayer):
@@ -111,7 +126,22 @@ class Music(Sound):
 			print("[WARNING] [Music.getFileInfo] Music not loaded")
 
 	def copy(self):
-		snd = Sound.copy(self)
+		"""
+		Create a new music with the same properties and audio data as this
+		music.
+
+		:rtype: audio.music.Music
+		:returns: A new independant music.
+		"""
+
+		msc = Music(self.ap)
 		if self.isLoaded:
-			snd.waveFile = self.waveFile
-		return snd
+			msc.framerate = self.framerate
+			msc.nbChannels = self.nbChannels
+			msc.samplesWidth = self.samplesWidth
+			msc.filePath = self.filePath
+			msc.samples = self.samples
+			msc.waveFile = self.waveFile
+			msc.isLoaded = True
+
+		return msc

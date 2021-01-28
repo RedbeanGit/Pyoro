@@ -1,15 +1,25 @@
 # -*- coding:utf-8 -*-
 
+#	This file is part of Pyoro (A Python fan game).
+#
+#	Metawars is free software: you can redistribute it and/or modify
+#	it under the terms of the GNU General Public License as published by
+#	the Free Software Foundation, either version 3 of the License, or
+#	(at your option) any later version.
+#
+#	Metawars is distributed in the hope that it will be useful,
+#	but WITHOUT ANY WARRANTY; without even the implied warranty of
+#	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+#	GNU General Public License for more details.
+#
+#	You should have received a copy of the GNU General Public License
+#	along with Metawars. If not, see <https://www.gnu.org/licenses/>
+
 """
 Provide useful functions
 
 Created on 17/11/2018
 """
-
-from game.config import DEFAULT_OPTIONS, NAME, VERSION
-
-__author__ = "Julien Dubois"
-__version__ = "1.1.2"
 
 import ctypes
 import enum
@@ -17,16 +27,22 @@ import json
 import os
 import platform
 import pygame
+import screeninfo
 import shutil
 import subprocess
 import sys
 import threading
 
-from gi.repository import Gdk
 from pygame.locals import K_1, K_2, K_3, K_4, K_5, K_6, K_7, K_8, K_9, K_0, \
 	K_q, K_w, K_z, K_m, K_a, K_MINUS, K_LEFTBRACKET, K_RIGHTBRACKET, \
 	K_SEMICOLON, K_QUOTE, K_COMMA, K_PERIOD, K_SLASH, JOYBUTTONDOWN, \
 	JOYHATMOTION, JOYAXISMOTION
+
+__author__ = "RedbeanGit"
+__repo__ = "https://github.com/RedbeanGit/Pyoro"
+
+from game.config import DEFAULT_OPTIONS, NAME, VERSION
+
 
 ##############################################################################
 ### Input representation #####################################################
@@ -299,7 +315,7 @@ def checkModules():
 	print("[INFO] [util.chechModules] Checking required modules")
 	required = ("os", "sys", "pygame", "json", "wave", "audioop", "pyaudio",
 		"threading", "traceback", "time", "platform", "shutil", "ftplib",
-		"enum", "gi", "collections")
+		"enum", "collections")
 
 	for moduleName in required:
 		try:
@@ -345,7 +361,7 @@ def getExternalDataPath():
 	r"""
 	Get the path to the game data folder according to the host
 	operating system.
-		- %AppData%\Pyoro on Window
+		- %AppData%\Pyoro on Windows
 		- /home/<user>/share/Pyoro on Linux distributions
 		- /home/<user>/Library/Pyoro on MacOS.
 	"""
@@ -474,9 +490,10 @@ def getMonitorSize():
 		represent the default screen size in millimeters.
 	"""
 
-	display = Gdk.Display.get_default()
-	monitor = display.get_monitor(0)
-	return monitor.get_width_mm(), monitor.get_height_mm()
+	monitors = screeninfo.get_monitors()
+	monitor = monitors[0]
+
+	return monitor.width_mm, monitor.height_mm
 
 
 def getScreenSize():
@@ -488,8 +505,10 @@ def getScreenSize():
 		represent the default screen size in pixels.
 	"""
 
-	screen = Gdk.Screen.get_default()
-	return screen.get_width(), screen.get_height()
+	monitors = screeninfo.get_monitors()
+	monitor = monitors[0]
+
+	return monitor.width, monitor.height
 
 
 def getScreenRatio():
@@ -508,6 +527,13 @@ def getScreenRatio():
 
 
 def getMonitorDensity():
+	"""
+	Return the monitor density in dpm.
+
+	:rtype: tuple
+	:returns: An (w, h) tuple where w and h are bot float numbers.
+	"""
+
 	wm, hm = getMonitorSize()
 	wp, hp = getScreenSize()
 	return wp / wm, hp / hm
@@ -519,6 +545,10 @@ def getMonitorDensity():
 
 
 class Game:
+	"""
+	Store main objects (unique instances).
+	"""
+
 	window = None
 	debugLogger = None
 	audioPlayer = None
@@ -526,6 +556,10 @@ class Game:
 
 
 class Errors(enum.Enum):
+	"""
+	Provide common errors constants.
+	"""
+	
 	MODULE_NOT_FOUND = 1
 	DATA_NOT_FOUND = 2
 	BOOT_ERROR = 3

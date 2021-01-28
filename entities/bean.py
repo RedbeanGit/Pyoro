@@ -1,5 +1,20 @@
 # -*- coding: utf-8 -*-
 
+#	This file is part of Pyoro (A Python fan game).
+#
+#	Metawars is free software: you can redistribute it and/or modify
+#	it under the terms of the GNU General Public License as published by
+#	the Free Software Foundation, either version 3 of the License, or
+#	(at your option) any later version.
+#
+#	Metawars is distributed in the hope that it will be useful,
+#	but WITHOUT ANY WARRANTY; without even the implied warranty of
+#	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+#	GNU General Public License for more details.
+#
+#	You should have received a copy of the GNU General Public License
+#	along with Metawars. If not, see <https://www.gnu.org/licenses/>
+
 """
 Provides a Bean class to represent falling beans
 (as indicated by his name). Beans destroy blocks and kill Pyoro
@@ -8,13 +23,13 @@ if they touch it.
 Created on 18/03/2018
 """
 
+import random
+
+__author__ = "RedbeanGit"
+__repo__ = "https://github.com/RedbeanGit/Pyoro"
+
 from entities.entity import Entity
 from game.config import BEAN_SPEED, BEAN_SPRITE_DURATION
-
-__author__ = "Julien Dubois"
-__version__ = "1.1"
-
-import random
 
 
 class Bean(Entity):
@@ -70,7 +85,8 @@ class Bean(Entity):
 					self.level.cases[int(self.pos[0])].exists = False
 					self.explode()
 					self.remove()
-			if(self.isHittingEntity(self.level.pyoro) and not(self.level.pyoro.dead)):
+			if(self.isHittingEntity(self.level.pyoro) \
+			and not(self.level.pyoro.dead)):
 				self.explode()
 				self.remove()
 				self.level.pyoro.remove()
@@ -82,8 +98,11 @@ class Bean(Entity):
 		"""
 
 		self.spriteIndex = self.spriteIndex + 1 if self.spriteIndex < 2 else 0
-		self.currentImageName = "bean_{}_{}.png".format(self.level.getStyleTypeWithScore(), self.spriteIndex)
-		self.level.setActionDelay((self, "updateSprite"), BEAN_SPRITE_DURATION, self.updateSprite)
+		self.currentImageName = "bean_{}_{}.png".format( \
+			self.level.getStyleTypeWithScore(), self.spriteIndex)
+		
+		self.level.setActionDelay((self, "updateSprite"), \
+			BEAN_SPRITE_DURATION, self.updateSprite)
 
 	def catch(self):
 		"""
@@ -108,7 +127,8 @@ class Bean(Entity):
 
 		self.sounds["bean_cut"].play()
 		for i in range(2):
-			randPos = [self.pos[0] + random.uniform(-0.5, 0.5), self.pos[1] + random.uniform(-0.5, 0.2)]
+			randPos = [self.pos[0] + random.uniform(-0.5, 0.5), self.pos[1] \
+				+ random.uniform(-0.5, 0.2)]
 			self.level.spawnLeaf(randPos, "leaf")
 
 	def remove(self):

@@ -1,10 +1,31 @@
 # -*- coding: utf-8 -*-
 
+#	This file is part of Pyoro (A Python fan game).
+#
+#	Metawars is free software: you can redistribute it and/or modify
+#	it under the terms of the GNU General Public License as published by
+#	the Free Software Foundation, either version 3 of the License, or
+#	(at your option) any later version.
+#
+#	Metawars is distributed in the hope that it will be useful,
+#	but WITHOUT ANY WARRANTY; without even the implied warranty of
+#	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+#	GNU General Public License for more details.
+#
+#	You should have received a copy of the GNU General Public License
+#	along with Metawars. If not, see <https://www.gnu.org/licenses/>
+
 """
 Provide a menu to manage game options.
 
 Created on 21/08/2018
 """
+
+import os
+from pygame.locals import KEYDOWN, JOYBUTTONDOWN, JOYAXISMOTION, JOYHATMOTION
+
+__author__ = "RedbeanGit"
+__repo__ = "https://github.com/RedbeanGit/Pyoro"
 
 from game.config import GUI_IMAGE_PATH, NAME, VERSION
 from game.util import getKeyName, getJoyKeyName, resetGame, Game
@@ -14,16 +35,10 @@ from gui.setting_bar import Setting_bar
 from gui.text import Text
 from gui.menu_widget import Menu_widget
 
-__author__ = "Julien Dubois"
-__version__ = "1.1.2"
-
-import os
-from pygame.locals import KEYDOWN, JOYBUTTONDOWN, JOYAXISMOTION, JOYHATMOTION
-
 
 class Option_menu(Menu_widget):
 	"""
-	Menu to display to manage game options like sound volume and inputs.
+	Create a menu allowing the player to change some game settings.
 	"""
 
 	DEFAULT_KWARGS = {
@@ -198,49 +213,81 @@ class Option_menu(Menu_widget):
 			if self.waitingInput[0] == "keyboard":
 				if event.type == KEYDOWN:
 					self.configSubWidget(("commandButton", *self.waitingInput), \
-						text = getKeyName(event.key), enable = True)
+						text=getKeyName(event.key), enable=True)
 					self.setKeyboardOption(self.waitingInput[1], event.key)
 					self.waitingInput = ()
+			
 			elif self.waitingInput[0] == "joystick":
+				
 				if event.type == JOYBUTTONDOWN:
 					self.configSubWidget(("commandButton", *self.waitingInput), \
-						text = getJoyKeyName(JOYBUTTONDOWN, \
-						buttonId = event.button), enable = True)
+						text=getJoyKeyName(JOYBUTTONDOWN, \
+						buttonId=event.button), enable=True)
 					self.setJoystickOption(self.waitingInput[1], \
 						inputType = JOYBUTTONDOWN, buttonId = event.button)
 					self.waitingInput = ()
+				
 				elif event.type == JOYHATMOTION:
 					self.configSubWidget(("commandButton", *self.waitingInput), \
-						text = getJoyKeyName(JOYHATMOTION, hatId = event.hat, \
-						value = event.value), enable = True)
+						text=getJoyKeyName(JOYHATMOTION, hatId=event.hat, \
+						value=round(event.value)), enable=True)
 					self.setJoystickOption(self.waitingInput[1], \
-						inputType = JOYHATMOTION, hatId = event.hat, \
-						value = event.value)
+						inputType=JOYHATMOTION, hatId=event.hat, \
+						value = round(event.value))
 					self.waitingInput = ()
+				
 				elif event.type == JOYAXISMOTION:
 					self.configSubWidget(("commandButton", *self.waitingInput), \
-						text = getJoyKeyName(JOYAXISMOTION, axisId = event.axis, \
-						value = event.value), enable = True)
+						text = getJoyKeyName(JOYAXISMOTION, axisId=event.axis, \
+						value=round(event.value)), enable=True)
 					self.setJoystickOption(self.waitingInput[1], \
-						inputType = JOYAXISMOTION, axisId = event.axis, \
-						value = event.value)
+						inputType=JOYAXISMOTION, axisId=event.axis, \
+						value=round(event.value))
 					self.waitingInput = ()
+				
 				elif event.type == KEYDOWN:
 					self.configSubWidget(("commandButton", *self.waitingInput), \
-					enable = True)
+					enable=True)
 					self.waitingInput = ()
 
 	def setKeyboardOption(self, actionName, keyCode):
+		"""
+		Define a new key for a given action.
+
+		:type actionName: str
+		:param actionName: The name used to identify the associated action.
+
+		:type keyCode: int
+		:param keyCode: A key id.
+		"""
+
 		if "keyboard" not in Game.options:
 			Game.options["keyboard"] = {}
 		Game.options["keyboard"][actionName] = keyCode
 
 	def setJoystickOption(self, actionName, **inputKwargs):
+		"""
+		Define a new controller button for a given action.
+
+		:type actionName: str
+		:param actionName: The name used to identify the associated action.
+
+		Keyword arguments depend of the event type.
+		"""
+
 		if "joystick" not in Game.options:
 			Game.options["joystick"] = {}
-		Game.options["joystick"][actionName] = keyCode
+		Game.options["joystick"][actionName] = inputKwargs
 
 	def update(self, deltaTime):
+		"""
+		Update the menu, its subwidgets and the sound volume.
+
+		:type deltaTime: float
+		:param deltaTime: Time elapsed since the last call of this method (in
+			seconds).
+		"""
+
 		Menu_widget.update(self, deltaTime)
 		if ("volumeSettingBar", "music") in self.subWidgets:
 			Game.audioPlayer.musicVolume = \
@@ -250,6 +297,10 @@ class Option_menu(Menu_widget):
 				self.subWidgets["volumeSettingBar", "sound"].getValue()
 
 	def destroy(self):
+		"""
+		Destroy the menu and its subwidgets.
+		"""
+
 		if ("volumeSettingBar", "music") in self.subWidgets:
 			Game.options["music volume"] = \
 				self.subWidgets["volumeSettingBar", "music"].getValue()
@@ -260,6 +311,17 @@ class Option_menu(Menu_widget):
 		self.quitFct()
 
 	def inputCommand(self, inputTypeName, actionName):
+		"""
+		Start to record user event to configure the keyboard or a joystick.
+
+		:type inputTypeName: str
+		:param inputTypeName: It can be "keyboard" or "joystick".
+
+		:type actionName: str
+		:param actionName: The name used to identify the associated action.
+		"""
+
 		if not self.waitingInput:
-			self.configSubWidget(("commandButton", inputTypeName, actionName), enable = False)
+			self.configSubWidget(("commandButton", inputTypeName, \
+				actionName), enable=False)
 			self.waitingInput = (inputTypeName, actionName)

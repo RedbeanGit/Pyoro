@@ -1,5 +1,20 @@
 # -*- coding: utf-8 -*-
 
+#	This file is part of Pyoro (A Python fan game).
+#
+#	Metawars is free software: you can redistribute it and/or modify
+#	it under the terms of the GNU General Public License as published by
+#	the Free Software Foundation, either version 3 of the License, or
+#	(at your option) any later version.
+#
+#	Metawars is distributed in the hope that it will be useful,
+#	but WITHOUT ANY WARRANTY; without even the implied warranty of
+#	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+#	GNU General Public License for more details.
+#
+#	You should have received a copy of the GNU General Public License
+#	along with Metawars. If not, see <https://www.gnu.org/licenses/>
+
 """
 Provide methods to play and manage sounds
 and musics
@@ -7,18 +22,18 @@ and musics
 Created on 27/08/2018
 """
 
-from audio.sound import Sound
-from audio.music import Music
-from game.config import LOW_AUDIO
-from game.util import getResourcePaths
-
-__author__ = "Julien Dubois"
-__version__ = "1.1.2"
-
 import os
 import pyaudio
 import audioop
 import threading
+
+__author__ = "RedbeanGit"
+__repo__ = "https://github.com/RedbeanGit/Pyoro"
+
+from audio.sound import Sound
+from audio.music import Music
+from game.config import LOW_AUDIO
+from game.util import getResourcePaths
 
 
 class Audio_player:
@@ -32,7 +47,7 @@ class Audio_player:
 
 	defaultFramerate = 44100 # CD quality (22050 samples per second)
 
-	def __init__(self, nbChannels = 2, samplesWidth = 2, chunkSize = 1024):
+	def __init__(self, nbChannels=2, samplesWidth=2, chunkSize=1024):
 		"""
 		Initialize the Audio_player object.
 

@@ -1,20 +1,35 @@
 # -*- coding:utf-8 -*-
 
+#	This file is part of Pyoro (A Python fan game).
+#
+#	Metawars is free software: you can redistribute it and/or modify
+#	it under the terms of the GNU General Public License as published by
+#	the Free Software Foundation, either version 3 of the License, or
+#	(at your option) any later version.
+#
+#	Metawars is distributed in the hope that it will be useful,
+#	but WITHOUT ANY WARRANTY; without even the implied warranty of
+#	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+#	GNU General Public License for more details.
+#
+#	You should have received a copy of the GNU General Public License
+#	along with Metawars. If not, see <https://www.gnu.org/licenses/>
+
 """
 Provide a base class for activities.
 
 Created on 15/08/2018
 """
 
+import collections
+import os
+
+__author__ = "RedbeanGit"
+__repo__ = "https://github.com/RedbeanGit/Pyoro"
+
 from game.util import Game
 from gui.layout import Layout
 from gui.widget import Widget
-
-__author__ = "Julien Dubois"
-__version__ = "1.1.2"
-
-import collections
-import os
 
 
 class Activity:
@@ -132,7 +147,7 @@ class Activity:
 		event.
 
 		:type event: pygame.event.Event
-		:param event: The event to give to the widgets.
+		:param event: The event to pass to the widgets.
 		"""
 
 		for widget in tuple(self.widgets.values()):

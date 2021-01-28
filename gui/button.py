@@ -1,21 +1,36 @@
 # -*- coding: utf-8 -*-
 
+#	This file is part of Pyoro (A Python fan game).
+#
+#	Metawars is free software: you can redistribute it and/or modify
+#	it under the terms of the GNU General Public License as published by
+#	the Free Software Foundation, either version 3 of the License, or
+#	(at your option) any later version.
+#
+#	Metawars is distributed in the hope that it will be useful,
+#	but WITHOUT ANY WARRANTY; without even the implied warranty of
+#	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+#	GNU General Public License for more details.
+#
+#	You should have received a copy of the GNU General Public License
+#	along with Metawars. If not, see <https://www.gnu.org/licenses/>
+
 """
 Provide a class to create button widgets with update on click and on hover.
 
 Created on 18/08/2018
 """
 
+import os
+
+__author__ = "RedbeanGit"
+__repo__ = "https://github.com/RedbeanGit/Pyoro"
+
 from game.config import GUI_IMAGE_PATH
 
 from gui.eventable_widget import Eventable_widget
 from gui.image_transformer import resizeImage
 from gui.text import Text
-
-__author__ = "Julien Dubois"
-__version__ = "1.1.2"
-
-import os
 
 
 class Button(Eventable_widget):
@@ -52,6 +67,10 @@ class Button(Eventable_widget):
 		:type pos: tuple
 		:param pos: The default position of the button in a (x, y) tuple where
 			x and y are integers.
+
+		text, textKwargs, textAnchor, backgroundImage, onHoverBackgroundImage,
+		onClickBackgroundImage, onMiddleClickBackgroundImage,
+		onRightClickBackgroundImage and disableBackgroundImage can be defined.
 		"""
 
 		Button.updateDefaultKwargs(kwargs)
@@ -64,6 +83,15 @@ class Button(Eventable_widget):
 
 	@classmethod
 	def updateDefaultTextKwargs(cls, kwargs):
+		"""
+		Add missing optional text kwargs with
+			Button.DEFAULT_KWARGS["textKwargs"].
+
+		:type kwargs: dict
+		:param kwargs: A {kwargsName: value} dictionnary to update with
+			missing kwargs.
+		"""
+
 		for key, value in cls.DEFAULT_KWARGS["textKwargs"].items():
 			if key not in kwargs["textKwargs"]:
 				kwargs["textKwargs"][key] = value
@@ -94,6 +122,10 @@ class Button(Eventable_widget):
 	def update(self, deltaTime):
 		"""
 		Redraw the button with the best background for the current event.
+
+		:type deltaTime: float
+		:param deltaTime: Time elapsed since the last call of this method (in
+			seconds).
 		"""
 
 		eventName = ""
@@ -138,6 +170,14 @@ class Button(Eventable_widget):
 			self.loadBackgroundImages()
 
 	def getTextPos(self):
+		"""
+		Return the text position according to this button pos.
+
+		:rtype: tuple
+		:returns: The central position of the text in an (x, y) tuple where x
+			and y are both integers.
+		"""
+
 		x, y = self.getRealPos()
 		w, h = self.kwargs["size"]
 		ax, ay = self.kwargs["textAnchor"]

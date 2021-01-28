@@ -1,11 +1,33 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+#	This file is part of Pyoro (A Python fan game).
+#
+#	Metawars is free software: you can redistribute it and/or modify
+#	it under the terms of the GNU General Public License as published by
+#	the Free Software Foundation, either version 3 of the License, or
+#	(at your option) any later version.
+#
+#	Metawars is distributed in the hope that it will be useful,
+#	but WITHOUT ANY WARRANTY; without even the implied warranty of
+#	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+#	GNU General Public License for more details.
+#
+#	You should have received a copy of the GNU General Public License
+#	along with Metawars. If not, see <https://www.gnu.org/licenses/>
+
 """
 Main module and functions of Pyoro.
 
 Created on 17/03/2018
 """
+
+import os
+import sys
+import pygame
+
+__author__ = "RedbeanGit"
+__repo__ = "https://github.com/RedbeanGit/Pyoro"
 
 from audio.audio_player import Audio_player
 from game.debug_logger import Debug_logger
@@ -14,13 +36,6 @@ from game.util import checkData, checkModules, Errors, Game, leaveGame, \
 	loadOptions
 from game.config import VERSION
 from gui.window import Window
-
-__author__ = "Julien Dubois"
-__version__ = "1.1.2"
-
-import os
-import sys
-import pygame
 
 
 def main():

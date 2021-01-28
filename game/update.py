@@ -1,21 +1,36 @@
 # -*- coding:utf-8 -*-
 
+#	This file is part of Pyoro (A Python fan game).
+#
+#	Metawars is free software: you can redistribute it and/or modify
+#	it under the terms of the GNU General Public License as published by
+#	the Free Software Foundation, either version 3 of the License, or
+#	(at your option) any later version.
+#
+#	Metawars is distributed in the hope that it will be useful,
+#	but WITHOUT ANY WARRANTY; without even the implied warranty of
+#	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+#	GNU General Public License for more details.
+#
+#	You should have received a copy of the GNU General Public License
+#	along with Metawars. If not, see <https://www.gnu.org/licenses/>
+
 """
 Provide update functions
 
 Created on 17/11/2018
 """
 
-from game.config import VERSION, UPDATE_HOST, UPDATE_USER, UPDATE_PASSWORD
-from game.ftp_manager import FTP_manager
-from game.util import getExternalDataPath, copyDirectory
-
-__author__ = "Julien Dubois"
-__version__ = "1.1.1"
-
 import os
 import sys
 import threading
+
+__author__ = "RedbeanGit"
+__repo__ = "https://github.com/RedbeanGit/Pyoro"
+
+from game.config import VERSION, UPDATE_HOST, UPDATE_USER, UPDATE_PASSWORD
+from game.ftp_manager import FTP_manager
+from game.util import getExternalDataPath, copyDirectory
 
 
 def getConnectionStream():
@@ -38,6 +53,9 @@ def getUpdates(ftpMgr):
 	"""
 	Search new versions on a server.
 
+	:type ftpMgr: game.ftp_manager.FTP_manager
+	:param ftpMgr: The ftp manager used to download files.
+
 	:rtype: list<str>
 	:returns: A list of new versions. Return an empty list
 		if something wrong happen.
@@ -46,7 +64,8 @@ def getUpdates(ftpMgr):
 	"""
 
 	print("[INFO] [update.checkForUpdate] Checking for new updates")
-	versions = ftpMgr.readServerFile("htdocs/game_update/versions.txt").split("\n")
+	versions = ftpMgr.readServerFile("htdocs/game_update/versions.txt") \
+		.split("\n")
 	versionFound = False
 	newVersions = []
 	
@@ -60,7 +79,16 @@ def getUpdates(ftpMgr):
 
 def downloadUpdate(ftpMgr, version):
 	"""
-	Download 
+	Download files associated to a given version from the server.
+
+	:type ftpMgr: game.ftp_manager.FTP_manager
+	:param ftpMgr: The FTP_manager used to download files.
+
+	:type version: str
+	:param version: Version name (like "1.2.3")
+
+	:rtype: bool
+	:returns: False if an error occurs, True otherwise.
 	"""
 
 	print("[INFO] [update.downloadUpdate] Downloading update v" + version)
@@ -106,7 +134,7 @@ def getFilesToDownload(ftpMgr, version, folder = "htdocs/game_update/"):
 	return []
 
 
-def getFilesToRemove(ftpMgr, version, folder = "htdocs/game_update/"):
+def getFilesToRemove(ftpMgr, version, folder="htdocs/game_update/"):
 	"""
 	Get the name of the files to remove for a defined version.
 

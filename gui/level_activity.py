@@ -1,10 +1,34 @@
 # -*- coding: utf-8 -*-
 
+#	This file is part of Pyoro (A Python fan game).
+#
+#	Metawars is free software: you can redistribute it and/or modify
+#	it under the terms of the GNU General Public License as published by
+#	the Free Software Foundation, either version 3 of the License, or
+#	(at your option) any later version.
+#
+#	Metawars is distributed in the hope that it will be useful,
+#	but WITHOUT ANY WARRANTY; without even the implied warranty of
+#	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+#	GNU General Public License for more details.
+#
+#	You should have received a copy of the GNU General Public License
+#	along with Metawars. If not, see <https://www.gnu.org/licenses/>
+
 """
 Provide an activity to manage the real game view.
 
 Created on 10/04/2018
 """
+
+import os
+import pygame
+
+from pygame.locals import KEYDOWN, KEYUP, JOYBUTTONDOWN, JOYBUTTONUP, \
+	JOYHATMOTION, JOYAXISMOTION
+
+__author__ = "RedbeanGit"
+__repo__ = "https://github.com/RedbeanGit/Pyoro"
 
 from game.config import LEVEL_IMAGE_PATH
 from game.level import Level
@@ -16,22 +40,13 @@ from gui.level_drawer import Level_drawer
 from gui.pause_menu import Pause_menu
 from gui.text import Text
 
-__author__ = "Julien Dubois"
-__version__ = "1.1.2"
-
-import os
-import pygame
-
-from pygame.locals import KEYDOWN, KEYUP, JOYBUTTONDOWN, JOYBUTTONUP, \
-	JOYHATMOTION, JOYAXISMOTION
-
 
 class Level_activity(Activity):
 	"""
 	Activity managing in-game graphical components.
 	"""
 
-	def __init__(self, window, gameId = 0):
+	def __init__(self, window, gameId=0):
 		"""
 		Initialize a new Level_activity object.
 

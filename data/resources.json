@@ -18,7 +18,7 @@
 		["audio", "sounds", "pyoro_die.wav"],
 		["audio", "sounds", "pyoro_eat.wav"],
 		["audio", "sounds", "pyoro_move.wav"],
-		["audio", "sounds", "tong.wav"]
+		["audio", "sounds", "tongue.wav"]
 	],
 	"images":
 	[
@@ -217,12 +217,12 @@
 		["images", "entities", "super leaf piece", "leafpiece_2_0.png"],
 		["images", "entities", "super leaf piece", "leafpiece_2_1.png"],
 		["images", "entities", "super leaf piece", "leafpiece_2_2.png"],
-		["images", "entities", "tong", "tong_0_-1.png"],
-		["images", "entities", "tong", "tong_0_1.png"],
-		["images", "entities", "tong", "tong_1_-1.png"],
-		["images", "entities", "tong", "tong_1_1.png"],
-		["images", "entities", "tong", "tong_2_-1.png"],
-		["images", "entities", "tong", "tong_2_1.png"],
+		["images", "entities", "tongue", "tongue_0_-1.png"],
+		["images", "entities", "tongue", "tongue_0_1.png"],
+		["images", "entities", "tongue", "tongue_1_-1.png"],
+		["images", "entities", "tongue", "tongue_1_1.png"],
+		["images", "entities", "tongue", "tongue_2_-1.png"],
+		["images", "entities", "tongue", "tongue_2_1.png"],
 		["images", "gui", "button", "button.png"],
 		["images", "gui", "button", "button_click.png"],
 		["images", "gui", "button", "button_disable.png"],

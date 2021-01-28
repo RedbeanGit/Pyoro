@@ -1,10 +1,31 @@
 # -*- coding:utf-8 -*-
 
+#	This file is part of Pyoro (A Python fan game).
+#
+#	Metawars is free software: you can redistribute it and/or modify
+#	it under the terms of the GNU General Public License as published by
+#	the Free Software Foundation, either version 3 of the License, or
+#	(at your option) any later version.
+#
+#	Metawars is distributed in the hope that it will be useful,
+#	but WITHOUT ANY WARRANTY; without even the implied warranty of
+#	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+#	GNU General Public License for more details.
+#
+#	You should have received a copy of the GNU General Public License
+#	along with Metawars. If not, see <https://www.gnu.org/licenses/>
+
 """
 Provide a splash activity while the game is booting.
 
 Created on 29/10/2018
 """
+
+import os
+import threading
+
+__author__ = "RedbeanGit"
+__repo__ = "https://github.com/RedbeanGit/Pyoro"
 
 from game.config import SPLASH_ANIMATION_DURATION, \
 	ENTITIES_IMAGE_PATH
@@ -16,12 +37,6 @@ from gui.activity import Activity
 from gui.dialog_menu import Dialog_menu
 from gui.image_widget import Image_widget
 from gui.text import Text
-
-__author__ = "Julien Dubois"
-__version__ = "1.1.2"
-
-import os
-import threading
 
 
 class Splash_activity(Activity):

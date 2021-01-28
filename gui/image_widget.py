@@ -1,19 +1,37 @@
 # -*- coding: utf-8 -*-
 
+#   This file is part of Pyoro (A Python fan game).
+#
+#   Metawars is free software: you can redistribute it and/or modify
+#   it under the terms of the GNU General Public License as published by
+#   the Free Software Foundation, either version 3 of the License, or
+#   (at your option) any later version.
+#
+#   Metawars is distributed in the hope that it will be useful,
+#   but WITHOUT ANY WARRANTY; without even the implied warranty of
+#   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+#   GNU General Public License for more details.
+#
+#   You should have received a copy of the GNU General Public License
+#   along with Metawars. If not, see <https://www.gnu.org/licenses/>
+
 """
 Provide a high level image object.
 
 Created on 31/12/2018
 """
 
+__author__ = "RedbeanGit"
+__repo__ = "https://github.com/RedbeanGit/Pyoro"
+
 from gui.image_transformer import resizeImage
 from gui.widget import Widget
 
-__author__ = "Julien Dubois"
-__version__ = "1.1.2"
-
 
 class Image_widget(Widget):
+    """
+    Create a widget used to render image easily.
+    """
 
     DEFAULT_KWARGS = {
 
@@ -29,6 +47,9 @@ class Image_widget(Widget):
         :type pos: tuple
         :param pos: The position of the widget in a (x, y) tuple, where x and y
             are integers.
+
+        :type imagePath: str
+        :param imagePath: The image's filepath.
         """
 
         Image_widget.updateDefaultKwargs(kwargs)

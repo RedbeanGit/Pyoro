@@ -1,10 +1,32 @@
 # -*- coding: utf-8 -*-
 
+#	This file is part of Pyoro (A Python fan game).
+#
+#	Metawars is free software: you can redistribute it and/or modify
+#	it under the terms of the GNU General Public License as published by
+#	the Free Software Foundation, either version 3 of the License, or
+#	(at your option) any later version.
+#
+#	Metawars is distributed in the hope that it will be useful,
+#	but WITHOUT ANY WARRANTY; without even the implied warranty of
+#	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+#	GNU General Public License for more details.
+#
+#	You should have received a copy of the GNU General Public License
+#	along with Metawars. If not, see <https://www.gnu.org/licenses/>
+
 """
 Provide a class to manage the game window.
 
 Created on 18/03/2018
 """
+
+import os
+import pygame
+from pygame.locals import QUIT, K_F4, K_RALT, K_LALT
+
+__author__ = "RedbeanGit"
+__repo__ = "https://github.com/RedbeanGit/Pyoro"
 
 from audio.audio_player import Audio_player
 from game.config import NAME, GUI_IMAGE_PATH, CASE_SIZE, WINDOW_COLOR
@@ -13,13 +35,6 @@ from game.util import loadOptions, saveOptions, getResourcePaths, \
 from gui.level_activity import Level_activity
 from gui.menu_activity import Menu_activity
 from gui.splash_activity import Splash_activity
-
-__author__ = "Julien Dubois"
-__version__ = "1.1.2"
-
-import os
-import pygame
-from pygame.locals import QUIT, K_F4, K_RALT, K_LALT
 
 
 class Window:
@@ -46,7 +61,7 @@ class Window:
 			+ "in fullscreen mode with auto definition")
 
 		iconPath = os.path.join(GUI_IMAGE_PATH, "pyoro_icon.png")
-		self.rootSurface = pygame.display.set_mode((0, 0), pygame.FULLSCREEN)
+		self.rootSurface = pygame.display.set_mode((0, 0), pygame.FULLSCREEN | pygame.HWSURFACE)
 		pygame.display.set_caption(NAME)
 
 		if os.path.exists(iconPath):
@@ -112,7 +127,7 @@ class Window:
 		image.fill((255, 0, 255), (8, 8, 8, 8))
 		return image
 
-	def getImage(self, imagePath, alphaChannel = True):
+	def getImage(self, imagePath, alphaChannel=True):
 		"""
 		Get a copy of a loaded image. If the searched image hasn't been
 		loaded, return a replacement image.
@@ -163,7 +178,7 @@ class Window:
 		"""
 
 		self.updateEvents()
-		self.rootSurface.fill(WINDOW_COLOR)
+
 		if self.activity:
 			self.activity.update(deltaTime)
 		pygame.display.update()
@@ -280,6 +295,7 @@ class Window:
 		:rtype: tuple
 		:returns: A (width, height) tuple.
 		"""
+		
 		if self.rootSurface:
 			return self.rootSurface.get_size()
 		else:
