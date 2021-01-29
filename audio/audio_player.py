@@ -285,7 +285,9 @@ class Audio_player:
 						volume = self.musicVolume
 					else:
 						volume = self.soundVolume
-					chunk = sound.update()
+
+					chunk = sound.setChunkVolume(sound.update(), volume \
+						* sound.volume)
 					chunks = audioop.add(chunks, chunk, self.samplesWidth)
 			chunks = audioop.ratecv(chunks, self.samplesWidth, self.nbChannels, \
 				Audio_player.defaultFramerate, framerate * 2, None)[0]

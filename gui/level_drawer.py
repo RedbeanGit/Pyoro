@@ -205,7 +205,8 @@ class Level_drawer:
 				background.set_alpha(0)
 
 				self.updateBackgroundTransition(0)
-			self.activity.window.drawImage(self.lastBackground, (0, 0))
+			if background.get_alpha() != 255:
+				self.activity.window.drawImage(self.lastBackground, (0, 0))
 		self.activity.window.drawImage(background, (0, 0))
 
 	def drawBlocks(self):

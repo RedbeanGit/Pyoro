@@ -289,6 +289,7 @@ class Option_menu(Menu_widget):
 		"""
 
 		Menu_widget.update(self, deltaTime)
+
 		if ("volumeSettingBar", "music") in self.subWidgets:
 			Game.audioPlayer.musicVolume = \
 				self.subWidgets["volumeSettingBar", "music"].getValue()
