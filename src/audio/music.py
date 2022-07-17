@@ -33,115 +33,118 @@ from audio.sound import Sound
 
 
 class Music(Sound):
-	"""
-	Made for loading and playing large audio files.
-	"""
+    """
+    Made for loading and playing large audio files.
+    """
 
-	def __init__(self, audioPlayer):
-		"""
-		Initialize a Music object.
+    def __init__(self, audio_player):
+        """
+        Initialize a Music object.
 
-		:type audioPlayer: audio.audio_player.Audio_player
-		:param audioPlayer: The player that will update this Music object.
-		"""
+        :type audioPlayer: audio.audio_player.Audio_player
+        :param audioPlayer: The player that will update this Music object.
+        """
 
-		Sound.__init__(self, audioPlayer)
-		self.waveFile = None
+        Sound.__init__(self, audio_player)
+        self.wave_file = None
 
-	def load(self, filePath):
-		"""
-		Open a wav file at the given path to load it during playback.
+    def load(self, file_path):
+        """
+        Open a wav file at the given path to load it during playback.
 
-		:type filePath: str
-		:param filePath: The path of the file to load
-		"""
+        :type file_path: str
+        :param file_path: The path of the file to load
+        """
 
-		if os.path.exists(filePath):
-			try:
-				# Openning new stream
-				self.waveFile = wave.open(filePath, "rb")
-				self.filePath = filePath,
-				self.framerate = self.waveFile.getframerate()
-				self.nbChannels = self.waveFile.getnchannels()
-				self.samplesWidth = self.waveFile.getsampwidth()
-				self.isLoaded = True
-			except Exception:
-				print('[WARNING] [Music.load] Unable to load "%s"' % filePath)
-		else:
-			print('[WARNING] [Music.load] Unable to find "%s"' % filePath)
+        if os.path.exists(file_path):
+            try:
+                # Openning new stream
+                self.wave_file = wave.open(file_path, "rb")
+                self.file_path = file_path,
+                self.framerate = self.wave_file.getframerate()
+                self.nb_channels = self.wave_file.getnchannels()
+                self.samples_width = self.wave_file.getsampwidth()
+                self.is_loaded = True
+            except Exception:
+                print(f'[WARNING] [Music.load] Unable to load "{file_path}"')
+        else:
+            print(f'[WARNING] [Music.load] Unable to find "{file_path}"')
 
-	def unload(self):
-		"""
-		Clear the sound properties and audio data, and close the wave file.
-		"""
+    def unload(self):
+        """
+        Clear the sound properties and audio data, and close the wave file.
+        """
 
-		if self.isLoaded:
-			self.waveFile.close()
-			Sound.unload(self)
-		else:
-			print("[WARNING] [Music.unload] Music not loaded")
+        if self.is_loaded and self.wave_file:
+            self.wave_file.close()
+            Sound.unload(self)
+        else:
+            print("[WARNING] [Music.unload] Music not loaded")
 
-	def isFinished(self):
-		"""
-		Return True if the playhead has arrived at the end,
-		otherwise False.
-		"""
-		return self.pos >= self.waveFile.getnframes()
+    def is_finished(self):
+        """
+        Return True if the playhead has arrived at the end,
+        otherwise False.
+        """
+        if self.wave_file:
+            return self.pos >= self.wave_file.getnframes()
 
-	def setPos(self, pos):
-		"""
-		Set the playhead position.
+    def set_pos(self, pos):
+        """
+        Set the playhead position.
 
-		:type pos: int
-		:param pos: The new position of the playback
-		"""
-		self.waveFile.setpos(pos)
-		self.pos = pos
+        :type pos: int
+        :param pos: The new position of the playback
+        """
+        if self.wave_file:
+            self.wave_file.setpos(pos)
+            self.pos = pos
 
-	def getFrames(self, nbFrames):
-		"""
-		Get a new audio chunk.
+    def get_frames(self, nb_frames):
+        """
+        Get a new audio chunk.
 
-		:type nbFrames: int
-		:param nbFrames: The size of the audio chunk to get
+        :type nbFrames: int
+        :param nbFrames: The size of the audio chunk to get
 
-		:rtype: bytes
-		:returns: A new raw audio chunk
-		"""
+        :rtype: bytes
+        :returns: A new raw audio chunk
+        """
 
-		nbFrames = int(nbFrames)
-		chunkSize = int(nbFrames / self.nbChannels / self.samplesWidth)
-		chunk = self.waveFile.readframes(chunkSize)
-		self.pos = self.waveFile.tell()
-		return chunk + bytes(nbFrames - len(chunk))
+        if self.wave_file:
+            nb_frames = int(nb_frames)
+            chunk_size = int(nb_frames / self.nb_channels / self.samples_width)
+            chunk = self.wave_file.readframes(chunk_size)
+            self.pos = self.wave_file.tell()
+            return chunk + bytes(nb_frames - len(chunk))
 
-	def reset(self):
-		"""
-		Set the playhead at the beginning.
-		"""
+    def reset(self):
+        """
+        Set the playhead at the beginning.
+        """
 
-		if self.isLoaded:
-			self.waveFile.rewind()
-		else:
-			print("[WARNING] [Music.getFileInfo] Music not loaded")
+        if self.is_loaded and self.wave_file:
+            self.wave_file.rewind()
+        else:
+            print("[WARNING] [Music.getFileInfo] Music not loaded")
 
-	def copy(self):
-		"""
-		Create a new music with the same properties and audio data as this
-		music.
+    def copy(self):
+        """
+        Create a new music with the same properties and audio data as this
+        music.
 
-		:rtype: audio.music.Music
-		:returns: A new independant music.
-		"""
+        :rtype: audio.music.Music
+        :returns: A new independant music.
+        """
 
-		msc = Music(self.ap)
-		if self.isLoaded:
-			msc.framerate = self.framerate
-			msc.nbChannels = self.nbChannels
-			msc.samplesWidth = self.samplesWidth
-			msc.filePath = self.filePath
-			msc.samples = self.samples
-			msc.waveFile = self.waveFile
-			msc.isLoaded = True
+        msc = Music(self.audio_player)
+        if self.is_loaded:
+            msc.framerate = self.framerate
+            msc.nb_channels = self.nb_channels
+            msc.samples_width = self.samples_width
+            msc.file_path = self.file_path
+            msc.samples = self.samples
+            msc.wave_file = self.wave_file
+            msc.is_loaded = True
 
-		return msc
+        return msc

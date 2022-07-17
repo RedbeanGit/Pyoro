@@ -30,94 +30,93 @@ __repo__ = "https://github.com/RedbeanGit/Pyoro"
 from entities.entity import Entity
 from gui.image_transformer import resizeImage
 from game.config import SEED_SPEED, AIR_RESISTANCE, GRAVITY_FORCE, \
-	ENTITIES_IMAGE_PATH
+    ENTITIES_IMAGE_PATH
 
 
 class Seed(Entity):
-	"""
-	Create seeds used for Pyoro 2 shoot animations.
-	"""
+    """
+    Create seeds used for Pyoro 2 shoot animations.
+    """
 
-	def __init__(self, level, angle, direction):
-		"""
-		Initialize a new Seed object.
+    def __init__(self, level, angle, direction):
+        """
+        Initialize a new Seed object.
 
-		:type level: game.level.Level
-		:param level: The level managing this object
+        :type level: game.level.Level
+        :param level: The level managing this object
 
-		:type angle: float
-		:param angle: The initial trajectory's angle in degree.
+        :type angle: float
+        :param angle: The initial trajectory's angle in degree.
 
-		:type direction: int
-		:param direction: The direction of the seed (1=right, -1=left).
-		"""
+        :type direction: int
+        :param direction: The direction of the seed (1=right, -1=left).
+        """
 
-		self.direction = direction
-		self.spriteAlpha = 255
-		self.vel = [
-			math.cos(angle * math.pi / 180) * direction * SEED_SPEED,
-			-math.sin(angle * math.pi / 180) * SEED_SPEED
-		]
+        self.direction = direction
+        self.sprite_alpha = 255
+        self.vel = [
+            math.cos(angle * math.pi / 180) * direction * SEED_SPEED,
+            -math.sin(angle * math.pi / 180) * SEED_SPEED
+        ]
 
-		pos = (level.pyoro.pos[0] + (level.pyoro.size[0] / 2 + 0.0625) * direction,
-			level.pyoro.pos[1] - level.pyoro.size[1] / 2 + 0.0625)
+        pos = (level.pyoro.pos[0] + (level.pyoro.size[0] / 2 + 0.0625) * direction,
+               level.pyoro.pos[1] - level.pyoro.size[1] / 2 + 0.0625)
 
-		Entity.__init__(self, level, pos, (0.125, 0.125))
+        Entity.__init__(self, level, pos, (0.125, 0.125))
 
-	def __initImages__(self, folderName):
-		"""
-		Internally load seed images in memory.
+    def __init_images__(self, folder_name):
+        """
+        Internally load seed images in memory.
 
-		:type folderName: str
-		:param folderName: The path to the folder containing the seeds.
-		"""
+        :type folder_name: str
+        :param folder_name: The path to the folder containing the seeds.
+        """
 
-		self.images = {}
-		folder = os.path.join(ENTITIES_IMAGE_PATH, folderName)
-		imageNames = os.listdir(folder)
-		caseSize = self.level.levelDrawer.getCaseSize()
+        self.images = {}
+        folder = os.path.join(ENTITIES_IMAGE_PATH, folder_name)
+        image_names = os.listdir(folder)
+        case_size = self.level.levelDrawer.getCase_size()
 
-		for imageName in imageNames:
-			if imageName.split(".")[-1] == "png":
-				self.images[imageName] = resizeImage(
-					self.level.levelDrawer.activity.window.getImage(
-						os.path.join(folder, imageName),
-						alphaChannel = False), \
-					(caseSize[0] * self.size[0], caseSize[1] * self.size[1]))
-				self.images[imageName].set_alpha(self.spriteAlpha)
-				self.currentImageName = imageName
+        for image_name in image_names:
+            if image_name.split(".")[-1] == "png":
+                self.images[image_name] = resizeImage(
+                    self.level.levelDrawer.activity.window.getImage(
+                        os.path.join(folder, image_name),
+                        alphaChannel=False),
+                    (case_size[0] * self.size[0], case_size[1] * self.size[1]))
+                self.images[image_name].set_alpha(self.sprite_alpha)
+                self.current_image_name = image_name
 
-	def initImages(self):
-		"""
-		Initialize seed images.
-		"""
+    def init_images(self):
+        """
+        Initialize seed images.
+        """
 
-		self.__initImages__("seed")
+        self.__init_images__("seed")
 
-	def update(self, deltaTime):
-		"""
-		Update the seed (velocity, position, image opacity).
+    def update(self, deltaTime):
+        """
+        Update the seed (velocity, position, image opacity).
 
-		:type deltaTime: float
-		:param deltaTime: Time elapsed since the last update.
-		"""
+        :type deltaTime: float
+        :param deltaTime: Time elapsed since the last update.
+        """
 
-		self.vel[0] -= AIR_RESISTANCE * self.direction * deltaTime
-		self.vel[1] += GRAVITY_FORCE * deltaTime
-		self.pos[0] += self.vel[0]
-		self.pos[1] += self.vel[1]
+        self.vel[0] -= AIR_RESISTANCE * self.direction * deltaTime
+        self.vel[1] += GRAVITY_FORCE * deltaTime
+        self.pos[0] += self.vel[0]
+        self.pos[1] += self.vel[1]
 
-		if self.spriteAlpha > 0:
-			self.spriteAlpha -= 64 * deltaTime
-		else:
-			self.remove()
-		Entity.update(self, deltaTime)
+        if self.sprite_alpha > 0:
+            self.sprite_alpha -= 64 * deltaTime
+        else:
+            self.remove()
+        Entity.update(self, deltaTime)
 
-	def updateSprite(self):
-		"""
-		Define the sprite to use according to the current level style
-		"""
+    def update_sprite(self):
+        """
+        Define the sprite to use according to the current level style
+        """
 
-		self.currentImageName = "seed_{}.png".format( \
-			self.level.getStyleTypeWithScore())
-		self.images[self.currentImageName].set_alpha(self.spriteAlpha)
+        self.current_image_name = f"seed_{self.level.getStyleTypeWithScore()}.png"
+        self.images[self.current_image_name].set_alpha(self.sprite_alpha)

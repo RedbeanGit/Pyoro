@@ -30,84 +30,86 @@ from game.config import ANGEL_SPEED, ANGEL_SPRITE_DURATION
 
 
 class Angel(Entity):
-	"""
-	Angel that fall from the sky to repair a destroyed block
-	"""
+    """
+    Angel that fall from the sky to repair a destroyed block
+    """
 
-	def __init__(self, level, repairCase):
-		"""
-		Initialize an Angel object.
+    def __init__(self, level, repairCase):
+        """
+        Initialize an Angel object.
 
-		:type level: game.level.Level
-		:param level: The level managing this entity
+        :type level: game.level.Level
+        :param level: The level managing this entity
 
-		:type repairCase: game.case.Case
-		:param repairCase: The block to repair
-		"""
+        :type repairCase: game.case.Case
+        :param repairCase: The block to repair
+        """
 
-		self.spriteIndex = 0
-		self.case = repairCase
-		self.case.isRepairing = True
-		Entity.__init__(self, level, (repairCase.pos + 0.75, 0.75), (1.5, 1.5))
+        self.sprite_index = 0
+        self.case = repairCase
+        self.case.is_repairing = True
+        Entity.__init__(self, level, (repairCase.pos + 0.75, 0.75), (1.5, 1.5))
 
-	def initImages(self):
-		"""
-		Load angel images.
-		"""
+    def init_images(self):
+        """
+        Load angel images.
+        """
 
-		self.__initImages__("angel")
+        self.__init_images__("angel")
 
-	def initSounds(self):
-		"""
-		Load angel sounds and start playing a falling sound.
-		"""
+    def init_sounds(self):
+        """
+        Load angel sounds and start playing a falling sound.
+        """
 
-		self.__initSounds__(("angel_down",))
-		self.sounds["angel_down"].play()
-	
-	def update(self, deltaTime):
-		"""
-		Update the angel (position, sprite).
+        self.__init_sounds__(("angel_down",))
+        self.sounds["angel_down"].play()
 
-		:type deltaTime: float
-		:param deltaTime: Time elapsed since the last frame update
-		"""
+    def update(self, deltaTime):
+        """
+        Update the angel (position, sprite).
 
-		if self.case.isRepairing:
-			self.pos[1] += ANGEL_SPEED * deltaTime
-		else:
-			self.pos[1] -= ANGEL_SPEED * deltaTime
-		if self.isHittingTheFloor():
-			self.repairCase()
-		Entity.update(self, deltaTime)
+        :type deltaTime: float
+        :param deltaTime: Time elapsed since the last frame update
+        """
 
-	def repairCase(self, case = None):
-		"""
-		Repair a destroyed block.
+        if self.case.is_repairing:
+            self.pos[1] += ANGEL_SPEED * deltaTime
+        else:
+            self.pos[1] -= ANGEL_SPEED * deltaTime
+        if self.is_hitting_floor():
+            self.repair_case()
+        Entity.update(self, deltaTime)
 
-		:type case: game.case.Case
-		:param case: The block to repair.
-			Leave None to repair the default block.
-		"""
+    def repair_case(self, case=None):
+        """
+        Repair a destroyed block.
 
-		case = case if case else self.case
-		case.isRepairing = False
-		case.exists = True
-		self.sounds["angel_down"].stop()
+        :type case: game.case.Case
+        :param case: The block to repair.
+                Leave None to repair the default block.
+        """
 
-	def updateSprite(self):
-		"""
-		Update the images to create a flight animation.
-		"""
+        case = case if case else self.case
+        case.is_repairing = False
+        case.exists = True
+        self.sounds["angel_down"].stop()
 
-		self.spriteIndex = 1 if self.spriteIndex == 0 else 0
-		self.currentImageName = "angel_{}_{}.png".format(self.level.getStyleTypeWithScore(), self.spriteIndex)
-		self.level.setActionDelay((self, "updateSprite"), ANGEL_SPRITE_DURATION, self.updateSprite)
-		
-	def remove(self):
-		"""
-		Remove the angel from its level and stop all actions delayed.
-		"""
+    def update_sprite(self):
+        """
+        Update the images to create a flight animation.
+        """
 
-		self.level.removeActionDelay((self, "updateSprite"))
-		Entity.remove(self)
+        score = self.level.get_style_type_with_score()
+        self.sprite_index = 1 if self.sprite_index == 0 else 0
+        self.current_image_name = f"angel_{score}_{self.sprite_index}.png"
+        self.level.set_action_delay(
+            (self, "updateSprite"), ANGEL_SPRITE_DURATION, self.update_sprite)
+
+    def remove(self):
+        """
+        Remove the angel from its level and stop all actions delayed.
+        """
+
+        self.level.remove_action_delay((self, "updateSprite"))
+        Entity.remove(self)

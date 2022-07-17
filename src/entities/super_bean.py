@@ -30,123 +30,123 @@ from entities.bean import Bean
 from game.config import BEAN_SPRITE_DURATION
 
 
-class Super_bean(Bean):
-	"""
-	Create a Super_bean object which have the hability to repair 10 destroyed
-		cases and to explode all beans currently falling.
-	"""
-	def __init__(self, level, pos, speed):
-		"""
-		Initialize a new Super_bean object.
+class SuperBean(Bean):
+    """
+    Create a Super_bean object which have the hability to repair 10 destroyed
+        cases and to explode all beans currently falling.
+    """
 
-		:type level: game.level.Level
-		:param level: The level managing this entity.
+    def __init__(self, level, pos, speed):
+        """
+        Initialize a new Super_bean object.
 
-		:type pos: list
-		:param pos: An [x, y] list where x and y are both float numbers.
+        :type level: game.level.Level
+        :param level: The level managing this entity.
 
-		:type speed: float
-		:param speed: The falling speed multiplicator.
-		"""
+        :type pos: list
+        :param pos: An [x, y] list where x and y are both float numbers.
 
-		self.spriteIndex = 0
-		self.colorIndex = 0
-		Bean.__init__(self, level, pos, speed)
+        :type speed: float
+        :param speed: The falling speed multiplicator.
+        """
 
-	def initImages(self):
-		"""
-		Initialize super_bean images.
-		"""
+        self.sprite_index = 0
+        self.color_index = 0
+        Bean.__init__(self, level, pos, speed)
 
-		self.__initImages__("super bean")
+    def init_images(self):
+        """
+        Initialize super_bean images.
+        """
 
-	def initSounds(self):
-		"""
-		Load super_bean sounds.
-		"""
+        self.__init_images__("super bean")
 
-		Bean.initSounds(self)
-		self.__initSounds__(("bean_implode",))
+    def init_sounds(self):
+        """
+        Load super_bean sounds.
+        """
 
-	def updateSprite(self):
-		"""
-		Define the sprite to use according to the blinking animation state and
-			the current level style.
-		"""
+        Bean.init_sounds(self)
+        self.__init_sounds__(("bean_implode",))
 
-		if not self.colorIndex % 2:
-			self.spriteIndex = self.spriteIndex + 1 if self.spriteIndex < 2 else 0
+    def update_sprite(self):
+        """
+        Define the sprite to use according to the blinking animation state and
+            the current level style.
+        """
 
-		self.colorIndex = self.colorIndex + 1 if self.colorIndex < 5 else 0
-		self.currentImageName = "bean_{}_{}.png".format(self.spriteIndex, \
-			self.colorIndex)
-		
-		self.level.setActionDelay((self, "updateSprite"), \
-			BEAN_SPRITE_DURATION / 6, self.updateSprite)
+        if not self.color_index % 2:
+            self.sprite_index = self.sprite_index + 1 if self.sprite_index < 2 else 0
 
-	def catch(self):
-		"""
-		Explode all the beans currently falling and repair 10 destroyed cases.
-		"""
+        self.color_index = self.color_index + 1 if self.color_index < 5 else 0
+        self.current_image_name = f"bean_{self.sprite_index}_{self.color_index}.png"
 
-		i = 0
-		for entity in self.level.entities:
-			if isinstance(entity, Bean) and entity != self:
-				self.level.createActionDelay((self, "destroyBean", i), i * 0.1, \
-					self.destroyBean, entity, i)
-				i += 1
-		i = 0
-		emptyCases = list(self.level.getVoidCases())
-		for i in range(min(10, len(emptyCases))):
-			self.level.createActionDelay((self, "repairCase", emptyCases[i].pos), \
-				i * 0.5, self.repairCase, emptyCases[i])
-		Bean.catch(self)
+        self.level.setActionDelay((self, "update_sprite"),
+                                  BEAN_SPRITE_DURATION / 6, self.update_sprite)
 
-	def destroyBean(self, bean, beanId):
-		"""
-		Explode a bean, increase the score and remove action delayed
-			associated with this bean.
+    def catch(self):
+        """
+        Explode all the beans currently falling and repair 10 destroyed cases.
+        """
 
-		:type bean: entities.bean.Bean
-		:param bean: The bean to destroy.
+        i = 0
+        for entity in self.level.entities:
+            if isinstance(entity, Bean) and entity != self:
+                self.level.createActionDelay((self, "destroy_bean", i), i * 0.1,
+                                             self.destroy_bean, entity, i)
+                i += 1
+        i = 0
+        empty_cases = list(self.level.getVoidCases())
+        for i in range(min(10, len(empty_cases))):
+            self.level.createActionDelay((self, "repair_case", empty_cases[i].pos),
+                                         i * 0.5, self.repair_case, empty_cases[i])
+        Bean.catch(self)
 
-		:type beanId: int
-		:param beanId: An integer associated with this bean when the explosion
-			was decided.
-		"""
+    def destroy_bean(self, bean, bean_id):
+        """
+        Explode a bean, increase the score and remove action delayed
+            associated with this bean.
 
-		self.sounds["bean_implode"].play()
-		bean.cut()
-		bean.remove()
-		self.level.spawnScore(50, bean.pos)
-		self.level.removeActionDelay((self, "destroyBean", beanId))
+        :type bean: entities.bean.Bean
+        :param bean: The bean to destroy.
 
-	def cut(self):
-		"""
-		Spawn super leafs and play a sound.
-		"""
+        :type bean_id: int
+        :param bean_id: An integer associated with this bean when the explosion
+            was decided.
+        """
 
-		self.sounds["bean_cut"].play()
-		for i in range(2):
-			randPos = [self.pos[0] + random.uniform(-0.5, 0.5), \
-				self.pos[1] + random.uniform(-0.5, 0.2)]
-			self.level.spawnLeaf(randPos, "super leaf")
+        self.sounds["bean_implode"].play()
+        bean.cut()
+        bean.remove()
+        self.level.spawnScore(50, bean.pos)
+        self.level.removeActionDelay((self, "destroy_bean", bean_id))
 
-	def repairCase(self, case):
-		"""
-		Repair a case and remove the associated action delayed.
+    def cut(self):
+        """
+        Spawn super leafs and play a sound.
+        """
 
-		:type case: game.case.Case
-		:param case: The case to repair.
-		"""
+        self.sounds["bean_cut"].play()
+        for _ in range(2):
+            rand_pos = [self.pos[0] + random.uniform(-0.5, 0.5),
+                        self.pos[1] + random.uniform(-0.5, 0.2)]
+            self.level.spawnLeaf(rand_pos, "super leaf")
 
-		self.level.repairCase(case)
-		self.level.removeActionDelay((self, "repairCase", case.pos))
+    def repair_case(self, case):
+        """
+        Repair a case and remove the associated action delayed.
 
-	def remove(self):
-		"""
-		Remove the super bean action delayed and the super bean itself.
-		"""
-		
-		self.level.removeActionDelay(("override", self, "updateSprite"))
-		Bean.remove(self)
+        :type case: game.case.Case
+        :param case: The case to repair.
+        """
+
+        self.level.repair_case(case)
+        self.level.removeActionDelay((self, "repair_case", case.pos))
+
+    def remove(self):
+        """
+        Remove the super bean action delayed and the super bean itself.
+        """
+
+        self.level.removeActionDelay(("override", self, "update_sprite"))
+        Bean.remove(self)

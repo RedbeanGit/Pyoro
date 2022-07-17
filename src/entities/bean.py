@@ -33,108 +33,108 @@ from game.config import BEAN_SPEED, BEAN_SPRITE_DURATION
 
 
 class Bean(Entity):
-	"""
-	Main class for all falling beans
-	"""
+    """
+    Main class for all falling beans
+    """
 
-	def __init__(self, level, pos, speed):
-		"""
-		Initialize a Bean object.
+    def __init__(self, level, pos, speed):
+        """
+        Initialize a Bean object.
 
-		:type level: game.level.Level
-		:param level: The level managing this bean.
+        :type level: game.level.Level
+        :param level: The level managing this bean.
 
-		:type pos: list<float>
-		:param pos: The default position of the bean.
+        :type pos: list<float>
+        :param pos: The default position of the bean.
 
-		:type speed: float
-		:param speed: The falling speed of the bean.
-		"""
+        :type speed: float
+        :param speed: The falling speed of the bean.
+        """
 
-		self.caught = False
-		self.speed = speed
-		self.spriteIndex = 0
-		Entity.__init__(self, level, pos, (1.5, 1.5))
+        self.caught = False
+        self.speed = speed
+        self.sprite_index = 0
+        Entity.__init__(self, level, pos, (1.5, 1.5))
 
-	def initImages(self):
-		"""
-		Load bean images.
-		"""
+    def init_images(self):
+        """
+        Load bean images.
+        """
 
-		self.__initImages__("bean")
+        self.__init_images__("bean")
 
-	def initSounds(self):
-		"""
-		Load bean sounds.
-		"""
+    def init_sounds(self):
+        """
+        Load bean sounds.
+        """
 
-		self.__initSounds__(("bean_cut", "bean_explode"))
+        self.__init_sounds__(("bean_cut", "bean_explode"))
 
-	def update(self, deltaTime):
-		"""
-		Update the bean (position, sprite).
+    def update(self, deltaTime):
+        """
+        Update the bean (position, sprite).
 
-		:type deltaTime: float
-		:param deltaTime: Time elapsed since the last frame update
-		"""
+        :type deltaTime: float
+        :param deltaTime: Time elapsed since the last frame update
+        """
 
-		if not self.caught:
-			self.pos[1] += BEAN_SPEED * self.speed * deltaTime
-			if self.isHittingTheFloor():
-				if(self.level.cases[int(self.pos[0])].exists):
-					self.level.cases[int(self.pos[0])].exists = False
-					self.explode()
-					self.remove()
-			if(self.isHittingEntity(self.level.pyoro) \
-			and not(self.level.pyoro.dead)):
-				self.explode()
-				self.remove()
-				self.level.pyoro.remove()
-		Entity.update(self, deltaTime)
+        if not self.caught:
+            self.pos[1] += BEAN_SPEED * self.speed * deltaTime
+            if self.is_hitting_floor():
+                if self.level.cases[int(self.pos[0])].exists:
+                    self.level.cases[int(self.pos[0])].exists = False
+                    self.explode()
+                    self.remove()
+            if self.is_hitting_entity(self.level.pyoro) \
+                    and not self.level.pyoro.dead:
+                self.explode()
+                self.remove()
+                self.level.pyoro.remove()
+        Entity.update(self, deltaTime)
 
-	def updateSprite(self):
-		"""
-		Update the images to create a swing animation.
-		"""
+    def update_sprite(self):
+        """
+        Update the images to create a swing animation.
+        """
 
-		self.spriteIndex = self.spriteIndex + 1 if self.spriteIndex < 2 else 0
-		self.currentImageName = "bean_{}_{}.png".format( \
-			self.level.getStyleTypeWithScore(), self.spriteIndex)
-		
-		self.level.setActionDelay((self, "updateSprite"), \
-			BEAN_SPRITE_DURATION, self.updateSprite)
+        score = self.level.getStyleTypeWithScore()
+        self.sprite_index = self.sprite_index + 1 if self.sprite_index < 2 else 0
+        self.current_image_name = f"bean_{score}_{self.sprite_index}.png"
 
-	def catch(self):
-		"""
-		Method called when caught by Pyoro.
-		"""
+        self.level.setActionDelay((self, "update_sprite"),
+                                  BEAN_SPRITE_DURATION, self.update_sprite)
 
-		self.caught = True
+    def catch(self):
+        """
+        Method called when caught by Pyoro.
+        """
 
-	def explode(self):
-		"""
-		Create an explosion animation with smoke and by playing
-		an explosion sound.
-		"""
+        self.caught = True
 
-		self.sounds["bean_explode"].play()
-		self.level.spawnSmoke(self.pos)
+    def explode(self):
+        """
+        Create an explosion animation with smoke and by playing
+        an explosion sound.
+        """
 
-	def cut(self):
-		"""
-		Spawn leafs to create a cutting animation.
-		"""
+        self.sounds["bean_explode"].play()
+        self.level.spawnSmoke(self.pos)
 
-		self.sounds["bean_cut"].play()
-		for i in range(2):
-			randPos = [self.pos[0] + random.uniform(-0.5, 0.5), self.pos[1] \
-				+ random.uniform(-0.5, 0.2)]
-			self.level.spawnLeaf(randPos, "leaf")
+    def cut(self):
+        """
+        Spawn leafs to create a cutting animation.
+        """
 
-	def remove(self):
-		"""
-		Remove the bean from its level and stop all actions delayed.
-		"""
+        self.sounds["bean_cut"].play()
+        for _ in range(2):
+            rand_pos = [self.pos[0] + random.uniform(-0.5, 0.5), self.pos[1]
+                        + random.uniform(-0.5, 0.2)]
+            self.level.spawnLeaf(rand_pos, "leaf")
 
-		self.level.removeActionDelay((self, "updateSprite"))
-		Entity.remove(self)
+    def remove(self):
+        """
+        Remove the bean from its level and stop all actions delayed.
+        """
+
+        self.level.removeActionDelay((self, "update_sprite"))
+        Entity.remove(self)

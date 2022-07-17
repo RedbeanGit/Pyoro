@@ -16,7 +16,7 @@
 #	along with Metawars. If not, see <https://www.gnu.org/licenses/>
 
 """
-Povides useful class for connecting, sending and receiving 
+Povides useful class for connecting, sending and receiving
 files on a FTPs server.
 
 Created on 27/10/2018
@@ -29,389 +29,377 @@ __author__ = "RedbeanGit"
 __repo__ = "https://github.com/RedbeanGit/Pyoro"
 
 
-class FTP_manager:
-	"""
-	Simplify sending and downloading files on a FTPs server.
-	"""
+class FTPManager:
+    """
+    Simplify sending and downloading files on a FTPs server.
+    """
 
-	def __init__(self, host, user = "", password = ""):
-		"""
-		Initialize a FTP_manager object. To connect it to the server,
-		run FTP_manager.connect().
+    def __init__(self, host, user="", password=""):
+        """
+        Initialize a FTP_manager object. To connect it to the server,
+        run FTP_manager.connect().
 
-		:type host: str
-		:param host: The host address (IP or DNS).
+        :type host: str
+        :param host: The host address (IP or DNS).
 
-		:type user: str
-		:param user: Optional. The username to use for login.
+        :type user: str
+        :param user: Optional. The username to use for login.
 
-		:type password: str
-		:param password: Optional. The password to use for login.
-		"""
+        :type password: str
+        :param password: Optional. The password to use for login.
+        """
 
-		self.stream = None
-		self.connected = False
-		self.host = host
-		self.user = user
-		self.password = password
-		self.buffer = ""
+        self.stream = None
+        self.connected = False
+        self.host = host
+        self.user = user
+        self.password = password
+        self.buffer = ""
 
-	def __printError__(
-				self, error, 
-				methodName = "__printError__", 
-				msg = "An error occured !"
-			):
-		"""
-		Internal method used to display a specific message according to 
-		a defined error.
+    def __print_error__(
+        self, error,
+        method_name="__print_error__",
+        msg="An error occured !"
+    ):
+        """
+        Internal method used to display a specific message according to
+        a defined error.
 
-		:type error: Exception
-		:param error: The error to manage.
+        :type error: Exception
+        :param error: The error to manage.
 
-		:type methodName: str
-		:param methodName: Optional. The FTP_manager method that had 
-			an error.
+        :type method_name: str
+        :param method_name: Optional. The FTP_manager method that had
+            an error.
 
-		:type msg: str
-		:param msg: Optional. A message to display.
-		"""
+        :type msg: str
+        :param msg: Optional. A message to display.
+        """
 
-		toDisplay = "%s%s"
-		if isinstance(error, ftplib.error_temp):
-			toDisplay = "[WARNING] [FTP_manager.%s] %s Temporary unvailable"
-		elif isinstance(error, ftplib.error_perm):
-			toDisplay = "[WARNING] [FTP_manager.%s]" \
-				+ " %s Permanent error, check server file permission"
-		elif isinstance(error, ftplib.error_proto):
-			toDisplay = "[WARNING] [FTP_manager.%s]" \
-				+ " %s The server reply does not fit the FTP specifications"
-		elif isinstance(error, ftplib.error_reply):
-			toDisplay = "[WARNING] [FTP_manager.%s]" \
-				+ " %s Unexpected reply from the server"
-		elif isinstance(error, IOError):
-			toDisplay = "[WARNING] [FTP_manager.%s] %s " \
-				+ "An error occured while writing in a local file"
-		else:
-			toDisplay = "[WARNING] [FTP_manager.%s] %s Unknown cause"
-		print(toDisplay % (methodName, msg))
+        to_display = "%s%s"
+        if isinstance(error, ftplib.error_temp):
+            to_display = "[WARNING] [FTP_manager.%s] %s Temporary unvailable"
+        elif isinstance(error, ftplib.error_perm):
+            to_display = "[WARNING] [FTP_manager.%s]" \
+                + " %s Permanent error, check server file permission"
+        elif isinstance(error, ftplib.error_proto):
+            to_display = "[WARNING] [FTP_manager.%s]" \
+                + " %s The server reply does not fit the FTP specifications"
+        elif isinstance(error, ftplib.error_reply):
+            to_display = "[WARNING] [FTP_manager.%s]" \
+                + " %s Unexpected reply from the server"
+        elif isinstance(error, IOError):
+            to_display = "[WARNING] [FTP_manager.%s] %s " \
+                + "An error occured while writing in a local file"
+        else:
+            to_display = "[WARNING] [FTP_manager.%s] %s Unknown cause"
+        print(to_display % (method_name, msg))
 
-	def connect(self, user = None, password = None):
-		"""
-		Try to connect to the FTPs server.
+    def connect(self, user=None, password=None):
+        """
+        Try to connect to the FTPs server.
 
-		:type user: str
-		:param user: Optional. If not defined, the default user is used.
+        :type user: str
+        :param user: Optional. If not defined, the default user is used.
 
-		:type password: str
-		:param password: Optional. If not defined, the default password
-			is used.
+        :type password: str
+        :param password: Optional. If not defined, the default password
+            is used.
 
-		:rtype: bool
-		:returns: True if it's a success, otherwise False.
-		"""
+        :rtype: bool
+        :returns: True if it's a success, otherwise False.
+        """
 
-		print("[INFO] [FTP_manager.connect] Connecting to the server")
-		user = user if user else self.user
-		password = password if password else self.password
-		try:
-			self.stream = ftplib.FTP_TLS(self.host, user, password)
-			self.connected = True
-			print("[INFO] [FTP_manager.connect] Connected successfuly !")
-			return True
-		except Exception as error:
-			self.__printError__(error, "connect", 
-				"Unable to connect or to login to the server !")
-		self.connected = False
-		return False
+        print("[INFO] [FTP_manager.connect] Connecting to the server")
+        user = user if user else self.user
+        password = password if password else self.password
+        try:
+            self.stream = ftplib.FTP_TLS(self.host, user, password)
+            self.connected = True
+            print("[INFO] [FTP_manager.connect] Connected successfuly !")
+            return True
+        except Exception as error:
+            self.__print_error__(error, "connect",
+                                 "Unable to connect or to login to the server !")
+        self.connected = False
+        return False
 
-	def disconnect(self):
-		"""
-		Try to disconnect to the FTPs server.
+    def disconnect(self):
+        """
+        Try to disconnect to the FTPs server.
 
-		:rtype: bool
-		:returns: True if it's a success, otherwise False.
-		"""
+        :rtype: bool
+        :returns: True if it's a success, otherwise False.
+        """
 
-		if self.connected:
-			try:
-				self.stream.quit()
-				self.connected = False
-				return True
-			except Exception as error:
-				self.__printError__(error, "disconnect", 
-					"Unable to disconnect from the server !")
-		else:
-			print("[WARNING] [FTP_manager.disconnect]" \
-				+ " Not connected to the server")
-		return False
+        if self.connected:
+            try:
+                self.stream.quit()
+                self.connected = False
+                return True
+            except Exception as error:
+                self.__print_error__(error, "disconnect",
+                                     "Unable to disconnect from the server !")
+        else:
+            print("[WARNING] [FTP_manager.disconnect]"
+                  + " Not connected to the server")
+        return False
 
-	def readServerFile(self, serverFilePath):
-		"""
-		Read a text file (utf-8 encoding) on the server.
+    def read_server_file(self, server_file_path):
+        """
+        Read a text file (utf-8 encoding) on the server.
 
-		:type serverFilePath: str
-		:param serverFilePath: The path to the file on the server.
+        :type server_file_path: str
+        :param server_file_path: The path to the file on the server.
 
-		:rtype: str
-		:returns: A string of the file content. 
-			Empty string if something wrong happen.
-		"""
+        :rtype: str
+        :returns: A string of the file content.
+            Empty string if something wrong happen.
+        """
 
-		self.buffer = ""
-		def write(binary):
-			self.buffer += binary.decode()
+        self.buffer = ""
 
-		if self.connected:
-			try:
-				self.stream.retrbinary("RETR " + serverFilePath, write)
-			except Exception as error:
-				self.__printError__(error, "readServerFile", 
-						"Unable to read \"%s\" from the server !" \
-						% serverFilePath
-					)
-			return self.buffer
-		print("[WARNING] [FTP_manager.readServerFile]" \
-			+ " Not connected to the server")
-		return ""
+        def write(binary):
+            self.buffer += binary.decode()
 
-	def downloadFile(self, serverFilePath, localFilePath):
-		"""
-		Download a file from the server.
+        if self.connected:
+            try:
+                self.stream.retrbinary("RETR " + server_file_path, write)
+            except Exception as error:
+                self.__print_error__(error, "read_server_file",
+                                     f"Unable to read \"{server_file_path}\" from the server !")
+            return self.buffer
+        print("[WARNING] [FTP_manager.read_server_file]"
+              + " Not connected to the server")
+        return ""
 
-		:type serverFilePath: str
-		:param serverFilePath: The path to the file on the server.
+    def download_file(self, server_file_path, local_file_path):
+        """
+        Download a file from the server.
 
-		:type localFilePath: str
-		:param localFilePath: The path of the new local file.
+        :type server_file_path: str
+        :param server_file_path: The path to the file on the server.
 
-		:rtype: bool
-		:returns: True if it's a success, otherwise False.
-		"""
+        :type local_file_path: str
+        :param local_file_path: The path of the new local file.
 
-		if self.connected:
-			try:
-				if not os.path.exists(os.path.dirname(localFilePath)):
-					os.makedirs(os.path.dirname(localFilePath))
+        :rtype: bool
+        :returns: True if it's a success, otherwise False.
+        """
 
-				with open(localFilePath, "wb") as file:
-					self.stream.retrbinary(
-							"RETR " + \
-							serverFilePath, 
-							file.write
-						)
-				
-				return True
-			except Exception as error:
-				self.__printError__(error, "downloadFile", 
-						"Unable to download \"%s\" from" % serverFilePath \
-						+ " the server to \"%s\"!" % localFilePath
-					)
-		else:
-			print("[WARNING] [FTP_manager.downloadFile]" \
-				+ " Not connected to the server")
-		return False
+        if self.connected:
+            try:
+                if not os.path.exists(os.path.dirname(local_file_path)):
+                    os.makedirs(os.path.dirname(local_file_path))
 
-	def sendFile(self, localFilePath, serverFilePath):
-		"""
-		Send a file to the server.
+                with open(local_file_path, "wb") as file:
+                    self.stream.retrbinary(
+                        "RETR " +
+                        server_file_path,
+                        file.write
+                    )
 
-		:type localFilePath: str
-		:param localFilePath: The path of the local file to send.
+                return True
+            except Exception as error:
+                self.__print_error__(error, "download_file",
+                                     f"Unable to download \"{server_file_path}\" from"
+                                     + f" the server to \"{local_file_path}\"!")
+        else:
+            print("[WARNING] [FTP_manager.download_file]"
+                  + " Not connected to the server")
+        return False
 
-		:type serverFilePath: str
-		:param serverFilePath: The path to the new file on the server.
+    def send_file(self, local_file_path, server_file_path):
+        """
+        Send a file to the server.
 
-		:rtype: bool
-		:returns: True if it's a success, otherwise False.
-		"""
+        :type local_file_path: str
+        :param local_file_path: The path of the local file to send.
 
-		if self.connected:
-			try:
+        :type server_file_path: str
+        :param server_file_path: The path to the new file on the server.
 
-				with open(localFilePath, "rb") as file:
-					self.stream.storbinary(
-							"STOR " + \
-							serverFilePath,
-							file
-						)
-					
-				return True
-			except Exception as error:
-				self.__printError__(error, "sendFile", 
-						"Unable to send \"%s\"" % localFilePath \
-						+ " to the server from \"%s\" !" % serverFilePath
-					)
-		else:
-			print("[WARNING] [FTP_manager.sendFile]" \
-				+ " Not connected to the server")
-		return False
+        :rtype: bool
+        :returns: True if it's a success, otherwise False.
+        """
 
-	def getServerFileNames(self, serverFolderPath = None):
-		"""
-		Get the names of all files and directories in a specific
-		folder on the server.
+        if self.connected:
+            try:
 
-		:type serverFolderPath: str
-		:param serverFolderPath: Optional. The path to the folder
-			on the server.
+                with open(local_file_path, "rb") as file:
+                    self.stream.storbinary(
+                        "STOR " +
+                        server_file_path,
+                        file
+                    )
 
-		:rtype: list<str>
-		:returns: A list of file names.
-		"""
+                return True
+            except Exception as error:
+                self.__print_error__(error, "send_file",
+                                     f"Unable to send \"{local_file_path}\""
+                                     + f" to the server from \"{server_file_path}\" !")
+        else:
+            print("[WARNING] [FTP_manager.send_file]"
+                  + " Not connected to the server")
+        return False
 
-		if self.connected:
-			if not serverFolderPath:
-				serverFolderPath = self.stream.pwd()
-			try:
-				return self.stream.nlst(serverFolderPath)
-			except Exception as error:
-				self.__printError__(error, "getServerFileNames", 
-						"Unable to get file names in \"%s\" !" \
-						% serverFolderPath
-					)
-		else:
-			print("[WARNING] [FTP_manager.getServerFileNames]" \
-				+ " Not connected to the server")
-		return []
+    def get_server_file_names(self, server_folder_path=None):
+        """
+        Get the names of all files and directories in a specific
+        folder on the server.
 
-	def getCurrentDirectory(self):
-		"""
-		Get the current working directory path on the server.
+        :type server_folder_path: str
+        :param server_folder_path: Optional. The path to the folder
+            on the server.
 
-		:rtype: str
-		:returns: The path of the current working directory.
-			Return an empty string if something wrong happen.
-		"""
+        :rtype: list<str>
+        :returns: A list of file names.
+        """
 
-		if self.connected:
-			return self.stream.pwd()
-		print("[WARNING] FTP_manager.getCurrentDirectory]" \
-			+ " Not connected to the server")
-		return ""
+        if self.connected:
+            if not server_folder_path:
+                server_folder_path = self.stream.pwd()
+            try:
+                return self.stream.nlst(server_folder_path)
+            except Exception as error:
+                self.__print_error__(error, "get_server_file_names",
+                                     f"Unable to get file names in \"{server_folder_path}\" !")
+        else:
+            print("[WARNING] [FTP_manager.get_server_file_names]"
+                  + " Not connected to the server")
+        return []
 
-	def setCurrentDirectory(self, serverPath):
-		"""
-		Set the working directory path.
+    def get_current_directory(self):
+        """
+        Get the current working directory path on the server.
 
-		:type serverPath: str
-		:param serverPath: The path to the new working directory.
+        :rtype: str
+        :returns: The path of the current working directory.
+            Return an empty string if something wrong happen.
+        """
 
-		:rtype: bool
-		:returns: True if it's a success, otherwise False.
-		"""
+        if self.connected:
+            return self.stream.pwd()
+        print("[WARNING] FTP_manager.get_current_directory]"
+              + " Not connected to the server")
+        return ""
 
-		if self.connected:
-			try:
-				self.stream.cwd(serverPath)
-				return True
-			except Exception as error:
-				self.__printError__(error, "setCurrentDirectory", 
-						"Unable to define \"%s\" as the current directory !" \
-						% serverPath
-					)
-		else:
-			print("[WARNING] [FTP_manager.getCurrentDirectory]" \
-				+ " Not connected to the server")
-		return False
+    def set_current_directory(self, server_path):
+        """
+        Set the working directory path.
 
-	def renameServerPath(self, fromName, toName):
-		"""
-		Rename a file or a folder on the server.
+        :type server_path: str
+        :param server_path: The path to the new working directory.
 
-		:type fromName: str
-		:param fromName: The path to the file or folder to rename.
+        :rtype: bool
+        :returns: True if it's a success, otherwise False.
+        """
 
-		:type toName: str
-		:param toName: The new path to give to the file 
-			or folder to rename.
+        if self.connected:
+            try:
+                self.stream.cwd(server_path)
+                return True
+            except Exception as error:
+                self.__print_error__(error, "set_current_directory",
+                                     f"Unable to define \"{server_path}\""
+                                     + " as the current directory !")
+        else:
+            print("[WARNING] [FTP_manager.get_current_directory]"
+                  + " Not connected to the server")
+        return False
 
-		:rtype: bool
-		:returns: True if it's a success, otherwise False.
-		"""
+    def rename_server_path(self, from_name, to_name):
+        """
+        Rename a file or a folder on the server.
 
-		if self.connected:
-			try:
-				self.stream.rename(fromName, toName)
-				return True
-			except Exception as error:
-				self.__printError__(error, "renameServerPath", 
-						"Unable to rename \"%s\" to \"%s\" !" \
-						% (fromName, toName)
-					)
-		else:
-			print("[WARNING] [FTP_manager.renameServerPath]" \
-				+ " Not connected to the server")
-		return False
+        :type from_name: str
+        :param from_name: The path to the file or folder to rename.
 
-	def removeServerFile(self, serverFilePath):
-		"""
-		Remove a file (doesn't work for folders) on the server.
+        :type to_name: str
+        :param to_name: The new path to give to the file
+            or folder to rename.
 
-		:type serverFilePath: str
-		:param serverFilePath: The path to the file to remove.
+        :rtype: bool
+        :returns: True if it's a success, otherwise False.
+        """
 
-		:rtype: bool
-		:returns: True if it's a success, otherwise False.
-		"""
+        if self.connected:
+            try:
+                self.stream.rename(from_name, to_name)
+                return True
+            except Exception as error:
+                self.__print_error__(error, "rename_server_path",
+                                     f"Unable to rename \"{from_name}\""
+                                     + f" to \"{to_name}\" !")
+        else:
+            print("[WARNING] [FTP_manager.rename_server_path]"
+                  + " Not connected to the server")
+        return False
 
-		if self.connected:
-			try:
-				self.stream.delete(serverFilePath)
-				return True
-			except Exception as error:
-				self.__printError__(error, "removeServerFile", 
-						"Unable to remove \"%s\" from the server !" \
-						% serverFilePath
-					)
-		else:
-			print("[WARNING] [FTP_manager.removeServerFile] Not connected to the server")
-		return False
+    def remove_server_file(self, server_file_path):
+        """
+        Remove a file (doesn't work for folders) on the server.
 
-	def removeServerDirectory(self, serverFolderPath):
-		"""
-		Remove a folder (doesn't work for a file) on the server.
+        :type server_file_path: str
+        :param server_file_path: The path to the file to remove.
 
-		:type serverFolderPath: str
-		:param serverFolderPath: The path to the folder to remove.
+        :rtype: bool
+        :returns: True if it's a success, otherwise False.
+        """
 
-		:rtype: bool
-		:returns: True if it's a success, otherwise False.
-		"""
+        if self.connected:
+            try:
+                self.stream.delete(server_file_path)
+                return True
+            except Exception as error:
+                self.__print_error__(error, "remove_server_file",
+                                     f"Unable to remove \"{server_file_path}\" from the server !")
+        else:
+            print(
+                "[WARNING] [FTP_manager.remove_server_file] Not connected to the server")
+        return False
 
-		if self.connected:
-			try:
-				self.stream.rmd(serverFolderPath)
-				return True
-			except Exception as error:
-				self.__printError__(error, "removeServerDirectory", 
-						"Unable to remove \"%s\" from the server !" \
-						% serverFolderPath
-					)
-		else:
-			print("[WARNING] [FTP_manager.removeServerDirectory]" \
-				+ " Not connected to the server")
-		return False
+    def remove_server_directory(self, server_folder_path):
+        """
+        Remove a folder (doesn't work for a file) on the server.
 
-	def getFileSize(self, serverFilePath):
-		"""
-		Get the file of a file on the server.
+        :type server_folder_path: str
+        :param server_folder_path: The path to the folder to remove.
 
-		:type serverFilePath: str
-		:param serverFilePath: The path to the file to get the size.
+        :rtype: bool
+        :returns: True if it's a success, otherwise False.
+        """
 
-		:rtype: int
-		:returns: The size of the file.
-		"""
+        if self.connected:
+            try:
+                self.stream.rmd(server_folder_path)
+                return True
+            except Exception as error:
+                self.__print_error__(error, "remove_server_directory",
+                                     f"Unable to remove \"{server_folder_path}\" from the server !")
+        else:
+            print("[WARNING] [FTP_manager.remove_server_directory]"
+                  + " Not connected to the server")
+        return False
 
-		if self.connected:
-			try:
-				return self.stream.size(serverFilePath)
-			except Exception as error:
-				self.__printError__(error, "getFileSize", 
-						"Unable to get the size of \"%s\" !" \
-						% serverFilePath
-					)
-		else:
-			print("[WARNING] [FTP_manager.getFileSize]" \
-				+ " Not connected to the server")
-		return 0
+    def get_file_size(self, server_file_path):
+        """
+        Get the file of a file on the server.
+
+        :type server_file_path: str
+        :param server_file_path: The path to the file to get the size.
+
+        :rtype: int
+        :returns: The size of the file.
+        """
+
+        if self.connected:
+            try:
+                return self.stream.size(server_file_path)
+            except Exception as error:
+                self.__print_error__(error, "get_file_size",
+                                     f"Unable to get the size of \"{server_file_path}\" !")
+        else:
+            print("[WARNING] [FTP_manager.get_file_size]"
+                  + " Not connected to the server")
+        return 0

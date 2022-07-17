@@ -29,59 +29,59 @@ from game.config import LEAF_SPRITE_DURATION
 from entities.leaf import Leaf
 
 
-class Leaf_piece(Leaf):
-	"""
-	Define a piece of leaf which appears when a normal leaf is cut. There are
-		3 leaf types ("leaf", "pink leaf" and "super leaf") depending on the
-		leaf that has just been cut.
-	"""
+class LeafPiece(Leaf):
+    """
+    Define a piece of leaf which appears when a normal leaf is cut. There are
+        3 leaf types ("leaf", "pink leaf" and "super leaf") depending on the
+        leaf that has just been cut.
+    """
 
-	def __init__(self, level, pos, speed, leafpieceType, vel=0):
-		"""
-		Initialise a Leaf object.
+    def __init__(self, level, pos, speed, leafpieceType, vel=0):
+        """
+        Initialise a Leaf object.
 
-		:type level: game.level.Level
-		:param level: The level managing this entity.
+        :type level: game.level.Level
+        :param level: The level managing this entity.
 
-		:type pos: list
-		:param pos: The default position of the leaf in a [x, y] list where x
-			and y are both float numbers.
+        :type pos: list
+        :param pos: The default position of the leaf in a [x, y] list where x
+        and y are both float numbers.
 
-		:type speed: float
-		:param speed: The falling speed of the leaf.
+        :type speed: float
+        :param speed: The falling speed of the leaf.
 
-		:type leafpieceType: str
-		:param leafpieceType: The type of the leaf. It can be "leaf", "pink leaf"
-			or "super leaf".
+        :type leafpieceType: str
+        :param leafpieceType: The type of the leaf. It can be "leaf", "pink leaf"
+        or "super leaf".
 
-		:type vel: float
-		:param vel: (Optional) The default velocity of the leaf.
-		"""
+        :type vel: float
+        :param vel: (Optional) The default velocity of the leaf.
+        """
 
-		Leaf.__init__(self, level, pos, speed, leafpieceType)
-		self.vel = vel
+        Leaf.__init__(self, level, pos, speed, leafpieceType)
+        self.vel = vel
 
-	def initImages(self):
-		"""
-		Load leaf_pieces images.
-		"""
+    def init_images(self):
+        """
+        Load leaf_pieces images.
+        """
 
-		self.__initImages__(self.leafType)
+        self.__init_images__(self.leaf_type)
 
-	def updateSprite(self):
-		"""
-		Update the images to create a flight animation.
-		"""
+    def update_sprite(self):
+        """
+        Update the images to create a flight animation.
+        """
 
-		self.spriteIndex = self.spriteIndex + 1 if self.spriteIndex < 2 else 0
-		self.currentImageName = "leafpiece_{}_{}.png".format( \
-			self.level.getStyleTypeWithScore(), self.spriteIndex)
-		
-		self.level.setActionDelay((self, "updateSprite"), \
-			LEAF_SPRITE_DURATION, self.updateSprite)
+        score = self.level.get_style_type_with_score()
 
-	def cut(self):
-		"""
-		A piece of leaf can't be cut so this method do nothing.
-		"""
-		pass
+        self.sprite_index = self.sprite_index + 1 if self.sprite_index < 2 else 0
+        self.current_image_name = f"leafpiece_{score}_{self.sprite_index}.png"
+
+        self.level.set_action_delay((self, "update_sprite"),
+                                    LEAF_SPRITE_DURATION, self.update_sprite)
+
+    def cut(self):
+        """
+        A piece of leaf can't be cut so this method do nothing.
+        """

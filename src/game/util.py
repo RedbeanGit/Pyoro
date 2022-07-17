@@ -145,7 +145,7 @@ def saveOptions(options):
 		json.dump(options, file, indent = "\t")
 
 
-def loadOptions():
+def loadConfig():
 	"""
 	Load options from a json file. If no option found, return
 	game.config.DEFAULT_OPTIONS.

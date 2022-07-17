@@ -21,6 +21,8 @@ Provide a base abstract class to create entities
 Created on 18/03/2018
 """
 
+import os
+
 from game.config import ENTITIES_IMAGE_PATH
 from game.util import Game
 from gui.image_transformer import resizeImage
@@ -28,198 +30,193 @@ from gui.image_transformer import resizeImage
 __author__ = "RedbeanGit"
 __version__ = "1.1.1"
 
-import os
-
 
 class Entity:
-	"""
-	Abstract class for all moving objects : entities
-	"""
+    """
+    Abstract class for all moving objects : entities
+    """
 
-	def __init__(self, level, pos, size = (1, 1)):
-		"""
-		Initialize an Entity object.
+    def __init__(self, level, pos, size=(1, 1)):
+        """
+        Initialize an Entity object.
 
-		:type level: game.level.Level
-		:param level: The level managing this entity.
+        :type level: game.level.Level
+        :param level: The level managing this entity.
 
-		:type pos: list<float>
-		:param pos: The default (x, y) position of the entity.
+        :type pos: list<float>
+        :param pos: The default (x, y) position of the entity.
 
-		:type size: list<float>
-		:param size: Optional! The (width, height) size of the entity.
-			Default is [1, 1].
-		"""
+        :type size: list<float>
+        :param size: Optional! The (width, height) size of the entity.
+            Default is [1, 1].
+        """
 
-		self.level = level
+        self.level = level
 
-		self.size = list(size)
-		self.pos = list(pos)
-		self.sounds = {}
-		self.images = {}
-		self.currentImageName = ""
+        self.size = list(size)
+        self.pos = list(pos)
+        self.sounds = {}
+        self.images = {}
+        self.current_image_name = ""
 
-		self.initImages()
-		self.initSounds()
-		self.updateSprite()
+        self.init_images()
+        self.init_sounds()
+        self.update_sprite()
 
-	def __repr__(self):
-		"""
-		Represent the entity as a string.
+    def __repr__(self):
+        """
+        Represent the entity as a string.
 
-		:rtype: str
-		:returns: A string respresenting the entity.
+        :rtype: str
+        :returns: A string respresenting the entity.
 
-		:Example: <Bean at pos x=2.35 y=5.86>
-		"""
+        :Example: <Bean at pos x=2.35 y=5.86>
+        """
 
-		return "<{} at pos x={:.2f}, y={:.2f}>".format(
-			type(self).__name__, *self.pos)
+        type_name = type(self).__name__
+        return f"<{type_name} at pos x={self.pos[0]:.2f}, y={self.pos[1]:.2f}>"
 
-	def __initImages__(self, folderName):
-		"""
-		Reference all images in a specific folder to use them later.
-		This method should be used internally by Entity.initImages
-		(see below).
+    def __init_images__(self, folder_name):
+        """
+        Reference all images in a specific folder to use them later.
+        This method should be used internally by Entity.initImages
+        (see below).
 
-		:type folderName: str
-		:param folderName: The path to the folder where images to
-			reference are.
-		"""
+        :type folder_name: str
+        :param folder_name: The path to the folder where images to
+            reference are.
+        """
 
-		self.images = {}
-		caseSize = self.level.levelDrawer.getCaseSize()
-		imageNames = os.listdir(os.path.join(ENTITIES_IMAGE_PATH, folderName))
+        self.images = {}
+        case_size = self.level.levelDrawer.getCase_size()
+        image_names = os.listdir(os.path.join(
+            ENTITIES_IMAGE_PATH, folder_name))
 
-		for imageName in imageNames:
-			if imageName.split(".")[-1] == "png":
-				self.images[imageName] = resizeImage(
-					self.level.levelDrawer.activity.window.getImage(
-						os.path.join(ENTITIES_IMAGE_PATH,
-							folderName, imageName)), \
-					(caseSize[0] * self.size[0], caseSize[1] * self.size[1]))
-		self.updateSprite()
+        for image_name in image_names:
+            if image_name.split(".")[-1] == "png":
+                self.images[image_name] = resizeImage(
+                    self.level.levelDrawer.activity.window.getImage(
+                        os.path.join(ENTITIES_IMAGE_PATH,
+                                     folder_name, image_name)),
+                    (case_size[0] * self.size[0], case_size[1] * self.size[1]))
+        self.update_sprite()
 
-	def initImages(self):
-		"""
-		Initialize the images used by the entity.
-		This method should be override to refer the images of this entity.
-		It's advisable to use this method with Entity.__initImages__.
-		"""
-		pass
+    def init_images(self):
+        """
+        Initialize the images used by the entity.
+        This method should be override to refer the images of this entity.
+        It's advisable to use this method with Entity.__initImages__.
+        """
 
-	def __initSounds__(self, soundNames):
-		"""
-		Reference sounds to use them later.
-		This method should be used internally by Entity.initSounds
-		(see below).
+    def __init_sounds__(self, sound_names):
+        """
+        Reference sounds to use them later.
+        This method should be used internally by Entity.initSounds
+        (see below).
 
-		:type soundNames: list<str>
-		:param soundNames: The name of the sounds to load.
-		"""
+        :type sound_names: list<str>
+        :param sound_names: The name of the sounds to load.
+        """
 
-		ap = self.level.getAudioPlayer()
-		for soundName in soundNames:
-			self.sounds[soundName] = ap.getSound(os.path.join(
-				"data", "audio", "sounds", "{}.wav".format(soundName)))
+        audio_player = self.level.getAudioPlayer()
+        for sound_name in sound_names:
+            self.sounds[sound_name] = audio_player.getSound(os.path.join(
+                "data", "audio", "sounds", f"{sound_name}.wav"))
 
-	def initSounds(self):
-		"""
-		Initialize the sounds used by the entity.
-		This method should be override to refer the sounds of this entity.
-		It's advisable to use this method with Entity.__initSounds__.
-		"""
-		pass
+    def init_sounds(self):
+        """
+        Initialize the sounds used by the entity.
+        This method should be override to refer the sounds of this entity.
+        It's advisable to use this method with Entity.__initSounds__.
+        """
 
-	def update(self, deltaTime):
-		"""
-		Update the entity.
+    def update(self, _delta_time):
+        """
+        Update the entity.
 
-		:type deltaTime: float
-		:param deltaTime: Elapsed time since the last update (in seconds).
-		"""
+        :type delta_time: float
+        :param delta_time: Elapsed time since the last update (in seconds).
+        """
 
-		if self.isOutOfBounds():
-			self.remove()
+        if self.is_out_of_bound():
+            self.remove()
 
-	def updateSprite(self):
-		"""
-		Update the image currently used by the entity.
-		This method should be override.
-		"""
-		pass
+    def update_sprite(self):
+        """
+        Update the image currently used by the entity.
+        This method should be override.
+        """
 
-	def isHittingEntity(self, entity):
-		"""
-		Check if the entity collide another.
+    def is_hitting_entity(self, entity):
+        """
+        Check if the entity collide another.
 
-		:type entity: entities.entity.Entity
-		:param entity: An entity which is maybe colliding this one.
+        :type entity: entities.entity.Entity
+        :param entity: An entity which is maybe colliding this one.
 
-		:rtype: bool
-		:returns: True if the entities are colliding, otherwise False.
-		"""
+        :rtype: bool
+        :returns: True if the entities are colliding, otherwise False.
+        """
 
-		p = entity.pos
-		s = entity.size
-		return (p[0] + s[0] / 2 > self.pos[0] - self.size[0] / 2) \
-		   and (p[0] - s[0] / 2 < self.pos[0] + self.size[0] / 2) \
-		   and (p[1] + s[1] / 2 > self.pos[1] - self.size[1] / 2) \
-		   and (p[1] - s[1] / 2 < self.pos[1] + self.size[1] / 2)
+        pos = entity.pos
+        size = entity.size
+        return (pos[0] + size[0] / 2 > self.pos[0] - self.size[0] / 2) \
+            and (pos[0] - size[0] / 2 < self.pos[0] + self.size[0] / 2) \
+            and (pos[1] + size[1] / 2 > self.pos[1] - self.size[1] / 2) \
+            and (pos[1] - size[1] / 2 < self.pos[1] + self.size[1] / 2)
 
-	def isOutOfBounds(self, included = True):
-		"""
-		Check if the entity is in the terrain.
+    def is_out_of_bound(self, included=True):
+        """
+        Check if the entity is in the terrain.
 
-		:type included: bool
-		:param included: Optional! If True (default), check if the entire
-			entity is out of the terrain. Otherwise, only check if a part
-			of the entity is out of bounds.
+        :type included: bool
+        :param included: Optional! If True (default), check if the entire
+            entity is out of the terrain. Otherwise, only check if a part
+            of the entity is out of bounds.
 
-		:rtype: bool
-		:returns: True if the entity is out of bounds, otherwise False.
-		"""
+        :rtype: bool
+        :returns: True if the entity is out of bounds, otherwise False.
+        """
 
-		w, h = self.level.size
-		if included:
-			return (self.pos[0] + self.size[0] / 2 <= 0) \
-				or (self.pos[0] - self.size[0] / 2 \
-				>= w) \
-				or (self.pos[1] + self.size[1] / 2 <= 0) \
-				or (self.pos[1] - self.size[1] / 2 \
-				>= h)
-		else:
-			return (self.pos[0] - self.size[0] / 2 <= 0) \
-				or (self.pos[0] + self.size[0] / 2 \
-				>= w) \
-				or (self.pos[1] - self.size[1] / 2 <= 0) \
-				or (self.pos[1] + self.size[1] / 2 \
-				>= h)
+        width, height = self.level.size
+        if included:
+            return (self.pos[0] + self.size[0] / 2 <= 0) \
+                or (self.pos[0] - self.size[0] / 2
+                    >= width) \
+                or (self.pos[1] + self.size[1] / 2 <= 0) \
+                or (self.pos[1] - self.size[1] / 2
+                    >= height)
+        return (self.pos[0] - self.size[0] / 2 <= 0) \
+            or (self.pos[0] + self.size[0] / 2
+                >= width) \
+            or (self.pos[1] - self.size[1] / 2 <= 0) \
+            or (self.pos[1] + self.size[1] / 2
+                >= height)
 
-	def isHittingTheFloor(self):
-		"""
-		Check if the entity collide with the floor.
+    def is_hitting_floor(self):
+        """
+        Check if the entity collide with the floor.
 
-		:rtype: bool
-		:returns: True if the entity is colliding the floor, otherwise False.
-		"""
-		return self.pos[1] + self.size[1] / 2 >= self.level.size[1] - 1
+        :rtype: bool
+        :returns: True if the entity is colliding the floor, otherwise False.
+        """
+        return self.pos[1] + self.size[1] / 2 >= self.level.size[1] - 1
 
-	def remove(self):
-		"""
-		Remove the entity from its level.
-		The entity will no longer be updated.
-		"""
+    def remove(self):
+        """
+        Remove the entity from its level.
+        The entity will no longer be updated.
+        """
 
-		self.level.removeEntity(self)
-		self.removeSounds()
+        self.level.removeEntity(self)
+        self.remove_sounds()
 
-	def removeSounds(self):
-		"""
-		Stop and remove all sounds used by this entity.
-		"""
+    def remove_sounds(self):
+        """
+        Stop and remove all sounds used by this entity.
+        """
 
-		for sound in self.sounds.values():
-			if sound.isPlaying:
-				sound.stop()
-			Game.audioPlayer.removeSound(sound)
+        for sound in self.sounds.values():
+            if sound.isPlaying:
+                sound.stop()
+            Game.audioPlayer.remove_sound(sound)

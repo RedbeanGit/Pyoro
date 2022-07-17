@@ -28,71 +28,74 @@ from entities.entity import Entity
 from game.config import SCORE_TEXT_BLINK_DURATION, SCORE_TEXT_LIFE_DURATION
 
 
-class Score_text(Entity):
-	"""
-	Create a Score_text which is a flashy entity to show points that has just
-		been earned at a specific position.
-	"""
+class ScoreText(Entity):
+    """
+    Create a Score_text which is a flashy entity to show points that has just
+        been earned at a specific position.
+    """
 
-	def __init__(self, level, pos, value):
-		"""
-		Initialize a new Score_text object.
+    def __init__(self, level, pos, value):
+        """
+        Initialize a new Score_text object.
 
-		:type level: game.level.Level
-		:param level: The level managing this entity.
+        :type level: game.level.Level
+        :param level: The level managing this entity.
 
-		:type pos: list
-		:param pos: An [x, y] list where x and y are both float numbers.
+        :type pos: list
+        :param pos: An [x, y] list where x and y are both float numbers.
 
-		:type value: int
-		:param value: The value to display (it can be 10, 50, 100, 300 or
-			1000).
-		"""
+        :type value: int
+        :param value: The value to display (it can be 10, 50, 100, 300 or
+            1000).
+        """
 
-		pixelSize = 1
-		for number in str(value):
-			if value == 1:
-				pixelSize += 2
-			else:
-				pixelSize += 4
-		self.value = value
-		self.colorIndex = 0
-		Entity.__init__(self, level, pos, (pixelSize * 0.125, 0.875))
+        pixel_size = 1
+        for _ in str(value):
+            if value == 1:
+                pixel_size += 2
+            else:
+                pixel_size += 4
+        self.value = value
+        self.color_index = 0
+        Entity.__init__(self, level, pos, (pixel_size * 0.125, 0.875))
 
-	def initImages(self):
-		"""
-		Initialize score_text images.
-		"""
+    def init_images(self):
+        """
+        Initialize score_text images.
+        """
 
-		self.__initImages__("score text")
-	
-	def update(self, deltaTime):
-		"""
-		Update the score_text.
+        self.__init_images__("score text")
 
-		:type deltaTime: float
-		:param deltaTime: Time elapsed since the last update.
-		"""
+    def update(self, deltaTime):
+        """
+        Update the score_text.
 
-		self.level.createActionDelay((self, "destroy"), SCORE_TEXT_LIFE_DURATION, self.remove)
-		Entity.update(self, deltaTime)
-	
-	def updateSprite(self):
-		"""
-		Change the sprite to make a blinking effect.
-		"""
+        :type deltaTime: float
+        :param deltaTime: Time elapsed since the last update.
+        """
 
-		if self.value in (300, 1000):
-			self.colorIndex = self.colorIndex + 1 if self.colorIndex < 5 else 0
-			self.currentImageName = "number_{}_{}.png".format(self.value, self.colorIndex)
-		else:
-			self.currentImageName = "number_{}.png".format(self.value)
-		self.level.setActionDelay((self, "updateSprite"), SCORE_TEXT_BLINK_DURATION, self.updateSprite)
-	
-	def remove(self):
-		"""
-		Remove the score_text actions delayed en the score_text itself.
-		"""
+        self.level.createActionDelay(
+            (self, "destroy"), SCORE_TEXT_LIFE_DURATION, self.remove)
+        Entity.update(self, deltaTime)
 
-		self.level.removeActionDelay((self, "destroy"), (self, "updateSprite"))
-		Entity.remove(self)
+    def update_sprite(self):
+        """
+        Change the sprite to make a blinking effect.
+        """
+
+        if self.value in (300, 1000):
+            self.color_index = self.color_index + 1 if self.color_index < 5 else 0
+            self.current_image_name = f"number_{self.value}_{self.color_index}.png"
+        else:
+            self.current_image_name = f"number_{self.value}.png"
+        self.level.setActionDelay(
+            (self, "update_sprite"), SCORE_TEXT_BLINK_DURATION, self.update_sprite)
+
+    def remove(self):
+        """
+        Remove the score_text actions delayed en the score_text itself.
+        """
+
+        self.level.removeActionDelay(
+            (self, "destroy"), (self, "update_sprite"))
+        Entity.remove(self)

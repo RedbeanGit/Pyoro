@@ -29,33 +29,34 @@ __repo__ = "https://github.com/RedbeanGit/Pyoro"
 from entities.bean import Bean
 
 
-class Pink_bean(Bean):
-	"""
-	Create pink beans. Pink beans have the hability to repair one case when
-		cut or caught.
-	"""
+class PinkBean(Bean):
+    """
+    Create pink beans. Pink beans have the hability to repair one case when
+            cut or caught.
+    """
 
-	def initImages(self):
-		"""
-		Load pink bean images.
-		"""
+    def init_images(self):
+        """
+        Load pink bean images.
+        """
 
-		self.__initImages__("pink bean")
-	
-	def catch(self):
-		"""
-		Repair a case and the follow Pyoro tongue.
-		"""
+        self.__init_images__("pink bean")
 
-		self.level.repairCase()
-		Bean.catch(self)
-	
-	def cut(self):
-		"""
-		Spawn pink leafs.
-		"""
+    def catch(self):
+        """
+        Repair a case and the follow Pyoro tongue.
+        """
 
-		self.sounds["bean_cut"].play()
-		for i in range(2):
-			randPos = [self.pos[0] + random.uniform(-0.5, 0.5), self.pos[1] + random.uniform(-0.5, 0.2)]
-			self.level.spawnLeaf(randPos, "pink leaf")
+        self.level.repair_case()
+        Bean.catch(self)
+
+    def cut(self):
+        """
+        Spawn pink leafs.
+        """
+
+        self.sounds["bean_cut"].play()
+        for _ in range(2):
+            rand_pos = [
+                self.pos[0] + random.uniform(-0.5, 0.5), self.pos[1] + random.uniform(-0.5, 0.2)]
+            self.level.spawn_leaf(rand_pos, "pink leaf")

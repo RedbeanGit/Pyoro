@@ -29,104 +29,103 @@ from entities.pyoro import Pyoro
 
 
 class Pyobot(Pyoro):
-	"""
-	Create a Pyobot used in the main menu. This Pyoro automatically move to
-		catch falling beans.
-	"""
+    """
+    Create a Pyobot used in the main menu. This Pyoro automatically move to
+        catch falling beans.
+    """
 
-	def update(self, deltaTime):
-		"""
-		Pyobot search for the best position to eat the lowest bean and update
-			its position.
+    def update(self, delta_time):
+        """
+        Pyobot search for the best position to eat the lowest bean and update
+            its position.
 
-		:type deltaTime: float
-		:param deltaTime: Time elapsed since the last update.
-		"""
+        :type delta_time: float
+        :param delta_time: Time elapsed since the last update.
+        """
 
-		if not self.tongue:
-			pos = self.getNearestPos(*self.getPosToEat())
-			if pos > 0 and pos < self.level.size[0]:
-				if self.pos[0] > pos:
-					self.enableMoveLeft()
-				elif self.pos[0] < pos:
-					self.enableMoveRight()
-			else:
-				self.disableMove()
+        if not self.tongue:
+            pos = self.get_nearest_pos(*self.get_pos_to_eat())
+            if pos > 0 and pos < self.level.size[0]:
+                if self.pos[0] > pos:
+                    self.enable_move_left()
+                elif self.pos[0] < pos:
+                    self.enable_move_right()
+            else:
+                self.disable_move()
 
-			if int(pos) == int(self.pos[0]):
-				self.lookBean()
-				self.enableCapacity()
-		Pyoro.update(self, deltaTime)
+            if int(pos) == int(self.pos[0]):
+                self.look_bean()
+                self.enable_capacity()
+        Pyoro.update(self, delta_time)
 
-	def getPosToEat(self):
-		"""
-		Find the 2 horizontal position that could allow Pyobot to eat the
-			lowest bean.
+    def get_pos_to_eat(self):
+        """
+        Find the 2 horizontal position that could allow Pyobot to eat the
+            lowest bean.
 
-		:rtype: tuple
-		:returns: A (pos1, pos2) tuple where pos1 is the leftmost position and
-			pos2 is the rightmost one. 
-		"""
+        :rtype: tuple
+        :returns: A (pos1, pos2) tuple where pos1 is the leftmost position and
+            pos2 is the rightmost one.
+        """
 
-		lowestBean = self.getLowestBean()
-		if lowestBean:
-			return lowestBean.pos[0] - (self.level.size[1] - lowestBean.pos[1]), \
-				lowestBean.pos[0] + (self.level.size[1] - lowestBean.pos[1])
-		else:
-			return -1, self.level.size[0]
+        lowest_bean = self.get_lowest_bean()
+        if lowest_bean:
+            return lowest_bean.pos[0] - (self.level.size[1] - lowest_bean.pos[1]), \
+                lowest_bean.pos[0] + (self.level.size[1] - lowest_bean.pos[1])
+        return -1, self.level.size[0]
 
-	def lookBean(self):
-		"""
-		Turn Pyobot to make him look at the bean he will catch.
-		"""
+    def look_bean(self):
+        """
+        Turn Pyobot to make him look at the bean he will catch.
+        """
 
-		lowestBean = self.getLowestBean()
-		if lowestBean:
-			if self.pos[0] > lowestBean.pos[0]:
-				self.enableMoveLeft()
-			else:
-				self.enableMoveRight()
-		self.disableMove()
+        lowest_bean = self.get_lowest_bean()
+        if lowest_bean:
+            if self.pos[0] > lowest_bean.pos[0]:
+                self.enable_move_left()
+            else:
+                self.enable_move_right()
+        self.disable_move()
 
-	def getNearestPos(self, pos1, pos2):
-		"""
-		Return the nearest horizontal position from Pyobot.
+    def get_nearest_pos(self, pos1, pos2):
+        """
+        Return the nearest horizontal position from Pyobot.
 
-		:type pos1: float
-		:param pos1: The first horizontal position.
+        :type pos1: float
+        :param pos1: The first horizontal position.
 
-		:type pos2: float
-		:param pos2: The second horizontal position.
+        :type pos2: float
+        :param pos2: The second horizontal position.
 
-		:rtype: float
-		:returns: The best position between pos1 and pos2.
-		"""
+        :rtype: float
+        :returns: The best position between pos1 and pos2.
+        """
 
-		pos = sorted([pos1, pos2], key = lambda x: abs(self.pos[0] - x))
-		if pos[0] <= 0 or pos[0] >= self.level.size[0]:
-			return pos[1]
-		return pos[0]
+        pos = sorted([pos1, pos2], key=lambda x: abs(self.pos[0] - x))
+        if pos[0] <= 0 or pos[0] >= self.level.size[0]:
+            return pos[1]
+        return pos[0]
 
-	def remove(self):
-		"""
-		Reset the level (this entity can't die).
-		"""
+    def remove(self):
+        """
+        Reset the level (this entity can't die).
+        """
 
-		self.level.reset()
+        self.level.reset()
 
-	def getLowestBean(self):
-		"""
-		Find the bean which has the smallest vertical coordinate.
+    def get_lowest_bean(self):
+        """
+        Find the bean which has the smallest vertical coordinate.
 
-		:rtype: entities.bean.Bean
-		:returns: The lowest bean.
-		"""
+        :rtype: entities.bean.Bean
+        :returns: The lowest bean.
+        """
 
-		bestEntity = None
-		for entity in self.level.entities:
-			if isinstance(entity, Bean):
-				if bestEntity == None:
-					bestEntity = entity
-				elif entity.pos[1] > bestEntity.pos[1]:
-					bestEntity = entity
-		return bestEntity
+        best_entity = None
+        for entity in self.level.entities:
+            if isinstance(entity, Bean):
+                if best_entity is None:
+                    best_entity = entity
+                elif entity.pos[1] > best_entity.pos[1]:
+                    best_entity = entity
+        return best_entity

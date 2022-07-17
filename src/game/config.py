@@ -28,94 +28,130 @@ __repo__ = "https://github.com/RedbeanGit/Pyoro"
 
 
 # General information about the game
-DEBUG = True														# Debugging mode (if you want to see logs in a console)
-FPS = 60															# frame per seconds
-NAME = "PYORO"														# game name
-VERSION = "1.1.1"													# game version
-WINDOW_COLOR = (120, 120, 120)										# background color
-LOW_AUDIO = True													# If True, use less resources but cannot read several...
-																	# ...sounds at the same time
+# Debugging mode (if you want to see logs in a console)
+DEBUG = True
+# frame per seconds
+FPS = 60
+# game name
+NAME = "PYORO"
+# game version
+VERSION = "1.1.1"
+# background color
+WINDOW_COLOR = (120, 120, 120)
+# If True, use less resources but cannot read several sounds at the same time
+LOW_AUDIO = True
 
 # Update server address and login
-UPDATE_HOST = "ftpupload.net"										# FTP host
-UPDATE_USER = "epiz_22757918"										# FTP username
-UPDATE_PASSWORD = "6UJDteWTmclaL"									# FTP password
+# FTP host
+UPDATE_HOST = "ftpupload.net"
+# FTP username
+UPDATE_USER = "epiz_22757918"
+# FTP password
+UPDATE_PASSWORD = "6UJDteWTmclaL"
 
 # Some level constants
-AIR_RESISTANCE = 25													# Air resistance value for leaf and seeds wind effect
-BACKGROUND_TRANSITION_DURATION = 3									# Speed of transition between to backgrounds
-CASE_SIZE = 10														# Size of a block (in mm)
-GRAVITY_FORCE = 9.81												# Gravity force for seeds falling effect
-SPEED_ACCELERATION = 0.01											# Acceleration of the level speed each second
-BACKGROUND_ANIMATED_DURATION = 1									# Duration of each animated background (for last backgrounds)
-SPLASH_ANIMATION_DURATION = 0.125									# Duration of each animation during splash screen (currently useless)
+# Air resistance value for leaf and seeds wind effect
+AIR_RESISTANCE = 25
+# Speed of transition between to backgrounds
+BACKGROUND_TRANSITION_DURATION = 3
+# Size of a block (in mm)
+CASE_SIZE = 10
+# Gravity force for seeds falling effect
+GRAVITY_FORCE = 9.81
+# Acceleration of the level speed each second
+SPEED_ACCELERATION = 0.01
+# Duration of each animated background
+BACKGROUND_ANIMATED_DURATION = 1
+# (for last backgrounds)
+# Duration of each animation during splash screen (currently useless)
+SPLASH_ANIMATION_DURATION = 0.125
 
 # Main file paths
-GUI_IMAGE_PATH = os.path.join("data", "images", "gui")				# File path to Graphical User Interface images
-ENTITIES_IMAGE_PATH = os.path.join("data", "images", "entities")	# File path to entities images
-LEVEL_IMAGE_PATH = os.path.join("data", "images", "level")			# File path to level images (backgrounds, blocks,...)
+# File path to Graphical User Interface images
+GUI_IMAGE_PATH = os.path.join("data", "images", "gui")
+# File path to entities images
+ENTITIES_IMAGE_PATH = os.path.join("data", "images", "entities")
+# File path to level images (backgrounds, blocks,...)
+LEVEL_IMAGE_PATH = os.path.join("data", "images", "level")
 
 # Entities info
-ANGEL_SPEED = 35													# Angel speed (in case per second)
-ANGEL_SPRITE_DURATION = 0.5											# Duration of each angel sprite (in second)
+# Angel speed (in case per second)
+ANGEL_SPEED = 35
+# Duration of each angel sprite (in second)
+ANGEL_SPRITE_DURATION = 0.5
 
-BEAN_FREQUENCY = 2													# Bean spawn frequency (the value increases with the score) (in second)
-BEAN_SPEED = 1.8													# Bean speed (in case per second)
-BEAN_SPRITE_DURATION = 0.2											# Duration of each bean sprite (in second)
+# Bean spawn frequency (the value increases with the score) (in second)
+BEAN_FREQUENCY = 2
+# Bean speed (in case per second)
+BEAN_SPEED = 1.8
+# Duration of each bean sprite (in second)
+BEAN_SPRITE_DURATION = 0.2
 
-LEAF_SPRITE_DURATION = 0.2											# Duration of each leaf sprite (in second)
-LEAF_SPEED = 1.5													# Leaf speed (in case per second)
-LEAF_WIND_SPEED = 15												# Wind force applied to bean leaf when shot (in case per second)
+# Duration of each leaf sprite (in second)
+LEAF_SPRITE_DURATION = 0.2
+# Leaf speed (in case per second)
+LEAF_SPEED = 1.5
+# Wind force applied to bean leaf when shot (in case per second)
+LEAF_WIND_SPEED = 15
 
-PYORO_EATING_DURATION = 0.04										# Duration of each pyoro eating sprite (in second)
-PYORO_DIE_SPEED = 2													# Pyoro speed when it dies (in case per second)
-PYORO_NOTCH_DURATION = 0.01											# Pyoro notch duration (in second)
-PYORO_SHOOT_SPRITE_DURATION = 0.1									# Sprite frequency when pyoro 2 shoot (in second)
-PYORO_SPEED = 25													# Pyoro speed (in case per second)
+# Duration of each pyoro eating sprite (in second)
+PYORO_EATING_DURATION = 0.04
+# Pyoro speed when it dies (in case per second)
+PYORO_DIE_SPEED = 2
+# Pyoro notch duration (in second)
+PYORO_NOTCH_DURATION = 0.01
+# Sprite frequency when pyoro 2 shoot (in second)
+PYORO_SHOOT_SPRITE_DURATION = 0.1
+# Pyoro speed (in case per second)
+PYORO_SPEED = 25
 
-SEED_SPEED = 45														# Seed speed (in case per second)
+# Seed speed (in case per second)
+SEED_SPEED = 45
 
-SMOKE_SPRITE_DURATION = 0.2											# Duration of each smoke sprite (in second)
+# Duration of each smoke sprite (in second)
+SMOKE_SPRITE_DURATION = 0.2
 
-SCORE_TEXT_BLINK_DURATION = 0.05									# Duration of each text sprite (in second)
-SCORE_TEXT_LIFE_DURATION = 0.3										# Time before the destruction of each text sprite (in second)
+# Duration of each text sprite (in second)
+SCORE_TEXT_BLINK_DURATION = 0.05
+# Time before the destruction of each text sprite (in second)
+SCORE_TEXT_LIFE_DURATION = 0.3
 
-TONG_SPEED = 25														# Pyoro tongue speed (in case per second)
+# Pyoro tongue speed (in case per second)
+TONG_SPEED = 25
 
 # Default options used at first boot and when reset
 DEFAULT_OPTIONS = {
-	"keyboard": {
-		"right": 100,
-		"left": 97,
-		"action": 32,
-		"pause": 27
-	},
-	"joystick": {
-		"right": {
-			"inputType": 9,
-			"hatId": 0,
-			"value": (1, 0)
-		},
-		"left": {
-			"inputType": 9,
-			"hatId": 0,
-			"value": (-1, 0)
-		},
-		"action": {
-			"inputType": 10,
-			"buttonId": 2
-		},
-		"pause": {
-			"inputType": 10,
-			"buttonId": 9
-		}
-	},
-	"last game": 0,
-	"high score": [
-		0,
-		0
-	],
-	"last game": 0,
-	"music volume": 1,
-	"sound volume": 1
+    "keyboard": {
+        "right": 100,
+        "left": 97,
+        "action": 32,
+        "pause": 27
+    },
+    "joystick": {
+        "right": {
+            "inputType": 9,
+            "hatId": 0,
+            "value": (1, 0)
+        },
+        "left": {
+            "inputType": 9,
+            "hatId": 0,
+            "value": (-1, 0)
+        },
+        "action": {
+            "inputType": 10,
+            "buttonId": 2
+        },
+        "pause": {
+            "inputType": 10,
+            "buttonId": 9
+        }
+    },
+    "last game": 0,
+    "high score": [
+        0,
+        0
+    ],
+    "music volume": 1,
+    "sound volume": 1
 }
