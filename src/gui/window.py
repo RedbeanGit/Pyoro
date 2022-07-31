@@ -28,275 +28,275 @@ from pygame.locals import QUIT, K_F4, K_RALT, K_LALT
 __author__ = "RedbeanGit"
 __repo__ = "https://github.com/RedbeanGit/Pyoro"
 
-from audio.audio_player import Audio_player
-from game.config import NAME, GUI_IMAGE_PATH, CASE_SIZE, WINDOW_COLOR
-from game.util import loadOptions, saveOptions, getResourcePaths, \
-	leaveGame, Game, Errors
-from gui.level_activity import Level_activity
-from gui.menu_activity import Menu_activity
-from gui.splash_activity import Splash_activity
+from game.config import NAME, GUI_IMAGE_PATH
+from game.util import get_resource_paths, leave_game, Game, Errors
+from gui.level_activity import LevelActivity
+from gui.menu_activity import MenuActivity
+from gui.splash_activity import SplashActivity
 
 
 class Window:
-	"""
-	Main game window, manage the levels and all graphical components.
-	"""
+    """
+    Main game window, manage the levels and all graphical components.
+    """
 
-	def __init__(self):
-		"""
-		Initialize a new Window.
-		"""
+    def __init__(self):
+        """
+        Initialize a new Window.
+        """
 
-		self.images = {}
-		self.joysticks = []
-		self.rootSurface = None
-		self.activity = None
+        self.images = {}
+        self.joysticks = []
+        self.root_surface = None
+        self.activity = None
 
-	def createRootSurface(self):
-		"""
-		Create a pygame window in fullscreen mode.
-		"""
+    def create_root_surface(self):
+        """
+        Create a pygame window in fullscreen mode.
+        """
 
-		print("[INFO] [Window.createRootSurface] Creating new Pygame window " \
-			+ "in fullscreen mode with auto definition")
+        print("[INFO] [Window.create_root_surface] Creating new Pygame window "
+              + "in fullscreen mode with auto definition")
 
-		iconPath = os.path.join(GUI_IMAGE_PATH, "pyoro_icon.png")
-		self.rootSurface = pygame.display.set_mode((0, 0), pygame.FULLSCREEN | pygame.HWSURFACE)
-		pygame.display.set_caption(NAME)
+        icon_path = os.path.join(GUI_IMAGE_PATH, "pyoro_icon.png")
+        self.root_surface = pygame.display.set_mode(
+            (0, 0), pygame.FULLSCREEN | pygame.HWSURFACE)
+        pygame.display.set_caption(NAME)
 
-		if os.path.exists(iconPath):
-			try:
-				pygame.display.set_icon(pygame.image.load(
-					iconPath).convert_alpha())
-			except Exception:
-				print("[FATAL ERROR] [Window.createRootSurface] Unable to load" \
-					+ " the window icon")
-				leaveGame(Errors.BAD_RESOURCE)
-		else:
-			print("[WARNING] [Window.createRootSurface] Window icon not found")
+        if os.path.exists(icon_path):
+            try:
+                pygame.display.set_icon(pygame.image.load(
+                    icon_path).convert_alpha())
+            except Exception:
+                print("[FATAL ERROR] [Window.create_root_surface] Unable to load"
+                      + " the window icon")
+                leave_game(Errors.BAD_RESOURCE)
+        else:
+            print("[WARNING] [Window.create_root_surface] Window icon not found")
 
-	def loadJoysticks(self):
-		"""
-		Initialize all connected joysticks.
-		"""
+    def load_joysticks(self):
+        """
+        Initialize all connected joysticks.
+        """
 
-		print("[INFO] [Window.initJoysticks] Initializing joystick inputs")
-		self.joysticks.clear()
-		for i in range(pygame.joystick.get_count()):
-			joystick = pygame.joystick.Joystick(i)
-			joystick.init()
-			self.joysticks.append(joystick)
+        print("[INFO] [Window.initJoysticks] Initializing joystick inputs")
+        self.joysticks.clear()
+        for i in range(pygame.joystick.get_count()):
+            joystick = pygame.joystick.Joystick(i)
+            joystick.init()
+            self.joysticks.append(joystick)
 
-	def loadImages(self):
-		"""
-		Load all images to the RAM.
-		"""
+    def load_images(self):
+        """
+        Load all images to the RAM.
+        """
 
-		print("[INFO] [Window.initImages] Loading images to RAM memory")
-		self.images["unknown"] = self.createRemplacementImage()
-		imagePaths = getResourcePaths("images")
-		for imagePath in imagePaths:
-			image = os.path.join("data", *imagePath)
-			self.loadImage(image)
+        print("[INFO] [Window.initImages] Loading images to RAM memory")
+        self.images["unknown"] = self.create_remplacement_image()
+        image_paths = get_resource_paths("images")
+        for image_path in image_paths:
+            image = os.path.join("data", *image_path)
+            self.load_image(image)
 
-	def loadImage(self, imagePath):
-		"""
-		Load an image to the RAM.
+    def load_image(self, image_path):
+        """
+        Load an image to the RAM.
 
-		:type imagePath: str
-		:param imagePath: The filepath of the image to load.
-		"""
+        :type image_path: str
+        :param image_path: The filepath of the image to load.
+        """
 
-		if os.path.exists(imagePath):
-			self.images[imagePath] = pygame.image.load(imagePath)
-		else:
-			print("[WARNING] [Window.initImage] Unable" \
-				+ ' to find "%s"' % imagePath)
+        if os.path.exists(image_path):
+            self.images[image_path] = pygame.image.load(image_path)
+        else:
+            print(
+                f"[WARNING] [Window.initImage] Unable to find '{image_path}'")
 
-	def createRemplacementImage(self):
-		"""
-		Create a replacement image and return it.
+    def create_remplacement_image(self):
+        """
+        Create a replacement image and return it.
 
-		:rtype: pygame.surface.Surface
-		:returns: A purple and black image.
-		"""
+        :rtype: pygame.surface.Surface
+        :returns: A purple and black image.
+        """
 
-		print("[INFO] [Window.createRemplacementImage] Creating the replacement image")
-		image = pygame.Surface((16, 16))
-		image.fill((255, 0, 255), (0, 0, 8, 8))
-		image.fill((255, 0, 255), (8, 8, 8, 8))
-		return image
+        print("[INFO] [Window.create_remplacement_image] Creating the replacement image")
+        image = pygame.Surface((16, 16))
+        image.fill((255, 0, 255), (0, 0, 8, 8))
+        image.fill((255, 0, 255), (8, 8, 8, 8))
+        return image
 
-	def getImage(self, imagePath, alphaChannel=True):
-		"""
-		Get a copy of a loaded image. If the searched image hasn't been
-		loaded, return a replacement image.
+    def get_image(self, image_path, alpha_channel=True):
+        """
+        Get a copy of a loaded image. If the searched image hasn't been
+        loaded, return a replacement image.
 
-		:type imagePath: str
-		:param imagePath: The filepath to the image to get.
+        :type image_path: str
+        :param image_path: The filepath to the image to get.
 
-		:type alphaChannel: bool
-		:param alphaChannel: (Optional) If True, return an image with an
-			alpha channel that can't be modified; otherwise, return an image
-			fully opaque but alpha can be modified.
+        :type alpha_channel: bool
+        :param alpha_channel: (Optional) If True, return an image with an
+            alpha channel that can't be modified; otherwise, return an image
+            fully opaque but alpha can be modified.
 
-		:rtype: pygame.surface.Surface
-		:returns: A loaded or replacement image.
-		"""
+        :rtype: pygame.surface.Surface
+        :returns: A loaded or replacement image.
+        """
 
-		if imagePath in self.images:
-			if alphaChannel:
-				return self.images[imagePath].convert_alpha()
-			return self.images[imagePath].convert()
+        if image_path in self.images:
+            if alpha_channel:
+                return self.images[image_path].convert_alpha()
+            return self.images[image_path].convert()
 
-		print('[WARNING] [Window.getImage] Image "%s" ' % filepath \
-			+ "not loaded! Using a remplacement image")
+        print(
+            f'[WARNING] [Window.get_image] Image "{image_path}"'
+            + ' not loaded! Using a remplacement image')
 
-		if alphaChannel:
-			return self.images["unknown"].convert()
-		return self.images["unknown"].convert_alpha()
+        if alpha_channel:
+            return self.images["unknown"].convert()
+        return self.images["unknown"].convert_alpha()
 
-	def updateEvents(self):
-		"""
-		Update the activity with the current events in the pygame event buffer.
-		"""
+    def update_events(self):
+        """
+        Update the activity with the current events in the pygame event buffer.
+        """
 
-		for event in pygame.event.get():
-			if event.type == QUIT:
-				self.destroy()
-			elif event.type == K_F4 and pygame.key.get_mods() in (K_RALT, K_LALT):
-				self.destroy()
-			elif self.activity:
-				self.activity.updateEvent(event)
+        for event in pygame.event.get():
+            if event.type == QUIT:
+                self.destroy()
+            elif event.type == K_F4 and pygame.key.get_mods() in (K_RALT, K_LALT):
+                self.destroy()
+            elif self.activity:
+                self.activity.update_event(event)
 
-	def update(self, deltaTime):
-		"""
-		Update the current level and all graphical components.
+    def update(self, delta_time):
+        """
+        Update the current level and all graphical components.
 
-		:type deltaTime: float
-		:param deltaTime: Time elapsed since the last update (in seconds).
-		"""
+        :type delta_time: float
+        :param delta_time: Time elapsed since the last update (in seconds).
+        """
 
-		self.updateEvents()
+        self.update_events()
 
-		if self.activity:
-			self.activity.update(deltaTime)
-		pygame.display.update()
+        if self.activity:
+            self.activity.update(delta_time)
+        pygame.display.update()
 
-	def destroy(self):
-		"""
-		Destroy the current activity and leave the game.
-		"""
+    def destroy(self):
+        """
+        Destroy the current activity and leave the game.
+        """
 
-		print("[INFO] [Window.destroy] Destroying window")
-		self.destroyActivity()
-		leaveGame()
+        print("[INFO] [Window.destroy] Destroying window")
+        self.destroy_activity()
+        leave_game()
 
-	def destroyActivity(self):
-		"""
-		Destroy the current activity and stop sounds and musics.
-		"""
+    def destroy_activity(self):
+        """
+        Destroy the current activity and stop sounds and musics.
+        """
 
-		if self.activity:
-			print("[INFO] [Window.destroyActivity] Destroying " \
-				+ "the current activity")
-			self.activity.destroy()
-			Game.audioPlayer.stopAudio()
-		else:
-			print("[INFO] [Window.destroyActivity] No current activity")
+        if self.activity:
+            print("[INFO] [Window.destroy_activity] Destroying "
+                  + "the current activity")
+            self.activity.destroy()
+            Game.audio_player.stop_audio()
+        else:
+            print("[INFO] [Window.destroy_activity] No current activity")
 
-	def setSplashRender(self, bootOption = "default"):
-		"""
-		Replace the current activity by a new
-		gui.splash_activity.Splash_activity.
+    def set_splash_render(self, boot_option="default"):
+        """
+        Replace the current activity by a new
+        gui.splashActivity.SplashActivity.
 
-		:type bootOption: str
-		:param bootOption: (Optional) An option for alternate starts. It can be
-			"default" (default option) or "update".
+        :type boot_option: str
+        :param boot_option: (Optional) An option for alternate starts. It can be
+            "default" (default option) or "update".
 
-		:Example: myWindow.setSplashRender("update") will
-			show an update installation dialog.
-		"""
+        :Example: myWindow.set_splash_render("update") will
+            show an update installation dialog.
+        """
 
-		self.destroyActivity()
-		print("[INFO] [Window.setSplashRender] Creating splash activity " \
-			+ "with bootOption=%s" % bootOption)
-		self.activity = Splash_activity(self)
+        self.destroy_activity()
+        print("[INFO] [Window.set_splash_render] Creating splash activity "
+              + f"with boot_option={boot_option}")
+        self.activity = SplashActivity(self)
 
-		if bootOption == "update":
-			self.activity.bootUpdate()
-		elif bootOption == "default":
-			self.activity.boot()
-		else:
-			print("[FATAL ERROR] [Window.setSplashRender] Unknown boot option" \
-				+ " '%s'" % bootOption)
-			leaveGame(Errors.CODE_ERROR)
+        if boot_option == "update":
+            self.activity.boot_update()
+        elif boot_option == "default":
+            self.activity.boot()
+        else:
+            print(
+                "[FATAL ERROR] [Window.set_splash_render] Unknown boot option '{boot_option}'")
+            leave_game(Errors.CODE_ERROR)
 
-	def setMenuRender(self):
-		"""
-		Replace the current activity by a new
-		gui.menu_activity.Menu_activity.
-		"""
+    def set_menu_render(self):
+        """
+        Replace the current activity by a new
+        gui.menuActivity.MenuActivity.
+        """
 
-		self.destroyActivity()
-		gameId = Game.options.get("last game", 0)
+        self.destroy_activity()
+        game_id = Game.options.get("last game", 0)
 
-		if gameId not in (0, 1):
-			print("[FATAL ERROR] [Window.setMenuRender]" \
-				+ " Unknown gameId %s" % gameId)
-			leaveGame(Errors.BAD_RESOURCE)
+        if game_id not in (0, 1):
+            print(
+                f"[FATAL ERROR] [Window.set_menu_render] Unknown game_id {game_id}")
+            leave_game(Errors.BAD_RESOURCE)
 
-		print("[INFO] [Window.setMenuRender] Creating menu" \
-			+ " activity with gameId=%s" % gameId)
-		self.activity = Menu_activity(self, gameId)
+        print(
+            f"[INFO] [Window.set_menu_render] Creating menu activity with game_id={game_id}")
+        self.activity = MenuActivity(self, game_id)
 
-	def setGameRender(self, gameId = 0):
-		"""
-		Replace the current activity by a new
-		gui.level_activity.Level_activity.
+    def set_game_render(self, game_id=0):
+        """
+        Replace the current activity by a new
+        gui.levelActivity.LevelActivity.
 
-		:type gameId: int
-		:param gameId: An id representing the game to load.
-			0 = Pyoro
-			1 = Pyoro 2
-		"""
+        :type game_id: int
+        :param game_id: An id representing the game to load.
+            0 = Pyoro
+            1 = Pyoro 2
+        """
 
-		if gameId in (0, 1):
-			self.destroyActivity()
-			print("[INFO] [Window.setMenuRender] Creating level" \
-				+ " activity with gameId=%s" % gameId)
-			self.activity = Level_activity(self, gameId)
-		else:
-			print("[FATAL ERROR] [Window.setGameRender]" \
-				+ " Unknown gameId %s" % gameId)
-			leaveGame(Errors.CODE_ERROR)
+        if game_id in (0, 1):
+            self.destroy_activity()
+            print(
+                f"[INFO] [Window.set_menu_render] Creating level activity with game_id={game_id}")
+            self.activity = LevelActivity(self, game_id)
+        else:
+            print(
+                f"[FATAL ERROR] [Window.set_game_render] Unknown game_id {game_id}")
+            leave_game(Errors.CODE_ERROR)
 
-	def drawImage(self, image, pos):
-		"""
-		Draw an image on the screen.
+    def draw_image(self, image, pos):
+        """
+        Draw an image on the screen.
 
-		:type image: pygame.surface.Surface
-		:param image: The surface to draw on the screen.
+        :type image: pygame.surface.Surface
+        :param image: The surface to draw on the screen.
 
-		:type pos: tuple<int>
-		:param pos: The (x, y) position of the surface on the screen.
-			(0, 0) = the top left corner of the screen.
-		"""
+        :type pos: tuple<int>
+        :param pos: The (x, y) position of the surface on the screen.
+            (0, 0) = the top left corner of the screen.
+        """
 
-		if self.rootSurface:
-			self.rootSurface.blit(image, pos)
-		else:
-			print("[WARNING] [Window.drawImage] No root surface to draw on")
+        if self.root_surface:
+            self.root_surface.blit(image, pos)
+        else:
+            print("[WARNING] [Window.draw_image] No root surface to draw on")
 
-	def getSize(self):
-		"""
-		Return the size of the game window.
+    def get_size(self):
+        """
+        Return the size of the game window.
 
-		:rtype: tuple
-		:returns: A (width, height) tuple.
-		"""
-		
-		if self.rootSurface:
-			return self.rootSurface.get_size()
-		else:
-			print("[WARNING] [Window.getSize] Non root surface")
+        :rtype: tuple
+        :returns: A (width, height) tuple.
+        """
+
+        if self.root_surface:
+            return self.root_surface.get_size()
+        else:
+            print("[WARNING] [Window.get_size] Non root surface")

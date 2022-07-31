@@ -33,7 +33,7 @@ __repo__ = "https://github.com/RedbeanGit/Pyoro"
 from audio.sound import Sound
 from audio.music import Music
 from game.config import LOW_AUDIO
-from game.util import get_resource_path
+from game.util import get_resource_paths
 
 
 class AudioPlayer:
@@ -49,20 +49,20 @@ class AudioPlayer:
 
     def __init__(self, nb_channels=2, samples_width=2, chunk_size=1024):
         """
-        Initialize the Audio_player object.
+        Initialize the AudioPlayer object.
 
-        :type nbChannels: int
-        :param nbChannels: Number of output channels (1=mono, 2=stereo).
+        :type nb_channels: int
+        :param nb_channels: Number of output channels (1=mono, 2=stereo).
 
-        :type samplesWidth: int
-        :param samplesWidth: Number of bytes per sample
+        :type samples_width: int
+        :param samples_width: Number of bytes per sample
             (1 = 8bits, 2 = 16bits, ...).
 
-        :type chunkSize: int
-        :param chunkSize: Number of samples per chunk.
+        :type chunk_size: int
+        :param chunk_size: Number of samples per chunk.
         """
 
-        print("[INFO] [Audio_player.__init__] Opening audio stream")
+        print("[INFO] [AudioPlayer.__init__] Opening audio stream")
         self.nb_channels = nb_channels
         self.samples_width = samples_width
         self.chunk_size = chunk_size
@@ -93,18 +93,18 @@ class AudioPlayer:
         Load the sounds and musics in the default audio data location.
         """
 
-        print("[INFO] [Audio_player.loadAudio] Loading sounds and musics")
-        for sound_path in get_resource_path("sounds"):
+        print("[INFO] [AudioPlayer.load_audio] Loading sounds and musics")
+        for sound_path in get_resource_paths("sounds"):
             self.load_sound(os.path.join("data", *sound_path))
-        for music_path in get_resource_path("musics"):
+        for music_path in get_resource_paths("musics"):
             self.load_music(os.path.join("data", *music_path))
 
     def load_sound(self, sound_path):
         """
         Load a specific wav file as a Sound in a defined path.
 
-        :type soundPath: str
-        :param soundPath: The file path of the sound to load.
+        :type sound_path: str
+        :param sound_path: The file path of the sound to load.
         """
 
         snd = Sound(self)
@@ -115,8 +115,8 @@ class AudioPlayer:
         """
         Load a specific wav file as a Music in a defined path.
 
-        :type musicPath: str
-        :param musicPath: The file path of the music to load.
+        :type music_path: str
+        :param music_path: The file path of the music to load.
         """
 
         msc = Music(self)
@@ -128,8 +128,8 @@ class AudioPlayer:
         Get a loaded sound. If the sound file at the given
         path is not loaded, return an empty sound.
 
-        :type soundPath: str
-        :param soundPath: The path of the sound file.
+        :type sound_path: str
+        :param sound_path: The path of the sound file.
 
         :rtype: audio.sound.Sound
         :returns: A loaded sound.
@@ -138,7 +138,7 @@ class AudioPlayer:
         if sound_path in self.sounds:
             snd = self.sounds[sound_path].copy()
         else:
-            print('[WARNING] [Audio_player.getSound] Unable to get '
+            print('[WARNING] [AudioPlayer.get_sound] Unable to get '
                   + f'"{sound_path}" ! Creating empty sound')
             snd = Sound(self)
             snd.file_path = sound_path
@@ -150,8 +150,8 @@ class AudioPlayer:
         Get a loaded music. If the music file at the given
         path is not loaded, return an empty sound.
 
-        :type musicPath: str
-        :param musicPath: The path of the music file.
+        :type music_path: str
+        :param music_path: The path of the music file.
 
         :rtype: audio.music.Music
         :returns: A loaded music or empty sound.
@@ -159,7 +159,7 @@ class AudioPlayer:
 
         if music_path in self.musics:
             return self.musics[music_path]
-        print('[WARNING] [Audio_player.getMusic] Unable to get '
+        print('[WARNING] [AudioPlayer.get_music] Unable to get '
               + f'"{music_path}" ! Creating empty sound')
         snd = Sound(self)
         snd.file_path = music_path
@@ -189,7 +189,7 @@ class AudioPlayer:
 
     def is_playable(self, sound):
         """
-        Check if the sound can be played by this Audio_player.
+        Check if the sound can be played by this AudioPlayer.
 
         :type sound: audio.sound.Sound
         :param sound: The sound to check.
@@ -216,7 +216,7 @@ class AudioPlayer:
         self.active = True
         self.thread = threading.Thread(target=loop)
         self.thread.start()
-        print("[INFO] [Audio_player.start] Player started in a new thread")
+        print("[INFO] [AudioPlayer.start] Player started in a new thread")
 
     def stop(self):
         """
@@ -224,11 +224,11 @@ class AudioPlayer:
         """
 
         if self.active and self.thread:
-            print("[INFO] [Audio_player.stop] Stopping player")
+            print("[INFO] [AudioPlayer.stop] Stopping player")
             self.active = False
             self.thread.join()
         else:
-            print("[WARNING] [Audio_player.stop] Audio_player already stopped")
+            print("[WARNING] [AudioPlayer.stop] AudioPlayer already stopped")
 
     def is_music(self, sound):
         """
@@ -272,7 +272,7 @@ class AudioPlayer:
     def update_low(self):
         """
         Update sounds and music and play a new audio samples but use less
-        resources than Audio_player.update() method.
+        resources than AudioPlayer.update() method.
         """
 
         with self.lock:

@@ -1,19 +1,19 @@
 # -*- coding: utf-8 -*-
 
-#	This file is part of Pyoro (A Python fan game).
+# 	This file is part of Pyoro (A Python fan game).
 #
-#	Metawars is free software: you can redistribute it and/or modify
-#	it under the terms of the GNU General Public License as published by
-#	the Free Software Foundation, either version 3 of the License, or
-#	(at your option) any later version.
+# 	Metawars is free software: you can redistribute it and/or modify
+# 	it under the terms of the GNU General Public License as published by
+# 	the Free Software Foundation, either version 3 of the License, or
+# 	(at your option) any later version.
 #
-#	Metawars is distributed in the hope that it will be useful,
-#	but WITHOUT ANY WARRANTY; without even the implied warranty of
-#	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-#	GNU General Public License for more details.
+# 	Metawars is distributed in the hope that it will be useful,
+# 	but WITHOUT ANY WARRANTY; without even the implied warranty of
+# 	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+# 	GNU General Public License for more details.
 #
-#	You should have received a copy of the GNU General Public License
-#	along with Metawars. If not, see <https://www.gnu.org/licenses/>
+# 	You should have received a copy of the GNU General Public License
+# 	along with Metawars. If not, see <https://www.gnu.org/licenses/>
 
 """
 Provide useful constants used in the game.
@@ -121,37 +121,15 @@ TONG_SPEED = 25
 
 # Default options used at first boot and when reset
 DEFAULT_OPTIONS = {
-    "keyboard": {
-        "right": 100,
-        "left": 97,
-        "action": 32,
-        "pause": 27
-    },
+    "keyboard": {"right": 100, "left": 97, "action": 32, "pause": 27},
     "joystick": {
-        "right": {
-            "inputType": 9,
-            "hatId": 0,
-            "value": (1, 0)
-        },
-        "left": {
-            "inputType": 9,
-            "hatId": 0,
-            "value": (-1, 0)
-        },
-        "action": {
-            "inputType": 10,
-            "buttonId": 2
-        },
-        "pause": {
-            "inputType": 10,
-            "buttonId": 9
-        }
+        "right": {"input_type": 9, "hat_id": 0, "value": (1, 0)},
+        "left": {"input_type": 9, "hat_id": 0, "value": (-1, 0)},
+        "action": {"input_type": 10, "button_id": 2},
+        "pause": {"input_type": 10, "button_id": 9},
     },
     "last game": 0,
-    "high score": [
-        0,
-        0
-    ],
+    "high score": [0, 0],
     "music volume": 1,
-    "sound volume": 1
+    "sound volume": 1,
 }

@@ -1,22 +1,22 @@
 # -*- coding: utf-8 -*-
 
-#	This file is part of Pyoro (A Python fan game).
+# 	This file is part of Pyoro (A Python fan game).
 #
-#	Metawars is free software: you can redistribute it and/or modify
-#	it under the terms of the GNU General Public License as published by
-#	the Free Software Foundation, either version 3 of the License, or
-#	(at your option) any later version.
+# 	Metawars is free software: you can redistribute it and/or modify
+# 	it under the terms of the GNU General Public License as published by
+# 	the Free Software Foundation, either version 3 of the License, or
+# 	(at your option) any later version.
 #
-#	Metawars is distributed in the hope that it will be useful,
-#	but WITHOUT ANY WARRANTY; without even the implied warranty of
-#	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-#	GNU General Public License for more details.
+# 	Metawars is distributed in the hope that it will be useful,
+# 	but WITHOUT ANY WARRANTY; without even the implied warranty of
+# 	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+# 	GNU General Public License for more details.
 #
-#	You should have received a copy of the GNU General Public License
-#	along with Metawars. If not, see <https://www.gnu.org/licenses/>
+# 	You should have received a copy of the GNU General Public License
+# 	along with Metawars. If not, see <https://www.gnu.org/licenses/>
 
 """
-Provide a Menu_widget base class.
+Provide a MenuWidget base class.
 
 Created on 08/10/2018.
 """
@@ -27,170 +27,178 @@ __author__ = "RedbeanGit"
 __repo__ = "https://github.com/RedbeanGit/Pyoro"
 
 from game.config import GUI_IMAGE_PATH
-from gui.image_transformer import stretchImage
+from gui.image_transformer import stretch_image
 from gui.widget import Widget
 
 
-class Menu_widget(Widget):
-	"""
-	Create a widget used to pack subwidgets which will be updated by this
-		menu.
-	"""
+class MenuWidget(Widget):
+    """
+    Create a widget used to pack sub_widgets which will be updated by this
+            menu.
+    """
 
-	DEFAULT_KWARGS = {
-		"backgroundImage": os.path.join(GUI_IMAGE_PATH, "frame.png")
-	}
+    DEFAULT_KWARGS = {"background_image": os.path.join(GUI_IMAGE_PATH, "frame.png")}
 
-	def __init__(self, activity, pos, **kwargs):
-		"""
-		Initialize a new Menu objects.
+    def __init__(self, activity, pos, **kwargs):
+        """
+        Initialize a new Menu objects.
 
-		:type activity: gui.activity.Activity
-		:param activity: The parent activity of this widget.
+        :type activity: gui.activity.Activity
+        :param activity: The parent activity of this widget.
 
-		:type pos: tuple
-		:param pos: The default position of the widget in a (x, y) tuple where
-			x and y are integers.
+        :type pos: tuple
+        :param pos: The default position of the widget in a (x, y) tuple where
+                x and y are integers.
 
-		backgroundImage can be defined.
-		"""
+        background_image can be defined.
+        """
 
-		Menu_widget.updateDefaultKwargs(kwargs)
-		Widget.__init__(self, activity, pos, **kwargs)
+        MenuWidget.update_default_kwargs(kwargs)
+        Widget.__init__(self, activity, pos, **kwargs)
 
-		self.subWidgets = {}
-		self.backgroundImage = None
-		self.activity.disableWidgets()
-		self.loadBackgroundImage()
-		self.initWidgets()
+        self.sub_widgets = {}
+        self.background_image = None
+        self.activity.disable_widgets()
+        self.load_background_image()
+        self.init_widgets()
 
-	def loadBackgroundImage(self):
-		"""
-		Create the background from an image stretched to the widget size.
-		"""
-		
-		if self.kwargs["backgroundImage"]:
-			self.backgroundImage = stretchImage( \
-				self.activity.window.getImage(self.kwargs["backgroundImage"]), \
-				self.kwargs["size"], 5)
+    def load_background_image(self):
+        """
+        Create the background from an image stretched to the widget size.
+        """
 
-	def initWidgets(self):
-		"""
-		Initialize all subwidgets.
-		"""
+        if self.kwargs["background_image"]:
+            self.background_image = stretch_image(
+                self.activity.window.get_image(self.kwargs["background_image"]),
+                self.kwargs["size"],
+                5,
+            )
 
-		pass
+    def init_widgets(self):
+        """
+        Initialize all sub_widgets.
+        """
 
-	def addSubWidget(self, widgetName, widgetType, pos, *widgetArgs, \
-		**widgetKwargs):
-		"""
-		Create and add a new widget to this menu.
+    def add_sub_widget(
+        self, widget_name, widget_type, pos, *widgetArgs, **widgetKwargs
+    ):
+        """
+        Create and add a new widget to this menu.
 
-		:type widgetName: str
-		:param widgetName: A string to identify the subwidget.
+        :type widget_name: str
+        :param widget_name: A string to identify the subwidget.
 
-		:type widgetType: type
-		:param widgetType: A type used to create the subwidget.
+        :type widget_type: type
+        :param widget_type: A type used to create the subwidget.
 
-		:type pos: tuple
-		:param pos: The default position of the subwidget relative to the
-			upper left corner of the menu.
+        :type pos: tuple
+        :param pos: The default position of the subwidget relative to the
+                upper left corner of the menu.
 
-		Arguments and keyword arguments to pass to the subwidget can be
-			defined then.
-		"""
+        Arguments and keyword arguments to pass to the subwidget can be
+                defined then.
+        """
 
-		if widgetName in self.subWidgets:
-			print("[WARNING] [Menu_widget.addSubWidget] A widget " \
-				+ "called \"{}\" already exists in".format(widgetName) \
-				+ " this Menu_widget ! Destroying it")
+        if widget_name in self.sub_widgets:
+            print(
+                "[WARNING] [MenuWidget.add_sub_widget] A widget "
+                + f'called "{widget_name}" already exists in'
+                + " this MenuWidget ! Destroying it"
+            )
 
-			if not self.widgetName[widgetName].isDestroyed:
-				self.subWidgets[widgetName].destroy()
-		
-		realPos = self.getRealPos()
-		self.subWidgets[widgetName] = widgetType(self.activity, (pos[0] \
-			+ realPos[0], pos[1] + realPos[1]), *widgetArgs, **widgetKwargs)
+            if not self.sub_widgets[widget_name].is_destroyed:
+                self.sub_widgets[widget_name].destroy()
 
-	def removeSubWidget(self, widgetName):
-		"""
-		Remove a subwidget from this menu.
+        real_pos = self.get_real_pos()
+        self.sub_widgets[widget_name] = widget_type(
+            self.activity,
+            (pos[0] + real_pos[0], pos[1] + real_pos[1]),
+            *widgetArgs,
+            **widgetKwargs,
+        )
 
-		:type widgetName: str
-		:param widgetName: The name used to identify the subwidget.
-		"""
+    def remove_sub_widget(self, widget_name):
+        """
+        Remove a subwidget from this menu.
 
-		if widgetName in self.subWidgets:
-			if not self.subWidgets[widgetName].isDestroyed:
-				self.subWidgets[widgetName].destroy()
-			self.subWidgets.pop(widgetName)
-		else:
-			print("[WARNING] [Menu_widget.removeSubWidget] No widget called" \
-				+ " \"{}\" in this Menu_widget".format(widgetName))
+        :type widget_name: str
+        :param widget_name: The name used to identify the subwidget.
+        """
 
-	def configSubWidget(self, widgetName, **kwargs):
-		"""
-		Call config method on a given subwidget.
+        if widget_name in self.sub_widgets:
+            if not self.sub_widgets[widget_name].is_destroyed:
+                self.sub_widgets[widget_name].destroy()
+            self.sub_widgets.pop(widget_name)
+        else:
+            print(
+                "[WARNING] [MenuWidget.remove_sub_widget] No widget called"
+                + f' "{widget_name}" in this MenuWidget'
+            )
 
-		:type widgetName: str
-		:param widgetName: The name used to identify the subwidget.
+    def config_sub_widget(self, widget_name, **kwargs):
+        """
+        Call config method on a given subwidget.
 
-		Keyword arguments are passed to the subwidget.config method.
-		"""
+        :type widget_name: str
+        :param widget_name: The name used to identify the subwidget.
 
-		if widgetName in self.subWidgets:
-			self.subWidgets[widgetName].config(**kwargs)
-		else:
-			print("[WARNING] [Menu_widget.configSubWidget] No widget called" \
-				+ " \"{}\" in this Menu_widget".format(widgetName))
+        Keyword arguments are passed to the subwidget.config method.
+        """
 
-	def update(self, deltaTime):
-		"""
-		Update the menu and its subwidgets.
+        if widget_name in self.sub_widgets:
+            self.sub_widgets[widget_name].config(**kwargs)
+        else:
+            print(
+                "[WARNING] [MenuWidget.config_sub_widget] No widget called"
+                + f' "{widget_name}" in this MenuWidget'
+            )
 
-		:type deltaTime: float
-		:param deltaTime: Time elapsed since the last call of this method (in
-			seconds).
-		"""
+    def update(self, delta_time):
+        """
+        Update the menu and its sub_widgets.
 
-		if self.backgroundImage:
-			self.activity.window.drawImage(self.backgroundImage, \
-				self.getRealPos())
-		
-		for widget in tuple(self.subWidgets.values()):
-			if not widget.isDestroyed:
-				widget.update(deltaTime)
+        :type delta_time: float
+        :param delta_time: Time elapsed since the last call of this method (in
+                seconds).
+        """
 
-	def onEvent(self, event):
-		"""
-		This method is called on all user events detected by Pygame.
+        if self.background_image:
+            self.activity.window.draw_image(self.background_image, self.get_real_pos())
 
-		:type event: pygame.event.Event
-		:param event: The event to handle.
-		"""
+        for widget in tuple(self.sub_widgets.values()):
+            if not widget.is_destroyed:
+                widget.update(delta_time)
 
-		for widget in tuple(self.subWidgets.values()):
-			if not widget.isDestroyed:
-				widget.onEvent(event)
+    def on_event(self, event):
+        """
+        This method is called on all user events detected by Pygame.
 
-	def destroy(self):
-		"""
-		Destroy the menu and its subwidgets.
-		"""
+        :type event: pygame.event.Event
+        :param event: The event to handle.
+        """
 
-		for widget in tuple(self.subWidgets.values()):
-			if not widget.isDestroyed:
-				widget.destroy()
-		self.subWidgets.clear()
-		self.activity.enableWidgets()
-		Widget.destroy(self)
+        for widget in tuple(self.sub_widgets.values()):
+            if not widget.is_destroyed:
+                widget.on_event(event)
 
-	def config(self, **kwargs):
-		"""
-		Change some kwargs of the menu.
-		"""
+    def destroy(self):
+        """
+        Destroy the menu and its sub_widgets.
+        """
 
-		Widget.config(self, **kwargs)
-		if "enable" in kwargs:
-			for widget in self.subWidgets.values():
-				widget.config(enable = kwargs["enable"])
+        for widget in tuple(self.sub_widgets.values()):
+            if not widget.is_destroyed:
+                widget.destroy()
+        self.sub_widgets.clear()
+        self.activity.enable_widgets()
+        Widget.destroy(self)
+
+    def config(self, **kwargs):
+        """
+        Change some kwargs of the menu.
+        """
+
+        Widget.config(self, **kwargs)
+        if "enable" in kwargs:
+            for widget in self.sub_widgets.values():
+                widget.config(enable=kwargs["enable"])

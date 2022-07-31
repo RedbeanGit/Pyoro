@@ -1,19 +1,19 @@
 # -*- coding:utf-8 -*-
 
-#	This file is part of Pyoro (A Python fan game).
+# 	This file is part of Pyoro (A Python fan game).
 #
-#	Metawars is free software: you can redistribute it and/or modify
-#	it under the terms of the GNU General Public License as published by
-#	the Free Software Foundation, either version 3 of the License, or
-#	(at your option) any later version.
+# 	Metawars is free software: you can redistribute it and/or modify
+# 	it under the terms of the GNU General Public License as published by
+# 	the Free Software Foundation, either version 3 of the License, or
+# 	(at your option) any later version.
 #
-#	Metawars is distributed in the hope that it will be useful,
-#	but WITHOUT ANY WARRANTY; without even the implied warranty of
-#	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-#	GNU General Public License for more details.
+# 	Metawars is distributed in the hope that it will be useful,
+# 	but WITHOUT ANY WARRANTY; without even the implied warranty of
+# 	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+# 	GNU General Public License for more details.
 #
-#	You should have received a copy of the GNU General Public License
-#	along with Metawars. If not, see <https://www.gnu.org/licenses/>
+# 	You should have received a copy of the GNU General Public License
+# 	along with Metawars. If not, see <https://www.gnu.org/licenses/>
 
 """
 Provide a class to load, update and manage mods
@@ -27,137 +27,142 @@ import sys
 __author__ = "RedbeanGit"
 __repo__ = "https://github.com/RedbeanGit/Pyoro"
 
-from game.util import getExternalDataPath
+from game.util import get_external_data_path
 
 
 class Mod:
-	"""
-	Load, update and manage a mod.
-	"""
-	modList = []
+    """
+    Load, update and manage a mod.
+    """
 
-	def __init__(self, name):
-		"""
-		Initialize a Mod object.
+    modList = []
 
-		:type name: str
-		:param name: The name of the mod.
-		"""
+    def __init__(self, name):
+        """
+        Initialize a Mod object.
 
-		self.name = name
-		self.module = None
-		self.loaded = False
-		Mod.addFolderToPath()
+        :type name: str
+        :param name: The name of the mod.
+        """
 
-	def load(self):
-		"""
-		Load a mod by importing it.
+        self.name = name
+        self.module = None
+        self.loaded = False
+        Mod.add_folder_to_path()
 
-		:rtype: bool
-		:returns: True if it's a success, otherwise False.
-		"""
+    def load(self):
+        """
+        Load a mod by importing it.
 
-		try:
-			exec("import " + self.name)
-			exec("self.module = " + self.name)
-			self.loaded = True
-			return True
-		except ImportError:
-			print('[WARNING] [Mod.load] Unable to import "%s"' % self.name)
-		return False
+        :rtype: bool
+        :returns: True if it's a success, otherwise False.
+        """
 
-	def init(self, window):
-		"""
-		Initialize a mod by passing to it the current gui.window.Window.
+        try:
+            exec("import " + self.name)
+            exec("self.module = " + self.name)
+            self.loaded = True
+            return True
+        except ImportError:
+            print(f'[WARNING] [Mod.load] Unable to import "{self.name}"')
+        return False
 
-		:type window: gui.window.Window
-		:param window: The current game window.
+    def init(self, window):
+        """
+        Initialize a mod by passing to it the current gui.window.Window.
 
-		:rtype: bool
-		:returns: True if it's a success, otherwise False.
-		"""
+        :type window: gui.window.Window
+        :param window: The current game window.
 
-		if "init" in dir(self.module):
-			if callable(self.module.init):
-				try:
-					self.module.init(window)
-					return True
-				except Exception:
-					print("[WARNING] [Mod.init] Something wrong happened " \
-						+ 'while initializing "%s"' % self.name)
-		return False
+        :rtype: bool
+        :returns: True if it's a success, otherwise False.
+        """
 
-	def update(self, window, deltaTime):
-		"""
-		Update a mod by passing to it the current gui.window.Window
-		and the elapsed time since the last update.
+        if "init" in dir(self.module):
+            if callable(self.module.init):
+                try:
+                    self.module.init(window)
+                    return True
+                except Exception:
+                    print(
+                        "[WARNING] [Mod.init] Something wrong happened "
+                        + f'while initializing "{self.name}"'
+                    )
+        return False
 
-		:type window: gui.window.Window
-		:param window: The current game window.
+    def update(self, window, delta_time):
+        """
+        Update a mod by passing to it the current gui.window.Window
+        and the elapsed time since the last update.
 
-		:type deltaTime: float
-		:param deltaTime: Elapsed time since the last update.
+        :type window: gui.window.Window
+        :param window: The current game window.
 
-		:rtype: bool
-		:returns: True if it's a success, otherwise False.
-		"""
+        :type delta_time: float
+        :param delta_time: Elapsed time since the last update.
 
-		if "update" in dir(self.module):
-			if callable(self.module.update):
-				try:
-					self.module.update(window, deltaTime)
-					return True
-				except Exception:
-					print("[WARNING] [Mod.update] Something wrong happened" \
-						+ ' while updating "%s"' % self.name)
-		return False
+        :rtype: bool
+        :returns: True if it's a success, otherwise False.
+        """
 
-	@classmethod
-	def loadMods(cls):
-		"""
-		Load all mods in the mod folder.
-		"""
+        if "update" in dir(self.module):
+            if callable(self.module.update):
+                try:
+                    self.module.update(window, delta_time)
+                    return True
+                except Exception:
+                    print(
+                        "[WARNING] [Mod.update] Something wrong happened"
+                        + f' while updating "{self.name}"'
+                    )
+        return False
 
-		modFolder = os.path.join(getExternalDataPath(), "mods")
+    @classmethod
+    def load_mods(cls):
+        """
+        Load all mods in the mod folder.
+        """
 
-		if not os.path.exists(modFolder):
-			os.makedirs(modFolder)
+        mod_folder = os.path.join(get_external_data_path(), "mods")
 
-		fileNames = os.listdir(modFolder)
+        if not os.path.exists(mod_folder):
+            os.makedirs(mod_folder)
 
-		for fileName in fileNames:
-			modName, ext = os.path.splitext(fileName)
-			if modName != "__init__" and ext in (".py", ".pyc", ".pyd", ".pyw"):
-				mod = Mod(modName)
-				cls.modList.append(mod)
-				mod.load()
+        file_names = os.listdir(mod_folder)
 
-	@classmethod
-	def initMods(cls, window):
-		"""
-		Initialize all loaded mods.
-		"""
+        for file_name in file_names:
+            mod_name, ext = os.path.splitext(file_name)
+            if mod_name != "__init__" and ext in (".py", ".pyc", ".pyd", ".pyw"):
+                mod = Mod(mod_name)
+                cls.modList.append(mod)
+                mod.load()
 
-		for mod in cls.modList:
-			if mod.loaded:
-				mod.init(window)
+    @classmethod
+    def init_mods(cls, window):
+        """
+        Initialize all loaded mods.
+        """
 
-	@classmethod
-	def updateMods(cls, window, deltaTime):
-		"""
-		Update all loaded mods.
-		"""
+        for mod in cls.modList:
+            if mod.loaded:
+                mod.init(window)
 
-		for mod in cls.modList:
-			if mod.loaded:
-				mod.update(window, deltaTime)
+    @classmethod
+    def update_mods(cls, window, delta_time):
+        """
+        Update all loaded mods.
+        """
 
-	@staticmethod
-	def addFolderToPath():
-		"""
-		Add the mod folder to path.
-		"""
+        for mod in cls.modList:
+            if mod.loaded:
+                mod.update(window, delta_time)
 
-		modFolder = os.path.join(getExternalDataPath(), "mods")
-		if modFolder not in sys.path:
-			sys.path.append(modFolder)
+    @staticmethod
+    def add_folder_to_path():
+        """
+        Add the mod folder to path.
+        """
+
+        mod_folder = os.path.join(get_external_data_path(), "mods")
+        if mod_folder not in sys.path:
+            sys.path.append(mod_folder)

@@ -1,19 +1,19 @@
 ﻿# -*- coding: utf-8 -*-
 
-#	This file is part of Pyoro (A Python fan game).
+# 	This file is part of Pyoro (A Python fan game).
 #
-#	Metawars is free software: you can redistribute it and/or modify
-#	it under the terms of the GNU General Public License as published by
-#	the Free Software Foundation, either version 3 of the License, or
-#	(at your option) any later version.
+# 	Metawars is free software: you can redistribute it and/or modify
+# 	it under the terms of the GNU General Public License as published by
+# 	the Free Software Foundation, either version 3 of the License, or
+# 	(at your option) any later version.
 #
-#	Metawars is distributed in the hope that it will be useful,
-#	but WITHOUT ANY WARRANTY; without even the implied warranty of
-#	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-#	GNU General Public License for more details.
+# 	Metawars is distributed in the hope that it will be useful,
+# 	but WITHOUT ANY WARRANTY; without even the implied warranty of
+# 	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+# 	GNU General Public License for more details.
 #
-#	You should have received a copy of the GNU General Public License
-#	along with Metawars. If not, see <https://www.gnu.org/licenses/>
+# 	You should have received a copy of the GNU General Public License
+# 	along with Metawars. If not, see <https://www.gnu.org/licenses/>
 
 """
 Provide a Pyoro class, the main character of the game.
@@ -26,8 +26,12 @@ __repo__ = "https://github.com/RedbeanGit/Pyoro"
 
 from entities.entity import Entity
 from entities.tongue import Tongue
-from game.config import PYORO_SPEED, PYORO_NOTCH_DURATION,  \
-    PYORO_EATING_DURATION, PYORO_DIE_SPEED
+from game.config import (
+    PYORO_SPEED,
+    PYORO_NOTCH_DURATION,
+    PYORO_EATING_DURATION,
+    PYORO_DIE_SPEED,
+)
 
 
 class Pyoro(Entity):
@@ -92,7 +96,7 @@ class Pyoro(Entity):
         Stop Pyoro movement.
         """
 
-        if self.sounds["pyoro_move"].isPlaying:
+        if self.sounds["pyoro_move"].is_playing:
             self.sounds["pyoro_move"].pause()
         self.moving = False
         self.notch = False
@@ -108,8 +112,7 @@ class Pyoro(Entity):
         if not self.dead and not self.tongue:
             if not self.notch:
                 if self.direction == 1:
-                    new_pos = self.pos[0] + self.size[0] / 2 + PYORO_SPEED \
-                        * delta_time
+                    new_pos = self.pos[0] + self.size[0] / 2 + PYORO_SPEED * delta_time
                     void_pos = self.get_void_case_pos_on_path(new_pos)
 
                     if new_pos >= self.level.size[0]:
@@ -120,8 +123,7 @@ class Pyoro(Entity):
                         self.pos[0] += PYORO_SPEED * delta_time
 
                 else:
-                    new_pos = self.pos[0] - self.size[0] / 2 - PYORO_SPEED \
-                        * delta_time
+                    new_pos = self.pos[0] - self.size[0] / 2 - PYORO_SPEED * delta_time
                     void_pos = self.get_void_case_pos_on_path(new_pos)
                     if new_pos < 0:
                         self.pos[0] = self.size[0] / 2
@@ -129,8 +131,9 @@ class Pyoro(Entity):
                         self.pos[0] = void_pos + self.size[0] / 2 + 1
                     else:
                         self.pos[0] -= PYORO_SPEED * delta_time
-                self.level.createActionDelay((self, "enable_notch"),
-                                             PYORO_NOTCH_DURATION, self.enable_notch)
+                self.level.create_action_delay(
+                    (self, "enable_notch"), PYORO_NOTCH_DURATION, self.enable_notch
+                )
 
     def get_void_case_pos_on_path(self, new_pos):
         """
@@ -164,9 +167,10 @@ class Pyoro(Entity):
         """
 
         self.notch = True
-        self.level.removeActionDelay((self, "enable_notch"))
-        self.level.createActionDelay((self, "disable_notch"),
-                                     PYORO_NOTCH_DURATION, self.disable_notch)
+        self.level.remove_action_delay((self, "enable_notch"))
+        self.level.create_action_delay(
+            (self, "disable_notch"), PYORO_NOTCH_DURATION, self.disable_notch
+        )
 
     def disable_notch(self):
         """
@@ -174,7 +178,7 @@ class Pyoro(Entity):
         """
 
         self.notch = False
-        self.level.removeActionDelay((self, "disable_notch"))
+        self.level.remove_action_delay((self, "disable_notch"))
 
     # update method
     def update(self, delta_time):
@@ -188,7 +192,7 @@ class Pyoro(Entity):
         if self.moving:
             self.move(delta_time)
         else:
-            self.level.removeActionDelay((self, "enable_notch"))
+            self.level.remove_action_delay((self, "enable_notch"))
             self.disable_notch()
         self.update_sprite()
 
@@ -202,8 +206,11 @@ class Pyoro(Entity):
         """
 
         if self.eating_count:
-            self.level.createActionDelay((self, "update_eating_count"),
-                                         PYORO_EATING_DURATION, self.update_eating_count)
+            self.level.create_action_delay(
+                (self, "update_eating_count"),
+                PYORO_EATING_DURATION,
+                self.update_eating_count,
+            )
 
         style_type = self.level.get_style_type_with_score()
         if self.dead:
@@ -226,11 +233,14 @@ class Pyoro(Entity):
 
         self.eating_count += 1
         if self.eating_count < 8:
-            self.level.setActionDelay((self, "update_eating_count"),
-                                      PYORO_EATING_DURATION, self.update_eating_count)
+            self.level.set_action_delay(
+                (self, "update_eating_count"),
+                PYORO_EATING_DURATION,
+                self.update_eating_count,
+            )
         else:
             self.eating_count = 0
-            self.level.removeActionDelay((self, "update_eating_count"))
+            self.level.remove_action_delay((self, "update_eating_count"))
 
     def enable_capacity(self):
         """
@@ -251,7 +261,7 @@ class Pyoro(Entity):
 
         if not self.dead:
             if self.tongue:
-                self.tongue.goBack = True
+                self.tongue.go_back = True
 
     def remove(self):
         """
@@ -265,13 +275,21 @@ class Pyoro(Entity):
 
             self.disable_move()
 
-            self.level.removeActionDelay((self, "enable_notch"),
-                                         (self, "disable_notch"), (self, "update_eating_count"))
+            self.level.remove_action_delay(
+                (self, "enable_notch"),
+                (self, "disable_notch"),
+                (self, "update_eating_count"),
+            )
 
-            self.level.createActionDelay((self, "gameOver"), 1.28,
-                                         self.level.levelDrawer.activity.gameOver)
-            self.level.createActionDelay((self, "removeGameOverActionDelay"),
-                                         1.29, self.level.removeActionDelay, (self, "gameOver"))
+            self.level.create_action_delay(
+                (self, "game_over"), 1.28, self.level.level_drawer.activity.game_over
+            )
+            self.level.create_action_delay(
+                (self, "removeGame_overActionDelay"),
+                1.29,
+                self.level.remove_action_delay,
+                (self, "game_over"),
+            )
 
-            self.level.getAudioPlayer().speed = 1
+            self.level.get_audio_player().speed = 1
             self.sounds["pyoro_die"].play()

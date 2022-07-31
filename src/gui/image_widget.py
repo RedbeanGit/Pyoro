@@ -24,22 +24,20 @@ Created on 31/12/2018
 __author__ = "RedbeanGit"
 __repo__ = "https://github.com/RedbeanGit/Pyoro"
 
-from gui.image_transformer import resizeImage
+from gui.image_transformer import resize_image
 from gui.widget import Widget
 
 
-class Image_widget(Widget):
+class ImageWidget(Widget):
     """
     Create a widget used to render image easily.
     """
 
-    DEFAULT_KWARGS = {
+    DEFAULT_KWARGS = {}
 
-    }
-
-    def __init__(self, activity, pos, imagePath, **kwargs):
+    def __init__(self, activity, pos, image_path, **kwargs):
         """
-        Initialize a new Image_widget object.
+        Initialize a new ImageWidget object.
 
         :type activity: gui.activity.Activity
         :param activity: The parent activity of this widget.
@@ -48,13 +46,13 @@ class Image_widget(Widget):
         :param pos: The position of the widget in a (x, y) tuple, where x and y
             are integers.
 
-        :type imagePath: str
-        :param imagePath: The image's filepath.
+        :type image_path: str
+        :param image_path: The image's filepath.
         """
 
-        Image_widget.updateDefaultKwargs(kwargs)
+        ImageWidget.update_default_kwargs(kwargs)
         self.activity = activity
-        self.loadImage(imagePath)
+        self.load_image(image_path)
 
         if "size" in kwargs:
             self.resize(kwargs["size"])
@@ -63,36 +61,36 @@ class Image_widget(Widget):
 
         Widget.__init__(self, activity, pos, **kwargs)
 
-    def loadImage(self, imagePath):
+    def load_image(self, image_path):
         """
         Load an image file to this object.
 
-        :type imagePath: str
-        :param imagePath: The filepath to the image to load.
+        :type image_path: str
+        :param image_path: The filepath to the image to load.
         """
 
-        self.image = self.activity.window.getImage(imagePath)
+        self.image = self.activity.window.get_image(image_path)
         self.size = self.image.get_size()
 
-    def update(self, deltaTime):
+    def update(self, delta_time):
         """
         Redraw the image on the game window.
         This method should be called each frame.
 
-        :type deltaTime: float
-        :param deltaTime: Time elapsed since the last call of this method (in
+        :type delta_time: float
+        :param delta_time: Time elapsed since the last call of this method (in
             seconds)
         """
-        self.activity.window.drawImage(self.image, self.getRealPos())
+        self.activity.window.draw_image(self.image, self.get_real_pos())
 
-    def resize(self, newSize):
+    def resize(self, new_size):
         """
         Resize the widget by stretching the image.
 
-        :type newSize: tuple
-        :param newSize: The size to give to the widget in a (width, height)
+        :type new_size: tuple
+        :param new_size: The size to give to the widget in a (width, height)
             tuple, where width and height are integers.
         """
 
-        self.image = resizeImage(self.image, newSize)
-        self.size = tuple(newSize)
+        self.image = resize_image(self.image, new_size)
+        self.size = tuple(new_size)

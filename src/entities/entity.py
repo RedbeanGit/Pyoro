@@ -1,19 +1,19 @@
 # -*- coding:utf-8 -*-
 
-#	This file is part of Pyoro (A Python fan game).
+# 	This file is part of Pyoro (A Python fan game).
 #
-#	Metawars is free software: you can redistribute it and/or modify
-#	it under the terms of the GNU General Public License as published by
-#	the Free Software Foundation, either version 3 of the License, or
-#	(at your option) any later version.
+# 	Metawars is free software: you can redistribute it and/or modify
+# 	it under the terms of the GNU General Public License as published by
+# 	the Free Software Foundation, either version 3 of the License, or
+# 	(at your option) any later version.
 #
-#	Metawars is distributed in the hope that it will be useful,
-#	but WITHOUT ANY WARRANTY; without even the implied warranty of
-#	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-#	GNU General Public License for more details.
+# 	Metawars is distributed in the hope that it will be useful,
+# 	but WITHOUT ANY WARRANTY; without even the implied warranty of
+# 	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+# 	GNU General Public License for more details.
 #
-#	You should have received a copy of the GNU General Public License
-#	along with Metawars. If not, see <https://www.gnu.org/licenses/>
+# 	You should have received a copy of the GNU General Public License
+# 	along with Metawars. If not, see <https://www.gnu.org/licenses/>
 
 """
 Provide a base abstract class to create entities
@@ -25,7 +25,7 @@ import os
 
 from game.config import ENTITIES_IMAGE_PATH
 from game.util import Game
-from gui.image_transformer import resizeImage
+from gui.image_transformer import resize_image
 
 __author__ = "RedbeanGit"
 __version__ = "1.1.1"
@@ -88,17 +88,17 @@ class Entity:
         """
 
         self.images = {}
-        case_size = self.level.levelDrawer.getCase_size()
-        image_names = os.listdir(os.path.join(
-            ENTITIES_IMAGE_PATH, folder_name))
+        case_size = self.level.level_drawer.get_case_size()
+        image_names = os.listdir(os.path.join(ENTITIES_IMAGE_PATH, folder_name))
 
         for image_name in image_names:
             if image_name.split(".")[-1] == "png":
-                self.images[image_name] = resizeImage(
-                    self.level.levelDrawer.activity.window.getImage(
-                        os.path.join(ENTITIES_IMAGE_PATH,
-                                     folder_name, image_name)),
-                    (case_size[0] * self.size[0], case_size[1] * self.size[1]))
+                self.images[image_name] = resize_image(
+                    self.level.level_drawer.activity.window.get_image(
+                        os.path.join(ENTITIES_IMAGE_PATH, folder_name, image_name)
+                    ),
+                    (case_size[0] * self.size[0], case_size[1] * self.size[1]),
+                )
         self.update_sprite()
 
     def init_images(self):
@@ -118,10 +118,11 @@ class Entity:
         :param sound_names: The name of the sounds to load.
         """
 
-        audio_player = self.level.getAudioPlayer()
+        audio_player = self.level.get_audio_player()
         for sound_name in sound_names:
-            self.sounds[sound_name] = audio_player.getSound(os.path.join(
-                "data", "audio", "sounds", f"{sound_name}.wav"))
+            self.sounds[sound_name] = audio_player.get_sound(
+                os.path.join("data", "audio", "sounds", f"{sound_name}.wav")
+            )
 
     def init_sounds(self):
         """
@@ -160,10 +161,12 @@ class Entity:
 
         pos = entity.pos
         size = entity.size
-        return (pos[0] + size[0] / 2 > self.pos[0] - self.size[0] / 2) \
-            and (pos[0] - size[0] / 2 < self.pos[0] + self.size[0] / 2) \
-            and (pos[1] + size[1] / 2 > self.pos[1] - self.size[1] / 2) \
+        return (
+            (pos[0] + size[0] / 2 > self.pos[0] - self.size[0] / 2)
+            and (pos[0] - size[0] / 2 < self.pos[0] + self.size[0] / 2)
+            and (pos[1] + size[1] / 2 > self.pos[1] - self.size[1] / 2)
             and (pos[1] - size[1] / 2 < self.pos[1] + self.size[1] / 2)
+        )
 
     def is_out_of_bound(self, included=True):
         """
@@ -180,18 +183,18 @@ class Entity:
 
         width, height = self.level.size
         if included:
-            return (self.pos[0] + self.size[0] / 2 <= 0) \
-                or (self.pos[0] - self.size[0] / 2
-                    >= width) \
-                or (self.pos[1] + self.size[1] / 2 <= 0) \
-                or (self.pos[1] - self.size[1] / 2
-                    >= height)
-        return (self.pos[0] - self.size[0] / 2 <= 0) \
-            or (self.pos[0] + self.size[0] / 2
-                >= width) \
-            or (self.pos[1] - self.size[1] / 2 <= 0) \
-            or (self.pos[1] + self.size[1] / 2
-                >= height)
+            return (
+                (self.pos[0] + self.size[0] / 2 <= 0)
+                or (self.pos[0] - self.size[0] / 2 >= width)
+                or (self.pos[1] + self.size[1] / 2 <= 0)
+                or (self.pos[1] - self.size[1] / 2 >= height)
+            )
+        return (
+            (self.pos[0] - self.size[0] / 2 <= 0)
+            or (self.pos[0] + self.size[0] / 2 >= width)
+            or (self.pos[1] - self.size[1] / 2 <= 0)
+            or (self.pos[1] + self.size[1] / 2 >= height)
+        )
 
     def is_hitting_floor(self):
         """
@@ -208,7 +211,7 @@ class Entity:
         The entity will no longer be updated.
         """
 
-        self.level.removeEntity(self)
+        self.level.remove_entity(self)
         self.remove_sounds()
 
     def remove_sounds(self):
@@ -217,6 +220,6 @@ class Entity:
         """
 
         for sound in self.sounds.values():
-            if sound.isPlaying:
+            if sound.is_playing:
                 sound.stop()
-            Game.audioPlayer.remove_sound(sound)
+            Game.audio_player.remove_sound(sound)

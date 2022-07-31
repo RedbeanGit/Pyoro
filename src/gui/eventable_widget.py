@@ -1,22 +1,22 @@
 # -*- coding:utf-8 -*-
 
-#	This file is part of Pyoro (A Python fan game).
+# 	This file is part of Pyoro (A Python fan game).
 #
-#	Metawars is free software: you can redistribute it and/or modify
-#	it under the terms of the GNU General Public License as published by
-#	the Free Software Foundation, either version 3 of the License, or
-#	(at your option) any later version.
+# 	Metawars is free software: you can redistribute it and/or modify
+# 	it under the terms of the GNU General Public License as published by
+# 	the Free Software Foundation, either version 3 of the License, or
+# 	(at your option) any later version.
 #
-#	Metawars is distributed in the hope that it will be useful,
-#	but WITHOUT ANY WARRANTY; without even the implied warranty of
-#	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-#	GNU General Public License for more details.
+# 	Metawars is distributed in the hope that it will be useful,
+# 	but WITHOUT ANY WARRANTY; without even the implied warranty of
+# 	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+# 	GNU General Public License for more details.
 #
-#	You should have received a copy of the GNU General Public License
-#	along with Metawars. If not, see <https://www.gnu.org/licenses/>
+# 	You should have received a copy of the GNU General Public License
+# 	along with Metawars. If not, see <https://www.gnu.org/licenses/>
 
 """
-Provide an Eventable_widget base class to manage user events and inputs.
+Provide an EventableWidget base class to manage user events and inputs.
 
 Created on 17/08/2018.
 """
@@ -30,310 +30,340 @@ from pygame.locals import MOUSEMOTION, MOUSEBUTTONDOWN, MOUSEBUTTONUP
 from gui.widget import Widget
 
 
-class Eventable_widget(Widget):
-	"""
-	This class exists to be subclassed by widgets which have to be able to
-		handle user events.
-	"""
+class EventableWidget(Widget):
+    """
+    This class exists to be subclassed by widgets which have to be able to
+        handle user events.
+    """
 
-	DEFAULT_KWARGS = {
-		"enable": True,
+    DEFAULT_KWARGS = {
+        "enable": True,
+        "on_click_fct": None,
+        "on_click_args": (),
+        "on_click_kwargs": {},
+        "on_hover_fct": None,
+        "on_hover_args": (),
+        "on_hover_kwargs": {},
+        "on_middle_click_fct": None,
+        "on_middle_click_args": (),
+        "on_middle_click_kwargs": {},
+        "on_right_click_fct": None,
+        "on_right_click_args": (),
+        "on_right_click_kwargs": {},
+        "on_wheel_fct": None,
+        "on_wheel_args": (),
+        "on_wheel_kwargs": {},
+        "on_click_sound": os.path.join("data", "audio", "sounds", "widget_click.wav"),
+    }
 
-		"onClickFct": None,
-		"onClickArgs": (),
-		"onClickKwargs": {},
+    def __init__(self, activity, pos, **kwargs):
+        """
+        Initialize a new Button object.
 
-		"onHoverFct": None,
-		"onHoverArgs": (),
-		"onHoverKwargs": {},
+        :type activity: gui.activity.Activity
+        :param activity: The parent activity of this widget.
 
-		"onMiddleClickFct": None,
-		"onMiddleClickArgs": (),
-		"onMiddleClickKwargs": {},
+        :type pos: tuple
+        :param pos: The default position of the widget in a (x, y) tuple where
+            x and y are integers.
 
-		"onRightClickFct": None,
-		"onRightClickArgs": (),
-		"onRightClickKwargs": {},
+        on_click_fct, on_click_args, on_click_kwargs,
+        on_hover_fct, on_hover_args, on_hover_kwargs,
+        on_middle_click_fct, on_middle_click_args, on_middle_click_kwargs,
+        on_right_click_fct, on_right_click_args, on_right_click_kwargs,
+        on_wheel_fct, on_wheel_args, on_wheel_kwargs,
+        and on_click_sound can be defined.
+        """
 
-		"onWheelFct": None,
-		"onWheelArgs": (),
-		"onWheelKwargs": {},
+        EventableWidget.update_default_kwargs(kwargs)
+        Widget.__init__(self, activity, pos, **kwargs)
+        self.hovered = False
+        self.clicked = False
+        self.middle_clicked = False
+        self.right_clicked = False
+        self.uneventable_zones = []
+        self.on_click_sound = None
 
-		"onClickSound": os.path.join("data", "audio", "sounds", "widget_click.wav")
-	}
+    def on_event(self, event):
+        """
+        This method is called on all user events detected by Pygame.
 
-	def __init__(self, activity, pos, **kwargs):
-		"""
-		Initialize a new Button object.
+        :type event: pygame.event.Event
+        :param event: The event to handle.
+        """
 
-		:type activity: gui.activity.Activity
-		:param activity: The parent activity of this widget.
+        if self.kwargs["enable"]:
+            if event.type == MOUSEMOTION:
+                if not self.is_in_uneventable_zone(event.pos):
+                    if self.is_in_widget(event.pos):
+                        self.on_hover()
+                    else:
+                        self.on_end_hover()
 
-		:type pos: tuple
-		:param pos: The default position of the widget in a (x, y) tuple where
-			x and y are integers.
+            elif event.type == MOUSEBUTTONDOWN:
+                if not self.is_in_uneventable_zone(event.pos):
+                    if self.is_in_widget(event.pos):
+                        if event.button == 1:
+                            self.on_click()
+                        elif event.button == 2:
+                            self.on_middle_click()
+                        elif event.button == 3:
+                            self.on_right_click()
+                        elif event.button == 4:
+                            self.on_mouse_wheel(1)
+                        elif event.button == 5:
+                            self.on_mouse_wheel(-1)
+                    else:
+                        if event.button == 1:
+                            self.on_click_out()
+                        elif event.button == 2:
+                            self.on_middle_click_out()
+                        elif event.button == 3:
+                            self.on_right_click_out()
+                        elif event.button == 4:
+                            self.on_mouse_wheel_out(1)
+                        elif event.button == 5:
+                            self.on_mouse_wheel_out(-1)
 
-		onClickFct, onClickArgs, onClickKwargs,
-		onHoverFct, onHoverArgs, onHoverKwargs,
-		onMiddleClickFct, onMiddleClickArgs, onMiddleClickKwargs,
-		onRightClickFct, onRightClickArgs, onRightClickKwargs,
-		onWheelFct, onWheelArgs, onWheelKwargs,
-		and onClickSound can be defined.
-		"""
+            elif event.type == MOUSEBUTTONUP:
+                if not self.is_in_uneventable_zone(event.pos):
+                    if self.is_in_widget(event.pos):
+                        if event.button == 1:
+                            self.on_end_click()
+                        elif event.button == 2:
+                            self.on_end_middle_click()
+                        elif event.button == 3:
+                            self.on_end_right_click()
+                        elif event.button == 4:
+                            self.on_end_mouse_wheel(1)
+                        elif event.button == 5:
+                            self.on_end_mouse_wheel(-1)
+                    else:
+                        if event.button == 1:
+                            self.on_end_click_out()
+                        elif event.button == 2:
+                            self.on_end_middle_click_out()
+                        elif event.button == 3:
+                            self.on_end_right_click_out()
+                        elif event.button == 4:
+                            self.on_end_mouse_wheel_out(1)
+                        elif event.button == 5:
+                            self.on_end_mouse_wheel_out(-1)
 
-		Eventable_widget.updateDefaultKwargs(kwargs)
-		Widget.__init__(self, activity, pos, **kwargs)
-		self.hovered = False
-		self.clicked = False
-		self.middleClicked = False
-		self.rightClicked = False
-		self.uneventableZones = []
-		self.onClickSound = None
+    def on_hover(self):
+        """
+        Set hovered state to True and call on_hover_fct.
+        """
 
-	def onEvent(self, event):
-		"""
-		This method is called on all user events detected by Pygame.
+        self.hovered = True
+        if self.kwargs["on_hover_fct"]:
+            self.kwargs["on_hover_fct"](
+                *self.kwargs["on_hover_args"], **self.kwargs["on_hover_kwargs"]
+            )
 
-		:type event: pygame.event.Event
-		:param event: The event to handle.
-		"""
+    def on_end_hover(self):
+        """
+        Set hovered state to False.
+        """
 
-		if self.kwargs["enable"]:
-			if event.type == MOUSEMOTION:
-				if not self.isInUneventableZone(event.pos):
-					if self.isInWidget(event.pos):  self.onHover()
-					else:	self.onEndHover()
+        self.hovered = False
 
-			elif event.type == MOUSEBUTTONDOWN:
-				if not self.isInUneventableZone(event.pos):
-					if self.isInWidget(event.pos):
-						if event.button == 1:   self.onClick()
-						elif event.button == 2: self.onMiddleClick()
-						elif event.button == 3: self.onRightClick()
-						elif event.button == 4: self.onMouseWheel(1)
-						elif event.button == 5: self.onMouseWheel(-1)
-					else:
-						if event.button == 1:   self.onClickOut()
-						elif event.button == 2: self.onMiddleClickOut()
-						elif event.button == 3: self.onRightClickOut()
-						elif event.button == 4: self.onMouseWheelOut(1)
-						elif event.button == 5: self.onMouseWheelOut(-1)
+    def on_click(self):
+        """
+        Set clicked state to True.
+        """
 
-			elif event.type == MOUSEBUTTONUP:
-				if not self.isInUneventableZone(event.pos):
-					if self.isInWidget(event.pos):
-						if event.button == 1:   self.onEndClick()
-						elif event.button == 2: self.onEndMiddleClick()
-						elif event.button == 3: self.onEndRightClick()
-						elif event.button == 4: self.onEndMouseWheel(1)
-						elif event.button == 5: self.onEndMouseWheel(-1)
-					else:
-						if event.button == 1:   self.onEndClickOut()
-						elif event.button == 2: self.onEndMiddleClickOut()
-						elif event.button == 3: self.onEndRightClickOut()
-						elif event.button == 4: self.onEndMouseWheelOut(1)
-						elif event.button == 5: self.onEndMouseWheelOut(-1)
+        self.clicked = True
 
-	def onHover(self):
-		"""
-		Set hovered state to True and call onHoverFct.
-		"""
+    def on_middle_click(self):
+        """
+        Set middle_clicked state to True.
+        """
 
-		self.hovered = True
-		if self.kwargs["onHoverFct"]:
-			self.kwargs["onHoverFct"](*self.kwargs["onHoverArgs"], **self.kwargs["onHoverKwargs"])
+        self.middle_clicked = True
 
-	def onEndHover(self):
-		"""
-		Set hovered state to False.
-		"""
+    def on_right_click(self):
+        """
+        Set right_clicked state to True.
+        """
 
-		self.hovered = False
+        self.right_clicked = True
 
-	def onClick(self):
-		"""
-		Set clicked state to True.
-		"""
+    def on_mouse_wheel(self, direction):
+        """
+        Call on_wheel_fct.
+        """
 
-		self.clicked = True
+        if self.kwargs["on_wheel_fct"]:
+            self.kwargs["on_wheel_fct"](
+                direction,
+                *self.kwargs["on_wheel_args"],
+                **self.kwargs["on_wheel_kwargs"]
+            )
 
-	def onMiddleClick(self):
-		"""
-		Set middleClicked state to True.
-		"""
+    def on_click_out(self):
+        """
+        Do nothing by default. This method has to be overridden.
+        """
 
-		self.middleClicked = True
+    def on_middle_click_out(self):
+        """
+        Do nothing by default. This method has to be overridden.
+        """
 
-	def onRightClick(self):
-		"""
-		Set rightClicked state to True.
-		"""
+    def on_right_click_out(self):
+        """
+        Do nothing by default. This method has to be overridden.
+        """
 
-		self.rightClicked = True
+    def on_mouse_wheel_out(self, direction):
+        """
+        Do nothing by default. This method has to be overridden.
+        """
 
-	def onMouseWheel(self, direction):
-		"""
-		Call onWheelFct.
-		"""
+    def on_end_click(self):
+        """
+        Set clicked state to False and call on_click_fct.
+        """
 
-		if self.kwargs["onWheelFct"]:
-			self.kwargs["onWheelFct"](direction, *self.kwargs["onWheelArgs"], **self.kwargs["onWheelKwargs"])
+        if self.clicked:
+            self.clicked = False
+            if self.kwargs["on_click_fct"]:
+                self.kwargs["on_click_fct"](
+                    *self.kwargs["on_click_args"], **self.kwargs["on_click_kwargs"]
+                )
 
-	def onClickOut(self):
-		"""
-		Do nothing by default. This method has to be overridden.
-		"""
-		pass
+    def on_end_middle_click(self):
+        """
+        Set middle_clicked state to False and call on_middle_click_fct.
+        """
 
-	def onMiddleClickOut(self):
-		"""
-		Do nothing by default. This method has to be overridden.
-		"""
-		pass
+        if self.middle_clicked:
+            self.middle_clicked = False
+            if self.kwargs["on_middle_click_fct"]:
+                self.kwargs["on_middle_click_fct"](
+                    *self.kwargs["on_middle_click_args"],
+                    **self.kwargs["on_middle_click_kwargs"]
+                )
 
-	def onRightClickOut(self):
-		"""
-		Do nothing by default. This method has to be overridden.
-		"""
-		pass
+    def on_end_right_click(self):
+        """
+        Set right_clicked state to False and call on_right_click_fct.
+        """
 
-	def onMouseWheelOut(self, direction):
-		"""
-		Do nothing by default. This method has to be overridden.
-		"""
-		pass
+        if self.right_clicked:
+            self.right_clicked = False
+            if self.kwargs["on_right_click_fct"]:
+                self.kwargs["on_right_click_fct"](
+                    *self.kwargs["on_right_click_args"],
+                    **self.kwargs["on_right_click_kwargs"]
+                )
 
-	def onEndClick(self):
-		"""
-		Set clicked state to False and call onClickFct.
-		"""
+    def on_end_mouse_wheel(self, direction):
+        """
+        Do nothing by default. This method has to be overridden.
+        """
 
-		if self.clicked:
-			self.clicked = False
-			if self.kwargs["onClickFct"]:
-				self.kwargs["onClickFct"](*self.kwargs["onClickArgs"], **self.kwargs["onClickKwargs"])
+    def on_end_click_out(self):
+        """
+        Set clicked state to False.
+        """
 
-	def onEndMiddleClick(self):
-		"""
-		Set middleClicked state to False and call onMiddleClickFct.
-		"""
+        if self.clicked:
+            self.clicked = False
 
-		if self.middleClicked:
-			self.middleClicked = False
-			if self.kwargs["onMiddleClickFct"]:
-				self.kwargs["onMiddleClickFct"](*self.kwargs["onMiddleClickArgs"], **self.kwargs["onMiddleClickKwargs"])
+    def on_end_middle_click_out(self):
+        """
+        Set middle_clicked state to False.
+        """
 
-	def onEndRightClick(self):
-		"""
-		Set rightClicked state to False and call onRightClickFct.
-		"""
+        if self.middle_clicked:
+            self.middle_clicked = False
 
-		if self.rightClicked:
-			self.rightClicked = False
-			if self.kwargs["onRightClickFct"]:
-				self.kwargs["onRightClickFct"](*self.kwargs["onRightClickArgs"], **self.kwargs["onRightClickKwargs"])
+    def on_end_right_click_out(self):
+        """
+        Set right_clicked state to False.
+        """
 
-	def onEndMouseWheel(self, direction):
-		"""
-		Do nothing by default. This method has to be overridden.
-		"""
-		pass
+        if self.right_clicked:
+            self.right_clicked = False
 
-	def onEndClickOut(self):
-		"""
-		Set clicked state to False.
-		"""
+    def on_end_mouse_wheel_out(self, direction):
+        """
+        Do nothing by default. This method has to be overridden.
+        """
 
-		if self.clicked:
-			self.clicked = False
+    def add_uneventable_zone(self, pos, size):
+        """
+        Add a zone where mouse events will have no effects for this widget.
 
-	def onEndMiddleClickOut(self):
-		"""
-		Set middleClicked state to False.
-		"""
+        :type pos: tuple
+        :param pos: A (x, y) tuple representing the top left corner of the
+            uneventable zone (in pixel).
 
-		if self.middleClicked:
-			self.middleClicked = False
+        :type size: tuple
+        :param size: A (w, h) tuple representing the size in pixel of the
+            uneventable zone.
 
-	def onEndRightClickOut(self):
-		"""
-		Set rightClicked state to False.
-		"""
+        :rtype: tuple
+        :returns: A (x, y, w, h) tuple representing the uneventable zone
+            created.
+        """
 
-		if self.rightClicked:
-			self.rightClicked = False
+        real_pos = self.get_real_pos()
 
-	def onEndMouseWheelOut(self, direction):
-		"""
-		Do nothing by default. This method has to be overridden.
-		"""
-		pass
+        if (
+            pos[0] >= real_pos[0]
+            and pos[0] <= real_pos[0] + self.kwargs["size"][0]
+            and pos[1] >= real_pos[1]
+            and pos[1] <= real_pos[1] + self.kwargs["size"][1]
+        ):
+            if pos[0] + size[0] > real_pos[0] + self.kwargs["size"][0]:
+                size[0] = real_pos[0] + self.kwargs["size"][0] - pos[0]
+            if pos[1] + size[1] > real_pos[1] + self.kwargs["size"][1]:
+                size[1] = real_pos[1] + self.kwargs["size"][1] - pos[1]
 
-	def addUneventableZone(self, pos, size):
-		"""
-		Add a zone where mouse events will have no effects for this widget.
+            self.uneventable_zones.append((pos[0], pos[1], size[0], size[1]))
 
-		:type pos: tuple
-		:param pos: A (x, y) tuple representing the top left corner of the
-			uneventable zone (in pixel).
+            return (pos[0], pos[1], size[0], size[1])
+        else:
+            print(
+                "[WARNING] [EventableWidget.add_uneventable_zone] The zone exceeds the widget"
+            )
 
-		:type size: tuple
-		:param size: A (w, h) tuple representing the size in pixel of the
-			uneventable zone.
+    def remove_uneventable_zone(self, pos, size):
+        """
+        Remove an uneventable zone.
 
-		:rtype: tuple
-		:returns: A (x, y, w, h) tuple representing the uneventable zone
-			created.
-		"""
+        :type pos: tuple
+        :param pos: A (x, y) tuple representing the top left corner of the
+            uneventable zone (in pixel).
 
-		realPos = self.getRealPos()
+        :type size: tuple
+        :param size: A (w, h) tuple representing the size in pixel of the
+            uneventable zone.
+        """
 
-		if pos[0] >= realPos[0] \
-		and pos[0] <= realPos[0] + self.kwargs["size"][0] \
-		and pos[1] >= realPos[1] \
-		and pos[1] <= realPos[1] + self.kwargs["size"][1]:
-			if pos[0] + size[0] > realPos[0] + self.kwargs["size"][0]:
-				size[0] = self.realPos[0] + self.kwargs["size"][0] - pos[0]
-			if pos[1] + size[1] > realPos[1] + self.kwargs["size"][1]:
-				size[1] = self.realPos[1] + self.kwargs["size"][1] - pos[1]
-			
-			self.uneventableZones.append((pos[0], pos[1], size[0], size[1]))
+        if (pos[0], pos[1], size[0], size[1]) in self.uneventable_zones:
+            self.uneventable_zones.remove((pos[0], pos[1], size[0], size[1]))
 
-			return (pos[0], pos[1], size[0], size[1])
-		else:
-			print("[WARNING] [Eventable_Widget.addUneventableZone] The zone exceeds the widget")
+    def is_in_uneventable_zone(self, pos):
+        """
+        Check if a position is within an eventable zone.
 
-	def removeUneventableZone(self, pos, size):
-		"""
-		Remove an uneventable zone.
+        :type pos: tuple
+        :param pos: A (x, y) tuple representing the position to check.
 
-		:type pos: tuple
-		:param pos: A (x, y) tuple representing the top left corner of the
-			uneventable zone (in pixel).
+        :rtype: bool
+        :returns: True if the position is within an uneventable zone.
+        """
 
-		:type size: tuple
-		:param size: A (w, h) tuple representing the size in pixel of the
-			uneventable zone.
-		"""
-
-		if (pos[0], pos[1], size[0], size[1]) in self.uneventableZones:
-			self.uneventableZones.remove((pos[0], pos[1], size[0], size[1]))
-
-	def isInUneventableZone(self, pos):
-		"""
-		Check if a position is within an eventable zone.
-
-		:type pos: tuple
-		:param pos: A (x, y) tuple representing the position to check.
-
-		:rtype: bool
-		:returns: True if the position is within an uneventable zone.
-		"""
-
-		for uz in self.uneventableZones:
-			if pos[0] >= uz[0] \
-			and pos[0] <= uz[0] + uz[2] \
-			and pos[1] >= uz[1] \
-			and pos[1] <= uz[1] + uz[3]:
-				return True
-		return False
+        for zone in self.uneventable_zones:
+            if (
+                pos[0] >= zone[0]
+                and pos[0] <= zone[0] + zone[2]
+                and pos[1] >= zone[1]
+                and pos[1] <= zone[1] + zone[3]
+            ):
+                return True
+        return False

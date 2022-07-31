@@ -1,19 +1,19 @@
 # -*- coding: utf-8 -*-
 
-#	This file is part of Pyoro (A Python fan game).
+# 	This file is part of Pyoro (A Python fan game).
 #
-#	Metawars is free software: you can redistribute it and/or modify
-#	it under the terms of the GNU General Public License as published by
-#	the Free Software Foundation, either version 3 of the License, or
-#	(at your option) any later version.
+# 	Metawars is free software: you can redistribute it and/or modify
+# 	it under the terms of the GNU General Public License as published by
+# 	the Free Software Foundation, either version 3 of the License, or
+# 	(at your option) any later version.
 #
-#	Metawars is distributed in the hope that it will be useful,
-#	but WITHOUT ANY WARRANTY; without even the implied warranty of
-#	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-#	GNU General Public License for more details.
+# 	Metawars is distributed in the hope that it will be useful,
+# 	but WITHOUT ANY WARRANTY; without even the implied warranty of
+# 	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+# 	GNU General Public License for more details.
 #
-#	You should have received a copy of the GNU General Public License
-#	along with Metawars. If not, see <https://www.gnu.org/licenses/>
+# 	You should have received a copy of the GNU General Public License
+# 	along with Metawars. If not, see <https://www.gnu.org/licenses/>
 
 """
 Provide a menu to display when the game is paused.
@@ -28,111 +28,147 @@ __repo__ = "https://github.com/RedbeanGit/Pyoro"
 
 from game.config import GUI_IMAGE_PATH
 
-from gui.clickable_text import Clickable_text
-from gui.menu_widget import Menu_widget
-from gui.option_menu import Option_menu
+from gui.clickable_text import ClickableText
+from gui.menu_widget import MenuWidget
+from gui.option_menu import OptionMenu
 from gui.text import Text
 
 
-class Pause_menu(Menu_widget):
-	"""
-	A menu to display when the game is paused.
-	"""
+class PauseMenu(MenuWidget):
+    """
+    A menu to display when the game is paused.
+    """
 
-	DEFAULT_KWARGS = {
-		"fontSize": 20,
-		"font": os.path.join(GUI_IMAGE_PATH, "font.ttf")
-	}
+    DEFAULT_KWARGS = {"font_size": 20, "font": os.path.join(GUI_IMAGE_PATH, "font.ttf")}
 
-	def __init__(self, activity, pos, resumeFct, quitFct, **kwargs):
-		"""
-		Initialize a new Pause_menu object.
+    def __init__(self, activity, pos, resume_fct, quit_fct, **kwargs):
+        """
+        Initialize a new Pause_menu object.
 
-		:type activity: gui.activity.Activity
-		:param activity: The parent activity of this widget.
+        :type activity: gui.activity.Activity
+        :param activity: The parent activity of this widget.
 
-		:type pos: tuple
-		:param pos: The position of the widget in a (x, y) tuple where x and y
-			are integers.
+        :type pos: tuple
+        :param pos: The position of the widget in a (x, y) tuple where x and y
+            are integers.
 
-		:type resumeFct: callable
-		:param resumeFct: A function, class or method which can be called on click
-			on the "resume" button.
+        :type resume_fct: callable
+        :param resume_fct: A function, class or method which can be called on click
+            on the "resume" button.
 
-		:type quitFct: callable
-		:param quitFct: A function, class or method which can be called on click
-			on the "quit" button.
-		"""
+        :type quit_fct: callable
+        :param quit_fct: A function, class or method which can be called on click
+            on the "quit" button.
+        """
 
-		Pause_menu.updateDefaultKwargs(kwargs)
-		Menu_widget.__init__(self, activity, pos, **kwargs)
+        PauseMenu.update_default_kwargs(kwargs)
+        MenuWidget.__init__(self, activity, pos, **kwargs)
 
-		self.resumeFct = resumeFct
-		self.quitFct = quitFct
+        self.resume_fct = resume_fct
+        self.quit_fct = quit_fct
 
-	def initWidgets(self):
-		"""
-		Create widgets displayed in this dialog.
-		"""
+    def init_widgets(self):
+        """
+        Create widgets displayed in this dialog.
+        """
 
-		realPos = self.getRealPos()
-		w, h = self.kwargs["size"]
-		f = self.kwargs["font"]
-		ts = self.kwargs["fontSize"]; ms = ts - 3
+        width, height = self.kwargs["size"]
+        font = self.kwargs["font"]
+        font_size = self.kwargs["font_size"]
+        medium_font_size = font_size - 3
 
-		px = int(w * 0.5)
-		py = int(h * 0.2)
-		self.addSubWidget("titleText", Text, (px, py), "Pause", \
-			anchor=(0, 0), font=f, fontSize=ts)
-		py = int(h * 0.4)
-		self.addSubWidget("resumeClickableText", Clickable_text, (px, py), \
-			"continuer", anchor=(0, 0), font=f, fontSize=ms, onClickFct=self.destroy)
-		py = int(h * 0.6)
-		self.addSubWidget("optionClickableText", Clickable_text, (px, py), \
-			"options", anchor=(0, 0), font=f, fontSize=ms, \
-			onClickFct=self.openOptionMenu)
-		py = int(h * 0.8)
-		self.addSubWidget("quitClickableText", Clickable_text, (px, py), \
-			"quitter", anchor=(0, 0), font=f, fontSize=ms, onClickFct=self.leaveLevel)
+        pos_x = int(width * 0.5)
+        pos_y = int(height * 0.2)
+        self.add_sub_widget(
+            "titleText",
+            Text,
+            (pos_x, pos_y),
+            "Pause",
+            anchor=(0, 0),
+            font=font,
+            font_size=font_size,
+        )
 
-	def destroy(self):
-		"""
-		Destroy the widget and its subwidgets, then call resumeFct.
-		"""
+        pos_y = int(height * 0.4)
+        self.add_sub_widget(
+            "resumeClickableText",
+            ClickableText,
+            (pos_x, pos_y),
+            "continuer",
+            anchor=(0, 0),
+            font=font,
+            font_size=medium_font_size,
+            on_click_fct=self.destroy,
+        )
 
-		Menu_widget.destroy(self)
-		self.resumeFct()
+        pos_y = int(height * 0.6)
+        self.add_sub_widget(
+            "optionClickableText",
+            ClickableText,
+            (pos_x, pos_y),
+            "options",
+            anchor=(0, 0),
+            font=font,
+            font_size=medium_font_size,
+            on_click_fct=self.open_option_menu,
+        )
 
-	def leaveLevel(self):
-		"""
-		Destroy the widget and its subwidgets, then call quitFct.
-		"""
+        pos_y = int(height * 0.8)
+        self.add_sub_widget(
+            "quitClickableText",
+            ClickableText,
+            (pos_x, pos_y),
+            "quitter",
+            anchor=(0, 0),
+            font=font,
+            font_size=medium_font_size,
+            on_click_fct=self.leave_level,
+        )
 
-		Menu_widget.destroy(self)
-		self.quitFct()
+    def destroy(self):
+        """
+        Destroy the widget and its subwidgets, then call resume_fct.
+        """
 
-	def openOptionMenu(self):
-		"""
-		Create an Option_menu.
-		"""
+        MenuWidget.destroy(self)
+        self.resume_fct()
 
-		layout = self.activity.layout
-		x, y = layout.getWidgetPos("option_menu")
-		size = layout.getWidgetSize("option_menu")
-		anchor = layout.getWidgetAnchor("option_menu")
-		fsize = layout.getFontSize("option_menu")
+    def leave_level(self):
+        """
+        Destroy the widget and its subwidgets, then call quit_fct.
+        """
 
-		rx, ry = self.getRealPos()
-		x, y = x - rx, y - ry
-		self.addSubWidget("option_menu", Option_menu, (x, y), \
-			self.onOptionMenuDestroy, size = size, anchor = anchor, \
-			fontSize = fsize)
+        MenuWidget.destroy(self)
+        self.quit_fct()
 
-	def onOptionMenuDestroy(self):
-		"""
-		This method is called when the Option_menu is destroyed.
-		"""
+    def open_option_menu(self):
+        """
+        Create an Option_menu.
+        """
 
-		self.removeSubWidget("option_menu")
-		self.activity.disableWidgets()
-		self.config(enable = True)
+        layout = self.activity.layout
+        pos_x, pos_y = layout.get_widget_pos("option_menu")
+        size = layout.get_widget_size("option_menu")
+        anchor = layout.get_widget_anchor("option_menu")
+        fsize = layout.get_font_size("option_menu")
+
+        realpos_x, realpos_y = self.get_real_pos()
+        pos_x, pos_y = pos_x - realpos_x, pos_y - realpos_y
+        self.add_sub_widget(
+            "option_menu",
+            OptionMenu,
+            (pos_x, pos_y),
+            self.on_option_menu_destroy,
+            size=size,
+            anchor=anchor,
+            font_size=fsize,
+        )
+
+    def on_option_menu_destroy(self):
+        """
+        This method is called when the Option_menu is destroyed.
+        """
+
+        self.remove_sub_widget("option_menu")
+        self.activity.disable_widgets()
+        self.config(enable=True)

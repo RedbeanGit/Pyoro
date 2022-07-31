@@ -58,5 +58,7 @@ class PinkBean(Bean):
         self.sounds["bean_cut"].play()
         for _ in range(2):
             rand_pos = [
-                self.pos[0] + random.uniform(-0.5, 0.5), self.pos[1] + random.uniform(-0.5, 0.2)]
+                self.pos[0] + random.uniform(-0.5, 0.5),
+                self.pos[1] + random.uniform(-0.5, 0.2),
+            ]
             self.level.spawn_leaf(rand_pos, "pink leaf")

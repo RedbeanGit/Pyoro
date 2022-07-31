@@ -10,7 +10,7 @@ pyaudio = "*"
 
 [dev-packages]
 pylint = "*"
-autopep8 = "*"
+black = "*"
 
 [requires]
 python_version = "3.8"

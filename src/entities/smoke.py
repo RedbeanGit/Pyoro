@@ -62,8 +62,11 @@ class Smoke(Entity):
         :param deltaTime: Time elapsed since the last update.
         """
 
-        self.level.createActionDelay((self, "destroy"),
-                                     SMOKE_SPRITE_DURATION * 3, self.remove)
+        self.level.create_action_delay(
+            (self, "destroy"),
+            SMOKE_SPRITE_DURATION * 3,
+            self.remove
+        )
         Entity.update(self, deltaTime)
 
     def update_sprite(self):
@@ -72,18 +75,18 @@ class Smoke(Entity):
             current level style.
         """
 
-        score = self.level.getStyleTypeWithScore()
+        score = self.level.get_style_type_with_score()
         self.sprite_index = self.sprite_index + 1 if self.sprite_index < 2 else 0
         self.current_image_name = f"smoke_{score}_{self.sprite_index}.png"
 
-        self.level.setActionDelay((self, "update_sprite"),
-                                  SMOKE_SPRITE_DURATION, self.update_sprite)
+        self.level.set_action_delay((self, "update_sprite"),
+                                    SMOKE_SPRITE_DURATION, self.update_sprite)
 
     def remove(self):
         """
         Remove the smoke actions delayed and the smoke itself.
         """
 
-        self.level.removeActionDelay(
+        self.level.remove_action_delay(
             (self, "destroy"), (self, "update_sprite"))
         Entity.remove(self)

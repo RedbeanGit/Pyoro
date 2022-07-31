@@ -1,22 +1,22 @@
 # -*- coding: utf-8 -*-
 
-#	This file is part of Pyoro (A Python fan game).
+# 	This file is part of Pyoro (A Python fan game).
 #
-#	Metawars is free software: you can redistribute it and/or modify
-#	it under the terms of the GNU General Public License as published by
-#	the Free Software Foundation, either version 3 of the License, or
-#	(at your option) any later version.
+# 	Metawars is free software: you can redistribute it and/or modify
+# 	it under the terms of the GNU General Public License as published by
+# 	the Free Software Foundation, either version 3 of the License, or
+# 	(at your option) any later version.
 #
-#	Metawars is distributed in the hope that it will be useful,
-#	but WITHOUT ANY WARRANTY; without even the implied warranty of
-#	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-#	GNU General Public License for more details.
+# 	Metawars is distributed in the hope that it will be useful,
+# 	but WITHOUT ANY WARRANTY; without even the implied warranty of
+# 	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+# 	GNU General Public License for more details.
 #
-#	You should have received a copy of the GNU General Public License
-#	along with Metawars. If not, see <https://www.gnu.org/licenses/>
+# 	You should have received a copy of the GNU General Public License
+# 	along with Metawars. If not, see <https://www.gnu.org/licenses/>
 
 """
-Provide a Setting_bar class.
+Provide a SettingBar class.
 
 Created on 20/08/2018.
 """
@@ -28,293 +28,344 @@ __author__ = "RedbeanGit"
 __repo__ = "https://github.com/RedbeanGit/Pyoro"
 
 from game.config import GUI_IMAGE_PATH
-from gui.eventable_widget import Eventable_widget
-from gui.image_transformer import stretchImage
+from gui.eventable_widget import EventableWidget
+from gui.image_transformer import stretch_image
 
 
-class Setting_bar(Eventable_widget):
-	"""
-	Create a widget allowing the player to choose an approximate value
-		within [0; 1].
-	"""
+class SettingBar(EventableWidget):
+    """
+    Create a widget allowing the player to choose an approximate value
+        within [0; 1].
+    """
 
-	DEFAULT_KWARGS = {
-		"lineThickness": 16,
-		"cursorWidth": 16,
+    DEFAULT_KWARGS = {
+        "line_thickness": 16,
+        "cursor_width": 16,
+        "line_image_border_size": 4,
+        "cursor_image_border_size": 4,
+        "value": 0,
+        "line_image": os.path.join(GUI_IMAGE_PATH, "setting bar", "line.png"),
+        "on_hover_line_image": os.path.join(
+            GUI_IMAGE_PATH, "setting bar", "line_hover.png"
+        ),
+        "on_click_line_image": os.path.join(
+            GUI_IMAGE_PATH, "setting bar", "line_click.png"
+        ),
+        "on_middle_click_line_image": os.path.join(
+            GUI_IMAGE_PATH, "setting bar", "line_middle_click.png"
+        ),
+        "on_right_click_line_image": os.path.join(
+            GUI_IMAGE_PATH, "setting bar", "line_right_click.png"
+        ),
+        "disable_line_image": os.path.join(
+            GUI_IMAGE_PATH, "setting bar", "line_disable.png"
+        ),
+        "cursor_image": os.path.join(GUI_IMAGE_PATH, "setting bar", "cursor.png"),
+        "on_hover_cursor_image": os.path.join(
+            GUI_IMAGE_PATH, "setting bar", "cursor_hover.png"
+        ),
+        "on_click_cursor_image": os.path.join(
+            GUI_IMAGE_PATH, "setting bar", "cursor_click.png"
+        ),
+        "on_middle_click_cursor_image": os.path.join(
+            GUI_IMAGE_PATH, "setting bar", "cursor_middle_click.png"
+        ),
+        "on_right_click_cursor_image": os.path.join(
+            GUI_IMAGE_PATH, "setting bar", "cursor_right_click.png"
+        ),
+        "disable_cursor_image": os.path.join(
+            GUI_IMAGE_PATH, "setting bar", "cursor_disable.png"
+        ),
+    }
 
-		"lineImageBorderSize": 4,
-		"cursorImageBorderSize": 4,
+    def __init__(self, activity, pos, **kwargs):
+        """
+        Initialize a new Text objects.
 
-		"value": 0,
+        :type activity: gui.activity.Activity
+        :param activity: The parent activity of this widget.
 
-		"lineImage": os.path.join(GUI_IMAGE_PATH, "setting bar", "line.png"),
-		"onHoverLineImage": os.path.join(GUI_IMAGE_PATH, "setting bar", "line_hover.png"),
-		"onClickLineImage": os.path.join(GUI_IMAGE_PATH, "setting bar", "line_click.png"),
-		"onMiddleClickLineImage": os.path.join(GUI_IMAGE_PATH, "setting bar", "line_middle_click.png"),
-		"onRightClickLineImage": os.path.join(GUI_IMAGE_PATH, "setting bar", "line_right_click.png"),
-		"disableLineImage": os.path.join(GUI_IMAGE_PATH, "setting bar", "line_disable.png"),
+        :type pos: tuple
+        :param pos: The default position of the widget in a (x, y) tuple where
+            x and y are integers.
 
-		"cursorImage": os.path.join(GUI_IMAGE_PATH, "setting bar", "cursor.png"),
-		"onHoverCursorImage": os.path.join(GUI_IMAGE_PATH, "setting bar", "cursor_hover.png"),
-		"onClickCursorImage": os.path.join(GUI_IMAGE_PATH, "setting bar", "cursor_click.png"),
-		"onMiddleClickCursorImage": os.path.join(GUI_IMAGE_PATH, "setting bar", "cursor_middle_click.png"),
-		"onRightClickCursorImage": os.path.join(GUI_IMAGE_PATH, "setting bar", "cursor_right_click.png"),
-		"disableCursorImage": os.path.join(GUI_IMAGE_PATH, "setting bar", "cursor_disable.png")
-	}
+        line_thickness, cursor_width, line_image_border_size,
+        cursor_image_border_size, value, line_image, on_hover_line_image,
+        on_click_line_image, on_middle_click_line_image, on_right_click_line_image,
+        disable_line_image, cursor_image, on_hover_cursor_image,
+        on_middle_click_cursor_image, on_right_click_cursor_image and
+        disable_cursor_image can be defined.
+        """
 
-	def __init__(self, activity, pos, **kwargs):
-		"""
-		Initialize a new Text objects.
+        SettingBar.update_default_kwargs(kwargs)
+        EventableWidget.__init__(self, activity, pos, **kwargs)
 
-		:type activity: gui.activity.Activity
-		:param activity: The parent activity of this widget.
+        self.line_image = None
+        self.on_hover_line_image = None
+        self.on_click_line_image = None
+        self.on_middle_click_line_image = None
+        self.on_right_click_line_image = None
+        self.disable_line_image = None
 
-		:type pos: tuple
-		:param pos: The default position of the widget in a (x, y) tuple where
-			x and y are integers.
+        self.cursor_image = None
+        self.on_hover_cursor_image = None
+        self.on_click_cursor_image = None
+        self.on_middle_click_cursor_image = None
+        self.on_right_click_cursor_image = None
+        self.disable_cursor_image = None
 
-		lineThickness, cursorWidth, lineImageBorderSize,
-		cursorImageBorderSize, value, lineImage, onHoverLineImage,
-		onClickLineImage, onMiddleClickLineImage, onRightClickLineImage,
-		disableLineImage, cursorImage, onHoverCursorImage,
-		onMiddleClickCursorImage, onRightClickCursorImage and
-		disableCursorImage can be defined.
-		"""
+        self.cursor_pos = self.get_cursor_pos_with_value(self.kwargs["value"])
 
-		Setting_bar.updateDefaultKwargs(kwargs)
-		Eventable_widget.__init__(self, activity, pos, **kwargs)
+        self.loadline_images()
+        self.load_cursor_images()
 
-		self.lineImage = None
-		self.onHoverLineImage = None
-		self.onClickLineImage = None
-		self.onMiddleClickLineImage = None
-		self.onRightClickLineImage = None
-		self.disableLineImage = None
+    def loadline_images(self):
+        """
+        Load the line images and stretch them to the right size.
+        """
 
-		self.cursorImage = None
-		self.onHoverCursorImage = None
-		self.onClickCursorImage = None
-		self.onMiddleClickCursorImage = None
-		self.onRightClickCursorImage = None
-		self.disableCursorImage = None
+        image_names = (
+            "line_image",
+            "on_hover_line_image",
+            "on_click_line_image",
+            "on_middle_click_line_image",
+            "on_right_click_line_image",
+            "disable_line_image",
+        )
 
-		self.cursorPos = self.getCursorPosWithValue(self.kwargs["value"])
+        for image_name in image_names:
+            if self.kwargs[image_name]:
+                image = stretch_image(
+                    self.activity.window.get_image(self.kwargs[image_name]),
+                    (self.kwargs["size"][0], self.kwargs["line_thickness"]),
+                    self.kwargs["line_image_border_size"],
+                )
+                setattr(self, image_name, image)
 
-		self.loadLineImages()
-		self.loadCursorImages()
+    def load_cursor_images(self):
+        """
+        Load the cursor images and stretch them to the right size.
+        """
 
-	def loadLineImages(self):
-		"""
-		Load the line images and stretch them to the right size.
-		"""
+        image_names = (
+            "cursor_image",
+            "on_hover_cursor_image",
+            "on_click_cursor_image",
+            "on_middle_click_cursor_image",
+            "on_right_click_cursor_image",
+            "disable_cursor_image",
+        )
 
-		imageNames = ("lineImage", "onHoverLineImage", "onClickLineImage", \
-			"onMiddleClickLineImage", "onRightClickLineImage", \
-			"disableLineImage")
+        for image_name in image_names:
+            if self.kwargs[image_name]:
+                image = stretch_image(
+                    self.activity.window.get_image(self.kwargs[image_name]),
+                    (self.kwargs["cursor_width"], self.kwargs["size"][1]),
+                    self.kwargs["cursor_image_border_size"],
+                )
+                setattr(self, image_name, image)
 
-		for imageName in imageNames:
-			if self.kwargs[imageName]:
-				image = stretchImage( \
-					self.activity.window.getImage(self.kwargs[imageName]), \
-					(self.kwargs["size"][0], self.kwargs["lineThickness"]), \
-					self.kwargs["lineImageBorderSize"])
+    def update(self, delta_time):
+        """
+        Draw the line and the cursor.
 
-				self.__setattr__(imageName, image)
+        :type delta_time: float
+        :param delta_time: Time elapsed since the last call of this method (in
+            seconds).
+        """
 
-	def loadCursorImages(self):
-		"""
-		Load the cursor images and stretch them to the right size.
-		"""
+        self.draw_line()
+        self.draw_cursor()
 
-		imageNames = ("cursorImage", "onHoverCursorImage", \
-			"onClickCursorImage", "onMiddleClickCursorImage", \
-			"onRightClickCursorImage", "disableCursorImage")
+    def draw_line(self):
+        """
+        Draw the right line image according to the widget state.
+        """
 
-		for imageName in imageNames:
-			if self.kwargs[imageName]:
-				image = stretchImage( \
-					self.activity.window.getImage(self.kwargs[imageName]), \
-					(self.kwargs["cursorWidth"], self.kwargs["size"][1]), \
-					self.kwargs["cursorImageBorderSize"])
-				self.__setattr__(imageName, image)
+        if not self.kwargs["enable"] and self.disable_line_image:
+            self.activity.window.draw_image(
+                self.disable_line_image, self.get_line_pos()
+            )
 
-	def update(self, deltaTime):
-		"""
-		Draw the line and the cursor.
+        if self.clicked and self.on_click_line_image:
+            self.activity.window.draw_image(
+                self.on_click_line_image, self.get_line_pos()
+            )
 
-		:type deltaTime: float
-		:param deltaTime: Time elapsed since the last call of this method (in
-			seconds).
-		"""
+        elif self.right_clicked and self.on_right_click_line_image:
+            self.activity.window.draw_image(
+                self.on_right_click_line_image, self.get_line_pos()
+            )
 
-		self.drawLine()
-		self.drawCursor()
+        elif self.middle_clicked and self.on_middle_click_line_image:
+            self.activity.window.draw_image(
+                self.on_middle_click_line_image, self.get_line_pos()
+            )
 
-	def drawLine(self):
-		"""
-		Draw the right line image according to the widget state.
-		"""
+        elif self.hovered and self.on_hover_line_image:
+            self.activity.window.draw_image(
+                self.on_hover_line_image, self.get_line_pos()
+            )
 
-		if not self.kwargs["enable"] and self.disableLineImage:
-			self.activity.window.drawImage(self.disableLineImage, \
-				self.getLinePos())
-		
-		if self.clicked and self.onClickLineImage:
-			self.activity.window.drawImage(self.onClickLineImage, \
-				self.getLinePos())
-		
-		elif self.rightClicked and self.onRightClickLineImage:
-			self.activity.window.drawImage(self.onRightClickLineImage, \
-				self.getLinePos())
-		
-		elif self.middleClicked and self.onMiddleClickLineImage:
-			self.activity.window.drawImage(self.onMiddleClickLineImage, \
-				self.getLinePos())
-		
-		elif self.hovered and self.onHoverLineImage:
-			self.activity.window.drawImage(self.onHoverLineImage, \
-				self.getLinePos())
-		
-		elif self.lineImage:
-			self.activity.window.drawImage(self.lineImage, \
-				self.getLinePos())
+        elif self.line_image:
+            self.activity.window.draw_image(self.line_image, self.get_line_pos())
 
-	def drawCursor(self):
-		"""
-		Draw the right line image according to the widget state.
-		"""
+    def draw_cursor(self):
+        """
+        Draw the right line image according to the widget state.
+        """
 
-		if not self.kwargs["enable"] and self.disableCursorImage:
-			self.activity.window.drawImage(self.disableCursorImage, \
-				self.getCursorPos())
-		
-		if self.clicked and self.onClickCursorImage:
-			self.activity.window.drawImage(self.onClickCursorImage, \
-				self.getCursorPos())
-		
-		elif self.rightClicked and self.onRightClickCursorImage:
-			self.activity.window.drawImage(self.onRightClickCursorImage, \
-				self.getCursorPos())
-		
-		elif self.middleClicked and self.onMiddleClickCursorImage:
-			self.activity.window.drawImage(self.onMiddleClickCursorImage, \
-				self.getCursorPos())
-		
-		elif self.hovered and self.onHoverCursorImage:
-			self.activity.window.drawImage(self.onHoverCursorImage, \
-				self.getCursorPos())
-		
-		elif self.cursorImage:
-			self.activity.window.drawImage(self.cursorImage, \
-				self.getCursorPos())
+        if not self.kwargs["enable"] and self.disable_cursor_image:
+            self.activity.window.draw_image(
+                self.disable_cursor_image, self.get_cursor_pos()
+            )
 
-	def getLinePos(self):
-		"""
-		Compute the position of the upper left corner of the line.
+        if self.clicked and self.on_click_cursor_image:
+            self.activity.window.draw_image(
+                self.on_click_cursor_image, self.get_cursor_pos()
+            )
 
-		:rtype: list
-		:returns: A [x, y] list where x and y are both integers.
-		"""
+        elif self.right_clicked and self.on_right_click_cursor_image:
+            self.activity.window.draw_image(
+                self.on_right_click_cursor_image, self.get_cursor_pos()
+            )
 
-		realPos = self.getRealPos()
-		return [realPos[0], realPos[1] + self.kwargs["size"][1] // 2 \
-			- self.kwargs["lineThickness"] // 2]
+        elif self.middle_clicked and self.on_middle_click_cursor_image:
+            self.activity.window.draw_image(
+                self.on_middle_click_cursor_image, self.get_cursor_pos()
+            )
 
-	def getCursorPos(self):
-		"""
-		Compute the position of the upper left corner of the cursor.
+        elif self.hovered and self.on_hover_cursor_image:
+            self.activity.window.draw_image(
+                self.on_hover_cursor_image, self.get_cursor_pos()
+            )
 
-		:rtype: list
-		:returns: A [x, y] list where x and y are both integers.
-		"""
+        elif self.cursor_image:
+            self.activity.window.draw_image(self.cursor_image, self.get_cursor_pos())
 
-		realPos = self.getRealPos()
-		return [self.cursorPos - self.kwargs["cursorWidth"] // 2, realPos[1]]
+    def get_line_pos(self):
+        """
+        Compute the position of the upper left corner of the line.
 
-	def onEvent(self, event):
-		"""
-		This method is called on all user events detected by Pygame.
+        :rtype: list
+        :returns: A [x, y] list where x and y are both integers.
+        """
 
-		:type event: pygame.event.Event
-		:param event: The event to handle.
-		"""
+        real_pos = self.get_real_pos()
+        return [
+            real_pos[0],
+            real_pos[1]
+            + self.kwargs["size"][1] // 2
+            - self.kwargs["line_thickness"] // 2,
+        ]
 
-		Eventable_widget.onEvent(self, event)
-		if self.kwargs["enable"] and self.clicked:
-			if event.type == MOUSEMOTION:
-				realPos = self.getRealPos()
-				
-				if event.pos[0] >= realPos[0] \
-				+ self.kwargs["cursorWidth"] / 2 and event.pos[0] \
-				<= realPos[0] + self.kwargs["size"][0] \
-				- self.kwargs["cursorWidth"] / 2:
-					self.cursorPos = event.pos[0]
-				
-				elif event.pos[0] < realPos[0] \
-				+ self.kwargs["cursorWidth"] / 2:
-					self.cursorPos = realPos[0] \
-					+ self.kwargs["cursorWidth"] / 2
-				
-				else:
-					self.cursorPos = realPos[0] + self.kwargs["size"][0] \
-					- self.kwargs["cursorWidth"] / 2
+    def get_cursor_pos(self):
+        """
+        Compute the position of the upper left corner of the cursor.
 
-	def getValue(self):
-		"""
-		Return a value between 0 and 1 from the position of the cursor on the
-			line.
+        :rtype: list
+        :returns: A [x, y] list where x and y are both integers.
+        """
 
-		:rtype: float
-		:returns: The value of the setting bar.
-		"""
+        real_pos = self.get_real_pos()
+        return [self.cursor_pos - self.kwargs["cursor_width"] // 2, real_pos[1]]
 
-		realPos = self.getRealPos()
-		if self.kwargs["size"][0] - self.kwargs["cursorWidth"] != 0:
-			return (self.cursorPos - realPos[0] - self.kwargs["cursorWidth"] \
-				/ 2) / (self.kwargs["size"][0] - self.kwargs["cursorWidth"])
-		return 0.5
+    def on_event(self, event):
+        """
+        This method is called on all user events detected by Pygame.
 
-	def getCursorPosWithValue(self, value):
-		"""
-		Return the horizontal position of the upper left corner of the cursor
-			from a give value.
+        :type event: pygame.event.Event
+        :param event: The event to handle.
+        """
 
-		:type value: float
-		:param value: Any float number between 0 and 1.
+        EventableWidget.on_event(self, event)
+        if self.kwargs["enable"] and self.clicked:
+            if event.type == MOUSEMOTION:
+                real_pos = self.get_real_pos()
 
-		:rtype: float
-		:returns: The absolute x position of the cursor.
-		"""
+                if (
+                    event.pos[0] >= real_pos[0] + self.kwargs["cursor_width"] / 2
+                    and event.pos[0]
+                    <= real_pos[0]
+                    + self.kwargs["size"][0]
+                    - self.kwargs["cursor_width"] / 2
+                ):
+                    self.cursor_pos = event.pos[0]
 
-		return value * (self.kwargs["size"][0] - self.kwargs["cursorWidth"]) \
-			+ self.kwargs["cursorWidth"] / 2 + self.getRealPos()[0]
+                elif event.pos[0] < real_pos[0] + self.kwargs["cursor_width"] / 2:
+                    self.cursor_pos = real_pos[0] + self.kwargs["cursor_width"] / 2
 
-	def config(self, **kwargs):
-		"""
-		Change some kwargs of the widget (cursorWidth, cursorImage, ...).
-		"""
-		
-		Eventable_widget.config(self, **kwargs)
+                else:
+                    self.cursor_pos = (
+                        real_pos[0]
+                        + self.kwargs["size"][0]
+                        - self.kwargs["cursor_width"] / 2
+                    )
 
-		if "cursorImageBorderSize" in kwargs or \
-			"cursorWidth" in kwargs or \
-			"cursorImage" in kwargs or \
-			"onHoverCursorImage" in kwargs or \
-			"onClickCursorImage" in kwargs or \
-			"onMiddleClickCursorImage" in kwargs or \
-			"onRightClickCursorImage" in kwargs or \
-			"disableCursorImage" in kwargs:
-			self.loadCursorImages()
+    def get_value(self):
+        """
+        Return a value between 0 and 1 from the position of the cursor on the
+            line.
 
-		if "lineImageBorderSize" in kwargs or \
-			"lineThickness" in kwargs or \
-			"lineImage" in kwargs or \
-			"onHoverLineImage" in kwargs or \
-			"onClickLineImage" in kwargs or \
-			"onMiddleClickLineImage" in kwargs or \
-			"onRightClickLineImage" in kwargs or \
-			"disableLineImage" in kwargs:
-			self.loadLineImages()
+        :rtype: float
+        :returns: The value of the setting bar.
+        """
 
-		if "value" in kwargs:
-			self.cursorPos = self.getCursorPosWithValue(kwargs["value"])
+        real_pos = self.get_real_pos()
+        if self.kwargs["size"][0] - self.kwargs["cursor_width"] != 0:
+            return (self.cursor_pos - real_pos[0] - self.kwargs["cursor_width"] / 2) / (
+                self.kwargs["size"][0] - self.kwargs["cursor_width"]
+            )
+        return 0.5
+
+    def get_cursor_pos_with_value(self, value):
+        """
+        Return the horizontal position of the upper left corner of the cursor
+            from a give value.
+
+        :type value: float
+        :param value: Any float number between 0 and 1.
+
+        :rtype: float
+        :returns: The absolute x position of the cursor.
+        """
+
+        return (
+            value * (self.kwargs["size"][0] - self.kwargs["cursor_width"])
+            + self.kwargs["cursor_width"] / 2
+            + self.get_real_pos()[0]
+        )
+
+    def config(self, **kwargs):
+        """
+        Change some kwargs of the widget (cursor_width, cursor_image, ...).
+        """
+
+        EventableWidget.config(self, **kwargs)
+
+        if (
+            "cursor_image_border_size" in kwargs
+            or "cursor_width" in kwargs
+            or "cursor_image" in kwargs
+            or "on_hover_cursor_image" in kwargs
+            or "on_click_cursor_image" in kwargs
+            or "on_middle_click_cursor_image" in kwargs
+            or "on_right_click_cursor_image" in kwargs
+            or "disable_cursor_image" in kwargs
+        ):
+            self.load_cursor_images()
+
+        if (
+            "line_image_border_size" in kwargs
+            or "line_thickness" in kwargs
+            or "line_image" in kwargs
+            or "on_hover_line_image" in kwargs
+            or "on_click_line_image" in kwargs
+            or "on_middle_click_line_image" in kwargs
+            or "on_right_click_line_image" in kwargs
+            or "disable_line_image" in kwargs
+        ):
+            self.loadline_images()
+
+        if "value" in kwargs:
+            self.cursor_pos = self.get_cursor_pos_with_value(kwargs["value"])

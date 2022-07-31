@@ -41,8 +41,8 @@ class Sound:
         """
         Initialize a Sound object.
 
-        :type audioPlayer: audio.audio_player.Audio_player
-        :param audioPlayer: The player that will update this Sound object.
+        :type audio_player: audio.audio_player.Audio_player
+        :param audio_player: The player that will update this Sound object.
         """
 
         self.audio_player = audio_player
@@ -64,8 +64,8 @@ class Sound:
         """
         Loads a sound from a wav file at the given path.
 
-        :type filePath: str
-        :param filePath: The path of the file to load.
+        :type file_path: str
+        :param file_path: The path of the file to load.
         """
 
         if os.path.exists(file_path):
@@ -295,12 +295,12 @@ class Sound:
         """
 
         if self.is_loaded:
-            return int(self.audio_player.chunkSize
+            return int(self.audio_player.chunk_size
                        * self.nb_channels
                        * self.samples_width
                        * self.framerate
-                       / self.audio_player.defaultFramerate)
-        print("[WARNING] [Sound.getChunkSize] Sound not loaded")
+                       / self.audio_player.default_framerate)
+        print("[WARNING] [Sound.get_chunk_size] Sound not loaded")
         return 0
 
     def copy(self):

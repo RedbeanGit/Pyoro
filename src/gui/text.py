@@ -32,91 +32,92 @@ from gui.widget import Widget
 
 
 class Text(Widget):
-	"""
-	Create a widget used to render text.
-	"""
+    """
+    Create a widget used to render text.
+    """
 
-	DEFAULT_KWARGS = {
-		"fontSize": 20,
-		"font": os.path.join(GUI_IMAGE_PATH, "font.ttf"),
-		
-		"bold": False,
-		"wide": False,
-		"italic": False,
-		"underline": False,
-		"verticalMode": False,
-		
-		"textColor": (255, 255, 255, 255),
-		"backgroundColor": None
-	}
+    DEFAULT_KWARGS = {
+        "font_size": 20,
+        "font": os.path.join(GUI_IMAGE_PATH, "font.ttf"),
 
-	def __init__(self, activity, pos, text, **kwargs):
-		"""
-		Initialize a new Text objects.
+        "bold": False,
+        "wide": False,
+        "italic": False,
+        "underline": False,
+        "vertical_mode": False,
 
-		:type activity: gui.activity.Activity
-		:param activity: The parent activity of this widget.
+        "text_color": (255, 255, 255, 255),
+        "background_color": None
+    }
 
-		:type pos: tuple
-		:param pos: The default position of the widget in a (x, y) tuple where
-			x and y are integers.
+    def __init__(self, activity, pos, text, **kwargs):
+        """
+        Initialize a new Text objects.
 
-		:type text: str
-		:param text: The text to render.
+        :type activity: gui.activity.Activity
+        :param activity: The parent activity of this widget.
 
-		font, fontSize, bold, wide, italic, underline, verticalMode, 
-		textColor, and backgroundColor can be defined.
-		"""
+        :type pos: tuple
+        :param pos: The default position of the widget in a (x, y) tuple where
+            x and y are integers.
 
-		Text.updateDefaultKwargs(kwargs)
-		Widget.__init__(self, activity, pos, **kwargs)
-		self.text = text
-		self.createFont()
+        :type text: str
+        :param text: The text to render.
 
-	def createFont(self):
-		"""
-		Load the font used to render the text.
-		"""
+        font, font_size, bold, wide, italic, underline, vertical_mode, 
+        text_color, and background_color can be defined.
+        """
 
-		self.font = pygame.freetype.Font(self.kwargs["font"])
-		kwargs = dict(self.kwargs)
-		kwargs.pop("font")
-		self.config(**kwargs)
+        Text.update_default_kwargs(kwargs)
+        Widget.__init__(self, activity, pos, **kwargs)
+        self.text = text
+        self.create_font()
 
-	def update(self, deltaTime):
-		"""
-		Update the text by drawing it on the window.
+    def create_font(self):
+        """
+        Load the font used to render the text.
+        """
 
-		:type deltaTime: float
-		:param deltaTime: Time elapsed since the last call of this method (in
-			seconds).
-		"""
+        self.font = pygame.freetype.Font(self.kwargs["font"])
+        kwargs = dict(self.kwargs)
+        kwargs.pop("font")
+        self.config(**kwargs)
 
-		surface, rect = self.font.render(self.text, bgcolor=self.kwargs["backgroundColor"])
-		self.kwargs["size"] = [rect.width, rect.height]
-		self.activity.window.drawImage(surface, self.getRealPos())
-		Widget.update(self, deltaTime)
+    def update(self, delta_time):
+        """
+        Update the text by drawing it on the window.
 
-	def config(self, **kwargs):
-		"""
-		Change some kwargs of the widget (font, fontSize, bold, ...).
-		"""
+        :type delta_time: float
+        :param delta_time: Time elapsed since the last call of this method (in
+            seconds).
+        """
 
-		Widget.config(self, **kwargs)
-		if "font" in  kwargs:
-			self.createFont()
-		else:
-			if "fontSize" in kwargs:
-				self.font.size = kwargs["fontSize"]
-			if "bold" in kwargs:
-				self.font.strong = kwargs["bold"]
-			if "wide" in kwargs:
-				self.font.wide = kwargs["wide"]
-			if "italic" in kwargs:
-				self.font.oblique = kwargs["italic"]
-			if "underline" in kwargs:
-				self.font.underline = kwargs["underline"]
-			if "verticalMode" in kwargs:
-				self.font.vertical = kwargs["verticalMode"]
-			if "textColor" in kwargs:
-				self.font.fgcolor = kwargs["textColor"]
+        surface, rect = self.font.render(
+            self.text, bgcolor=self.kwargs["background_color"])
+        self.kwargs["size"] = [rect.width, rect.height]
+        self.activity.window.draw_image(surface, self.get_real_pos())
+        Widget.update(self, delta_time)
+
+    def config(self, **kwargs):
+        """
+        Change some kwargs of the widget (font, font_size, bold, ...).
+        """
+
+        Widget.config(self, **kwargs)
+        if "font" in kwargs:
+            self.create_font()
+        else:
+            if "font_size" in kwargs:
+                self.font.size = kwargs["font_size"]
+            if "bold" in kwargs:
+                self.font.strong = kwargs["bold"]
+            if "wide" in kwargs:
+                self.font.wide = kwargs["wide"]
+            if "italic" in kwargs:
+                self.font.oblique = kwargs["italic"]
+            if "underline" in kwargs:
+                self.font.underline = kwargs["underline"]
+            if "vertical_mode" in kwargs:
+                self.font.vertical = kwargs["vertical_mode"]
+            if "text_color" in kwargs:
+                self.font.fgcolor = kwargs["text_color"]

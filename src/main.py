@@ -1,19 +1,19 @@
 #!/usr/bin/env python3
 
-#	This file is part of Pyoro (A Python fan game).
+# 	This file is part of Pyoro (A Python fan game).
 #
-#	Metawars is free software: you can redistribute it and/or modify
-#	it under the terms of the GNU General Public License as published by
-#	the Free Software Foundation, either version 3 of the License, or
-#	(at your option) any later version.
+# 	Metawars is free software: you can redistribute it and/or modify
+# 	it under the terms of the GNU General Public License as published by
+# 	the Free Software Foundation, either version 3 of the License, or
+# 	(at your option) any later version.
 #
-#	Metawars is distributed in the hope that it will be useful,
-#	but WITHOUT ANY WARRANTY; without even the implied warranty of
-#	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-#	GNU General Public License for more details.
+# 	Metawars is distributed in the hope that it will be useful,
+# 	but WITHOUT ANY WARRANTY; without even the implied warranty of
+# 	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+# 	GNU General Public License for more details.
 #
-#	You should have received a copy of the GNU General Public License
-#	along with Metawars. If not, see <https://www.gnu.org/licenses/>
+# 	You should have received a copy of the GNU General Public License
+# 	along with Metawars. If not, see <https://www.gnu.org/licenses/>
 
 """
 Main module and functions of Pyoro.
@@ -30,10 +30,9 @@ __author__ = "RedbeanGit"
 __repo__ = "https://github.com/RedbeanGit/Pyoro"
 
 from audio.audio_player import AudioPlayer
-from game import Game
+from game.debug_logger import DebugLogger
 from game.mod import Mod
-from game.util import loadOptions
-from game.config import VERSION
+from game.util import Errors, Game, leave_game, load_config
 from gui.window import Window
 
 
@@ -42,23 +41,22 @@ def main():
     Main function of the game. Must be called first except for updating.
     """
 
-    logging.info('[main] Starting Pyoro')
+    logging.info("[main] Starting Pyoro")
 
     try:
         pygame.init()
-        options = loadOptions()
-        Game.audioPlayer = Audio_player()
+        Game.options = load_config()
+        Game.audio_player = AudioPlayer()
         Game.window = Window()
-        Game.window.createRootSurface()
-        Game.window.setSplashRender()
+        Game.window.create_root_surface()
+        Game.window.set_splash_render()
 
-        Mod.loadMods()
-        Mod.initMods(Game.window)
+        Mod.load_mods()
+        Mod.init_mods(Game.window)
         loop()
     except Exception:
-        print("[FATAL ERROR] [loop] An unknown error" \
-            + " occurred while starting !")
-        leaveGame(Errors.BOOT_ERROR)
+        print("[FATAL ERROR] [loop] An unknown error occurred while starting !")
+        leave_game(Errors.BOOT_ERROR)
 
 
 def update():
@@ -68,18 +66,17 @@ def update():
 
     try:
         print("[INFO] [main] Starting Debug_logger")
-        Game.debugLogger = Debug_logger()
+        Game.debug_logger = DebugLogger()
         print("[INFO] [update] Starting Pyoro v1.1 to update")
 
         pygame.init()
 
         Game.window = Window()
-        Game.window.createRootSurface()
-        Game.window.setSplashRender("update")
+        Game.window.create_root_surface()
+        Game.window.set_splash_render("update")
     except Exception:
-        print("[FATAL ERROR] [update] An unknown error" \
-            + " occurred while updating!")
-        leaveGame(Errors.UPDATE_ERROR)
+        print("[FATAL ERROR] [update] An unknown error" + " occurred while updating!")
+        leave_game(Errors.UPDATE_ERROR)
 
 
 def loop():
@@ -90,22 +87,25 @@ def loop():
     print("[INFO] [startLoop] Starting new game loop")
     clock = pygame.time.Clock()
     tick = 0
-    totalTime = 0
+    total_time = 0
 
     while True:
         try:
             pygame.event.pump()
-            deltaTime = clock.tick() / 1000
+            delta_time = clock.tick() / 1000
 
-            Game.window.update(deltaTime)
-            Mod.updateMods(Game.window, deltaTime)
+            Game.window.update(delta_time)
+            Mod.update_mods(Game.window, delta_time)
 
             tick += 1
-            totalTime += deltaTime
+            total_time += delta_time
         except Exception:
-            print("[FATAL ERROR] [loop] An unknown error " \
-                + "occurred! tick=%s totalTime=%ss" % (tick, totalTime))
-            leaveGame(Errors.LOOP_ERROR)
+            print(
+                "[FATAL ERROR] [loop] An unknown error "
+                + f"occurred! tick={tick} total_time=%{total_time}s"
+            )
+            leave_game(Errors.LOOP_ERROR)
+
 
 if __name__ == "__main__":
     os.chdir(os.path.dirname(os.path.abspath(sys.argv[0])))
@@ -113,14 +113,12 @@ if __name__ == "__main__":
         if sys.argv[1] == "update":
             update()
         else:
-            print("[WARNING] [GLOBAL] unknown" \
-                + " argument %s" % sys.argv[1])
+            print(f"[WARNING] [GLOBAL] unknown argument {sys.argv[1]}")
             if len(sys.argv) > 2:
                 if sys.argv[2] == "update":
                     update()
                 else:
-                    print("[WARNING] [GLOBAL] unknown" \
-                    + " argument %s" % sys.argv[2])
+                    print(f"[WARNING] [GLOBAL] unknown argument {sys.argv[2]}")
                     main()
             else:
                 main()

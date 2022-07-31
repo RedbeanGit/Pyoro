@@ -1,19 +1,19 @@
 # -*- coding: utf-8 -*-
 
-#	This file is part of Pyoro (A Python fan game).
+# 	This file is part of Pyoro (A Python fan game).
 #
-#	Metawars is free software: you can redistribute it and/or modify
-#	it under the terms of the GNU General Public License as published by
-#	the Free Software Foundation, either version 3 of the License, or
-#	(at your option) any later version.
+# 	Metawars is free software: you can redistribute it and/or modify
+# 	it under the terms of the GNU General Public License as published by
+# 	the Free Software Foundation, either version 3 of the License, or
+# 	(at your option) any later version.
 #
-#	Metawars is distributed in the hope that it will be useful,
-#	but WITHOUT ANY WARRANTY; without even the implied warranty of
-#	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-#	GNU General Public License for more details.
+# 	Metawars is distributed in the hope that it will be useful,
+# 	but WITHOUT ANY WARRANTY; without even the implied warranty of
+# 	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+# 	GNU General Public License for more details.
 #
-#	You should have received a copy of the GNU General Public License
-#	along with Metawars. If not, see <https://www.gnu.org/licenses/>
+# 	You should have received a copy of the GNU General Public License
+# 	along with Metawars. If not, see <https://www.gnu.org/licenses/>
 
 """
 Provide a Score_text class (entity).
@@ -74,8 +74,9 @@ class ScoreText(Entity):
         :param deltaTime: Time elapsed since the last update.
         """
 
-        self.level.createActionDelay(
-            (self, "destroy"), SCORE_TEXT_LIFE_DURATION, self.remove)
+        self.level.create_action_delay(
+            (self, "destroy"), SCORE_TEXT_LIFE_DURATION, self.remove
+        )
         Entity.update(self, deltaTime)
 
     def update_sprite(self):
@@ -88,14 +89,14 @@ class ScoreText(Entity):
             self.current_image_name = f"number_{self.value}_{self.color_index}.png"
         else:
             self.current_image_name = f"number_{self.value}.png"
-        self.level.setActionDelay(
-            (self, "update_sprite"), SCORE_TEXT_BLINK_DURATION, self.update_sprite)
+        self.level.set_action_delay(
+            (self, "update_sprite"), SCORE_TEXT_BLINK_DURATION, self.update_sprite
+        )
 
     def remove(self):
         """
         Remove the score_text actions delayed en the score_text itself.
         """
 
-        self.level.removeActionDelay(
-            (self, "destroy"), (self, "update_sprite"))
+        self.level.remove_action_delay((self, "destroy"), (self, "update_sprite"))
         Entity.remove(self)

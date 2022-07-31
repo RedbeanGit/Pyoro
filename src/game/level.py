@@ -39,6 +39,8 @@ from entities.score_text import ScoreText
 from entities.smoke import Smoke
 from entities.super_bean import SuperBean
 
+from game.action_delay import ActionDelay
+from game.case import Case
 from game.config import BEAN_FREQUENCY, SPEED_ACCELERATION, \
     BACKGROUND_ANIMATED_DURATION
 from game.util import Game
@@ -192,7 +194,7 @@ class Level:
         :param case: The block that will be repaired by the new angel.
         """
 
-        if not case.exists and not case.isRepairing:
+        if not case.exists and not case.is_repairing:
             self.entities.append(Angel(self, case))
 
     def spawn_score(self, score, pos):
@@ -401,7 +403,7 @@ class Level:
         :rtype: audio.audio_player.Audio_player
         :returns: The audio player currently used by the game.
         """
-        return Game.audioPlayer
+        return Game.audio_player
 
     def get_void_cases(self):
         """
@@ -410,8 +412,7 @@ class Level:
         :rtype: list<game.case.Case>
         :returns: A list of all destroyed blocks.
         """
-        return [case for case in self.cases
-                if not(case.exists) and not(case.isRepairing)]
+        return [case for case in self.cases if not case.exists and not case.is_repairing]
 
     def set_size(self, size):
         """

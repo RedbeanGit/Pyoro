@@ -1,19 +1,19 @@
 # -*- coding: utf-8 -*-
 
-#	This file is part of Pyoro (A Python fan game).
+# 	This file is part of Pyoro (A Python fan game).
 #
-#	Metawars is free software: you can redistribute it and/or modify
-#	it under the terms of the GNU General Public License as published by
-#	the Free Software Foundation, either version 3 of the License, or
-#	(at your option) any later version.
+# 	Metawars is free software: you can redistribute it and/or modify
+# 	it under the terms of the GNU General Public License as published by
+# 	the Free Software Foundation, either version 3 of the License, or
+# 	(at your option) any later version.
 #
-#	Metawars is distributed in the hope that it will be useful,
-#	but WITHOUT ANY WARRANTY; without even the implied warranty of
-#	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-#	GNU General Public License for more details.
+# 	Metawars is distributed in the hope that it will be useful,
+# 	but WITHOUT ANY WARRANTY; without even the implied warranty of
+# 	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+# 	GNU General Public License for more details.
 #
-#	You should have received a copy of the GNU General Public License
-#	along with Metawars. If not, see <https://www.gnu.org/licenses/>
+# 	You should have received a copy of the GNU General Public License
+# 	along with Metawars. If not, see <https://www.gnu.org/licenses/>
 
 """
 Provides a Leaf class.
@@ -27,8 +27,12 @@ import random
 __author__ = "RedbeanGit"
 __repo__ = "https://github.com/RedbeanGit/Pyoro"
 
-from game.config import LEAF_SPEED, LEAF_SPRITE_DURATION, LEAF_WIND_SPEED, \
-    AIR_RESISTANCE
+from game.config import (
+    LEAF_SPEED,
+    LEAF_SPRITE_DURATION,
+    LEAF_WIND_SPEED,
+    AIR_RESISTANCE,
+)
 from entities.entity import Entity
 
 
@@ -71,37 +75,38 @@ class Leaf(Entity):
 
         self.__init_images__(self.leaf_type)
 
-    def update(self, deltaTime):
+    def update(self, delta_time):
         """
         Update the leaf (position, sprite).
 
-        :type deltaTime: float
-        :param deltaTime: Time elapsed since the last frame update
+        :type delta_time: float
+        :param delta_time: Time elapsed since the last frame update
         """
 
-        self.pos[0] += self.vel * deltaTime
-        self.pos[1] += (LEAF_SPEED - abs(self.vel)) * self.speed * deltaTime
+        self.pos[0] += self.vel * delta_time
+        self.pos[1] += (LEAF_SPEED - abs(self.vel)) * self.speed * delta_time
         if self.vel > 0:
-            self.vel -= AIR_RESISTANCE * deltaTime
+            self.vel -= AIR_RESISTANCE * delta_time
             if self.vel < 0:
                 self.vel = 0
         elif self.vel < 0:
-            self.vel += AIR_RESISTANCE * deltaTime
+            self.vel += AIR_RESISTANCE * delta_time
             if self.vel > 0:
                 self.vel = 0
-        Entity.update(self, deltaTime)
+        Entity.update(self, delta_time)
 
     def update_sprite(self):
         """
         Update the images to create a flight animation.
         """
 
-        score = self.level.get_style_with_score()
+        score = self.level.get_style_type_with_score()
         self.sprite_index = self.sprite_index + 1 if self.sprite_index < 2 else 0
         self.current_image_name = f"leaf_{score}_{self.sprite_index}.png"
 
-        self.level.set_action_delay((self, "updateSprite"),
-                                    LEAF_SPRITE_DURATION, self.update_sprite)
+        self.level.set_action_delay(
+            (self, "updateSprite"), LEAF_SPRITE_DURATION, self.update_sprite
+        )
 
     def set_left_wind(self):
         """
@@ -124,9 +129,12 @@ class Leaf(Entity):
 
         if not random.randint(0, 2):
             for delta_pos in (-self.size[0], self.size[0]):
-                self.level.spawn_leaf_piece((self.pos[0] + delta_pos / 2,
-                                             self.pos[1]), self.speed, self.leaf_type + " piece",
-                                            self.vel / 2)
+                self.level.spawn_leaf_piece(
+                    (self.pos[0] + delta_pos / 2, self.pos[1]),
+                    self.speed,
+                    self.leaf_type + " piece",
+                    self.vel / 2,
+                )
             self.remove()
 
     def remove(self):

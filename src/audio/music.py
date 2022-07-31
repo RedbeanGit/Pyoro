@@ -41,8 +41,8 @@ class Music(Sound):
         """
         Initialize a Music object.
 
-        :type audioPlayer: audio.audio_player.Audio_player
-        :param audioPlayer: The player that will update this Music object.
+        :type audio_player: audio.audio_player.Audio_player
+        :param audio_player: The player that will update this Music object.
         """
 
         Sound.__init__(self, audio_player)
@@ -104,8 +104,8 @@ class Music(Sound):
         """
         Get a new audio chunk.
 
-        :type nbFrames: int
-        :param nbFrames: The size of the audio chunk to get
+        :type nb_frames: int
+        :param nb_frames: The size of the audio chunk to get
 
         :rtype: bytes
         :returns: A new raw audio chunk
@@ -126,7 +126,7 @@ class Music(Sound):
         if self.is_loaded and self.wave_file:
             self.wave_file.rewind()
         else:
-            print("[WARNING] [Music.getFileInfo] Music not loaded")
+            print("[WARNING] [Music.get_file_info] Music not loaded")
 
     def copy(self):
         """

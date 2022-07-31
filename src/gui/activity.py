@@ -1,19 +1,19 @@
 # -*- coding:utf-8 -*-
 
-#	This file is part of Pyoro (A Python fan game).
+# 	This file is part of Pyoro (A Python fan game).
 #
-#	Metawars is free software: you can redistribute it and/or modify
-#	it under the terms of the GNU General Public License as published by
-#	the Free Software Foundation, either version 3 of the License, or
-#	(at your option) any later version.
+# 	Metawars is free software: you can redistribute it and/or modify
+# 	it under the terms of the GNU General Public License as published by
+# 	the Free Software Foundation, either version 3 of the License, or
+# 	(at your option) any later version.
 #
-#	Metawars is distributed in the hope that it will be useful,
-#	but WITHOUT ANY WARRANTY; without even the implied warranty of
-#	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-#	GNU General Public License for more details.
+# 	Metawars is distributed in the hope that it will be useful,
+# 	but WITHOUT ANY WARRANTY; without even the implied warranty of
+# 	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+# 	GNU General Public License for more details.
 #
-#	You should have received a copy of the GNU General Public License
-#	along with Metawars. If not, see <https://www.gnu.org/licenses/>
+# 	You should have received a copy of the GNU General Public License
+# 	along with Metawars. If not, see <https://www.gnu.org/licenses/>
 
 """
 Provide a base class for activities.
@@ -29,150 +29,151 @@ __repo__ = "https://github.com/RedbeanGit/Pyoro"
 
 from game.util import Game
 from gui.layout import Layout
-from gui.widget import Widget
 
 
 class Activity:
-	"""
-	Abstract class for all activities.
-	"""
+    """
+    Abstract class for all activities.
+    """
 
-	def __init__(self, window):
-		"""
-		Initialize a new Activity object.
+    def __init__(self, window):
+        """
+        Initialize a new Activity object.
 
-		:type window: gui.window.Window
-		:param window: The parent window which will manage this activity.
-		"""
+        :type window: gui.window.Window
+        :param window: The parent window which will manage this activity.
+        """
 
-		self.window = window
-		self.layout = Layout(window)
-		self.widgets = collections.OrderedDict()
-		self.sounds = {}
+        self.window = window
+        self.layout = Layout(window)
+        self.widgets = collections.OrderedDict()
+        self.sounds = {}
 
-		self.layout.load()
-		self.initSounds()
-		self.initWidgets()
+        self.layout.load()
+        self.init_sounds()
+        self.init_widgets()
 
-	def __initSounds__(self, soundNames, folder, audioType = "sound"):
-		"""
-		Useful method to easily load sounds or musics which will be used later
-		by this activity. Do not override this method.
+    def __init_sounds__(self, sound_names, folder, audio_type="sound"):
+        """
+        Useful method to easily load sounds or musics which will be used later
+        by this activity. Do not override this method.
 
-		:type soundNames: tuple
-		:param soundNames: Base filename of the sounds to load.
+        :type sound_names: tuple
+        :param sound_names: Base filename of the sounds to load.
 
-		:type folder: str
-		:param folder: The filepath of the folder where sounds are located.
+        :type folder: str
+        :param folder: The filepath of the folder where sounds are located.
 
-		:type audioType: str
-		:param audioType: (Optional) How to load the sound (as sound or as music).
-			Default is "sound". It can be "sound" or "music".
-		"""
+        :type audio_type: str
+        :param audio_type: (Optional) How to load the sound (as sound or as music).
+            Default is "sound". It can be "sound" or "music".
+        """
 
-		if audioType == "sound":
-			fct = Game.audioPlayer.getSound
-		elif audioType == "music":
-			fct = Game.audioPlayer.getMusic
-		for name in soundNames:
-			self.sounds[name] = fct(os.path.join(folder, "{}.wav".format(name)))
+        if audio_type == "sound":
+            fct = Game.audio_player.get_sound
+        elif audio_type == "music":
+            fct = Game.audio_player.get_music
+        for name in sound_names:
+            self.sounds[name] = fct(os.path.join(folder, f"{name}.wav"))
 
-	def initSounds(self):
-		"""
-		This method should be override. It's called when the activity is
-		initialized. It's used to load the sounds used by this activity.
-		"""
-		pass
+    def init_sounds(self):
+        """
+        This method should be override. It's called when the activity is
+        initialized. It's used to load the sounds used by this activity.
+        """
 
-	def initWidgets(self):
-		"""
-		This method should be override. It's called when the activity is
-		initialized. It's used to load the widgets used by this activity.
-		"""
-		pass
+    def init_widgets(self):
+        """
+        This method should be override. It's called when the activity is
+        initialized. It's used to load the widgets used by this activity.
+        """
 
-	def addWidget(self, widgetName, widgetType, *args, **kwargs):
-		"""
-		Add a widget with a defined name and arguments.
+    def add_widget(self, widget_name, widget_type, *args, **kwargs):
+        """
+        Add a widget with a defined name and arguments.
 
-		:type widgetName: str
-		:param widgetName: The name of the widget. This name can be use later to
-			get or remove the widget.
+        :type widget_name: str
+        :param widget_name: The name of the widget. This name can be use later to
+            get or remove the widget.
 
-		:type widgetType: class
-		:param widgetType: The class of the widget to add. This class is used to
-			create the widget.
-		"""
+        :type widget_type: class
+        :param widget_type: The class of the widget to add. This class is used to
+            create the widget.
+        """
 
-		if widgetName in self.widgets:
-			print("[WARNING] [Layout.addWidget] Widget '%s' already exists" % widgetName)
-		else:
-			widget = widgetType(self, *args, **kwargs)
-			self.widgets[widgetName] = widget
+        if widget_name in self.widgets:
+            print(
+                f"[WARNING] [Layout.add_widget] Widget '{widget_name}' already exists"
+            )
+        else:
+            widget = widget_type(self, *args, **kwargs)
+            self.widgets[widget_name] = widget
 
-	def removeWidget(self, widgetName):
-		"""
-		Remove a widget from this activity.
+    def remove_widget(self, widget_name):
+        """
+        Remove a widget from this activity.
 
-		:type widgetName: str
-		:param widgetName: The name of the widget to destroy and remove.
-		"""
+        :type widget_name: str
+        :param widget_name: The name of the widget to destroy and remove.
+        """
 
-		if widgetName in self.widgets:
-			if not self.widgets[widgetName].isDestroyed:
-				self.widgets[widgetName].destroy()
-			self.widgets.pop(widgetName)
-		else:
-			print("[WARNING] [Layout.removeWidget] '%s' not in widget list" % widgetName)
+        if widget_name in self.widgets:
+            if not self.widgets[widget_name].is_destroyed:
+                self.widgets[widget_name].destroy()
+            self.widgets.pop(widget_name)
+        else:
+            print(
+                f"[WARNING] [Layout.remove_widget] '{widget_name}' not in widget list"
+            )
 
-	def enableWidgets(self):
-		"""
-		Enable all widgets of this activity.
-		"""
+    def enable_widgets(self):
+        """
+        Enable all widgets of this activity.
+        """
 
-		for widget in tuple(self.widgets.values()):
-			widget.config(enable = True)
+        for widget in tuple(self.widgets.values()):
+            widget.config(enable=True)
 
-	def disableWidgets(self):
-		"""
-		Disable all widgets of this activity.
-		"""
+    def disable_widgets(self):
+        """
+        Disable all widgets of this activity.
+        """
 
-		for widget in tuple(self.widgets.values()):
-			widget.config(enable = False)
+        for widget in tuple(self.widgets.values()):
+            widget.config(enable=False)
 
-	def updateEvent(self, event):
-		"""
-		Update all widgets of this activity by giving to them a defined pygame
-		event.
+    def update_event(self, event):
+        """
+        Update all widgets of this activity by giving to them a defined pygame
+        event.
 
-		:type event: pygame.event.Event
-		:param event: The event to pass to the widgets.
-		"""
+        :type event: pygame.event.Event
+        :param event: The event to pass to the widgets.
+        """
 
-		for widget in tuple(self.widgets.values()):
-			if not widget.isDestroyed:
-				widget.onEvent(event)
+        for widget in tuple(self.widgets.values()):
+            if not widget.is_destroyed:
+                widget.on_event(event)
 
-	def update(self, deltaTime):
-		"""
-		Update all graphical components of this activity.
+    def update(self, delta_time):
+        """
+        Update all graphical components of this activity.
 
-		:type deltaTime: float
-		:param deltaTime: Time elapsed since the last call of this method (in
-			seconds).
-		"""
+        :type delta_time: float
+        :param delta_time: Time elapsed since the last call of this method (in
+            seconds).
+        """
 
-		for widget in tuple(self.widgets.values()):
-			if not widget.isDestroyed:
-				widget.update(deltaTime)
+        for widget in tuple(self.widgets.values()):
+            if not widget.is_destroyed:
+                widget.update(delta_time)
 
-	def destroy(self):
-		"""
-		Destroy all widgets of this activity.
-		"""
+    def destroy(self):
+        """
+        Destroy all widgets of this activity.
+        """
 
-		for widget in tuple(self.widgets.values()):
-			if not widget.isDestroyed:
-				widget.destroy()
-		self.widgets.clear()
+        for widget in tuple(self.widgets.values()):
+            if not widget.is_destroyed:
+                widget.destroy()
+        self.widgets.clear()

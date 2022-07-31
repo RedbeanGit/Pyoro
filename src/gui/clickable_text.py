@@ -24,65 +24,65 @@ Created on 10/04/2018.
 __author__ = "RedbeanGit"
 __repo__ = "https://github.com/RedbeanGit/Pyoro"
 
-from gui.eventable_widget import Eventable_widget
+from gui.eventable_widget import EventableWidget
 from gui.text import Text
 
 
-class Clickable_text(Text, Eventable_widget):
-	"""
-	Create a text widget which will react on user events.
-	"""
+class ClickableText(Text, EventableWidget):
+    """
+    Create a text widget which will react on user events.
+    """
 
-	DEFAULT_KWARGS = {
-		"onClickTextColor": (200, 200, 200, 255),
-		"onMiddleClickTextColor": (100, 100, 100, 255),
-		"onRightClickTextColor": (220, 220, 220, 255),
-		"onHoverTextColor": (230, 230, 230, 255),
-		"disableTextColor": (240, 240, 240, 235)
-	}
+    DEFAULT_KWARGS = {
+        "on_click_text_color": (200, 200, 200, 255),
+        "on_middle_click_text_color": (100, 100, 100, 255),
+        "on_right_click_text_color": (220, 220, 220, 255),
+        "on_hover_text_color": (230, 230, 230, 255),
+        "disable_text_color": (240, 240, 240, 235),
+    }
 
-	def __init__(self, activity, pos, text, **kwargs):
-		"""
-		Initialize a new Text objects.
+    def __init__(self, activity, pos, text, **kwargs):
+        """
+        Initialize a new Text objects.
 
-		:type activity: gui.activity.Activity
-		:param activity: The parent activity of this widget.
+        :type activity: gui.activity.Activity
+        :param activity: The parent activity of this widget.
 
-		:type pos: tuple
-		:param pos: The default position of the widget in a (x, y) tuple where
-			x and y are integers.
+        :type pos: tuple
+        :param pos: The default position of the widget in a (x, y) tuple where
+            x and y are integers.
 
-		:type text: str
-		:param text: The text to render.
+        :type text: str
+        :param text: The text to render.
 
-		onClickTextColor, onMiddleClickTextColor, onRightClickTextColor,
-		onHoverTextColor, disableTextColor, can be defined.
-		"""
+        on_click_text_color, on_middle_click_text_color, on_right_click_text_color,
+        on_hover_text_color, disable_text_color, can be defined.
+        """
 
-		Clickable_text.updateDefaultKwargs(kwargs)
-		Text.__init__(self, activity, pos, text, **kwargs)
-		Eventable_widget.__init__(self, activity, pos, **self.kwargs)
+        ClickableText.update_default_kwargs(kwargs)
+        Text.__init__(self, activity, pos, text, **kwargs)
+        EventableWidget.__init__(self, activity, pos, **self.kwargs)
 
-	def update(self, deltaTime):
-		"""
-		Update the clickable text by redrawing it on the window with the
-			appropriate color.
+    def update(self, delta_time):
+        """
+        Update the clickable text by redrawing it on the window with the
+            appropriate color.
 
-		:type deltaTime: float
-		:param deltaTime: Time elapsed since the last call of this method (in
-			seconds).
-		"""
+        :type delta_time: float
+        :param delta_time: Time elapsed since the last call of this method (in
+            seconds).
+        """
 
-		if not self.kwargs["enable"]:
-			self.font.fgcolor = self.kwargs["disableTextColor"]
-		elif self.clicked:
-			self.font.fgcolor = self.kwargs["onClickTextColor"]
-		elif self.rightClicked:
-			self.font.fgcolor = self.kwargs["onRightClickTextColor"]
-		elif self.middleClicked:
-			self.font.fgcolor = self.kwargs["onMiddleClickTextColor"]
-		elif self.hovered:
-			self.font.fgcolor = self.kwargs["onHoverTextColor"]
-		else:
-			self.font.fgcolor = self.kwargs["textColor"]
-		Text.update(self, deltaTime)
+        if not self.kwargs["enable"]:
+            self.font.fgcolor = self.kwargs["disable_text_color"]
+        elif self.clicked:
+            self.font.fgcolor = self.kwargs["on_click_text_color"]
+        elif self.right_clicked:
+            self.font.fgcolor = self.kwargs["on_right_click_text_color"]
+        elif self.middle_clicked:
+            self.font.fgcolor = self.kwargs["on_middle_click_text_color"]
+        elif self.hovered:
+            self.font.fgcolor = self.kwargs["on_hover_text_color"]
+        else:
+            self.font.fgcolor = self.kwargs["text_color"]
+        Text.update(self, delta_time)

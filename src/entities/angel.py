@@ -1,19 +1,19 @@
 # -*- coding: utf-8 -*-
 
-#	This file is part of Pyoro (A Python fan game).
+# 	This file is part of Pyoro (A Python fan game).
 #
-#	Metawars is free software: you can redistribute it and/or modify
-#	it under the terms of the GNU General Public License as published by
-#	the Free Software Foundation, either version 3 of the License, or
-#	(at your option) any later version.
+# 	Metawars is free software: you can redistribute it and/or modify
+# 	it under the terms of the GNU General Public License as published by
+# 	the Free Software Foundation, either version 3 of the License, or
+# 	(at your option) any later version.
 #
-#	Metawars is distributed in the hope that it will be useful,
-#	but WITHOUT ANY WARRANTY; without even the implied warranty of
-#	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-#	GNU General Public License for more details.
+# 	Metawars is distributed in the hope that it will be useful,
+# 	but WITHOUT ANY WARRANTY; without even the implied warranty of
+# 	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+# 	GNU General Public License for more details.
 #
-#	You should have received a copy of the GNU General Public License
-#	along with Metawars. If not, see <https://www.gnu.org/licenses/>
+# 	You should have received a copy of the GNU General Public License
+# 	along with Metawars. If not, see <https://www.gnu.org/licenses/>
 
 """
 Provides an Angel class.
@@ -34,21 +34,21 @@ class Angel(Entity):
     Angel that fall from the sky to repair a destroyed block
     """
 
-    def __init__(self, level, repairCase):
+    def __init__(self, level, repair_case):
         """
         Initialize an Angel object.
 
         :type level: game.level.Level
         :param level: The level managing this entity
 
-        :type repairCase: game.case.Case
-        :param repairCase: The block to repair
+        :type repair_case: game.case.Case
+        :param repair_case: The block to repair
         """
 
         self.sprite_index = 0
-        self.case = repairCase
+        self.case = repair_case
         self.case.is_repairing = True
-        Entity.__init__(self, level, (repairCase.pos + 0.75, 0.75), (1.5, 1.5))
+        Entity.__init__(self, level, (repair_case.pos + 0.75, 0.75), (1.5, 1.5))
 
     def init_images(self):
         """
@@ -65,21 +65,21 @@ class Angel(Entity):
         self.__init_sounds__(("angel_down",))
         self.sounds["angel_down"].play()
 
-    def update(self, deltaTime):
+    def update(self, delta_time):
         """
         Update the angel (position, sprite).
 
-        :type deltaTime: float
-        :param deltaTime: Time elapsed since the last frame update
+        :type delta_time: float
+        :param delta_time: Time elapsed since the last frame update
         """
 
         if self.case.is_repairing:
-            self.pos[1] += ANGEL_SPEED * deltaTime
+            self.pos[1] += ANGEL_SPEED * delta_time
         else:
-            self.pos[1] -= ANGEL_SPEED * deltaTime
+            self.pos[1] -= ANGEL_SPEED * delta_time
         if self.is_hitting_floor():
             self.repair_case()
-        Entity.update(self, deltaTime)
+        Entity.update(self, delta_time)
 
     def repair_case(self, case=None):
         """
@@ -104,7 +104,8 @@ class Angel(Entity):
         self.sprite_index = 1 if self.sprite_index == 0 else 0
         self.current_image_name = f"angel_{score}_{self.sprite_index}.png"
         self.level.set_action_delay(
-            (self, "updateSprite"), ANGEL_SPRITE_DURATION, self.update_sprite)
+            (self, "updateSprite"), ANGEL_SPRITE_DURATION, self.update_sprite
+        )
 
     def remove(self):
         """
