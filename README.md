@@ -1,6 +1,6 @@
 # Pyoro (A Python fan game)
 
-![Main menu](https://github.com/RedbeanGit/Pyoro/blob/master/Pyoro.png?raw=true)
+![Main menu](https://github.com/RedbeanGit/Pyoro/blob/main/Pyoro.png?raw=true)
 
 ## What is Pyoro?
 
