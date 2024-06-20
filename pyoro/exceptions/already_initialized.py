@@ -1,0 +1,2 @@
+class AlreadyInitializedException(Exception):
+    pass

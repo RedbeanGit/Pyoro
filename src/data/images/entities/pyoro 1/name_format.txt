@@ -1,1 +1,0 @@
-pyoro_<styleType(1|2|3)>_<actionName[_actionValue]>_<direction(1|-1)>.png
