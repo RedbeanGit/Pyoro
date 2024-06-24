@@ -1,1 +1,0 @@
-leafpiece_<styleType(1|2|3)>_<actionId>.png
